@@ -43,7 +43,7 @@ const Footer = () => {
             </div>
           </div>
           <div className="mt-8 pt-8 border-t border-gray-800 text-center text-gray-400">
-            <p>© 2024 Football Pitch Booking. All rights reserved.</p>
+            <p>© 2025 FPT Sports Field. All rights reserved</p>
           </div>
         </div>
       </footer>

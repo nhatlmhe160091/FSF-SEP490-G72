@@ -37,9 +37,9 @@ const Home = () => {
                 />
                 <div className="absolute inset-0 bg-black/50 z-10"></div>
                 <div className="relative z-20 text-center px-4">
-                    <h1 className="text-5xl md:text-7xl font-bold text-white mb-6">Book your football pitch in seconds</h1>
-                    <p className="text-xl md:text-2xl text-white mb-8">Experience seamless booking for the best football pitches in your area</p>
-                    <button className="bg-green-500 hover:bg-green-600 text-white text-xl font-bold py-4 px-8 rounded-full transition duration-300">Book Now</button>
+                    <h1 className="text-5xl md:text-7xl font-bold text-white mb-6">Đặt sân dễ dàng, nhanh chóng</h1>
+                    <p className="text-xl md:text-2xl text-white mb-8">Trải nghiệm đặt chỗ liền mạch cho các sân thể thao tốt nhất trong khu vực của bạn</p>
+                    <button className="bg-green-500 hover:bg-green-600 text-white text-xl font-bold py-4 px-8 rounded-full transition duration-300">Đặt ngay</button>
                 </div>
             </div>
 
@@ -139,7 +139,7 @@ const Home = () => {
                         </div>
                     </div>
                     <div className="mt-8 pt-8 border-t border-gray-800 text-center text-gray-400">
-                        <p>© 2024 Football Pitch Booking. All rights reserved.</p>
+                        <p>© 2025 FPT Sports Field. All rights reserved</p>
                     </div>
                 </div>
             </footer>

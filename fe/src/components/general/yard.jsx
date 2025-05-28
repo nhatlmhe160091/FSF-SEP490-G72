@@ -21,7 +21,7 @@ const YardPage = () => {
       location: "Downtown Sports Complex",
       price: 80,
       rating: 4.5,
-      type: "5v5",
+      type: "football",
       available: true
     },
     {
@@ -31,17 +31,47 @@ const YardPage = () => {
       location: "Westside Recreation Center",
       price: 120,
       rating: 4.8,
-      type: "11v11",
-      available: true
+      type: "football",
+      available: false
     },
     {
       id: 3,
-      name: "Elite Soccer Ground",
-      image: "https://images.unsplash.com/photo-1556056504-5c7696c4c28d",
+      name: "Pickleball for All",
+      image: "https://cdn.shopvnb.com/uploads/images/tin_tuc/kich-thuoc-san-pickleball-3-1717631144.webp",
       location: "Eastside Sports Park",
       price: 95,
       rating: 4.2,
-      type: "7v7",
+      type: "pickleball",
+      available: false
+    },
+    {
+      id: 4,
+      name: "Green Ball",
+      image: "https://file.hstatic.net/1000288768/file/kleball-phu-hop-nang-cao-ky-nang-choi_d5e3126d1bfa4ff9b40f78b921cdb1e9_grande.jpg",
+      location: "Downtown Sports Complex",
+      price: 120,
+      rating: 4.8,
+      type: "pickleball",
+      available: true
+    },
+    {
+      id: 5,
+      name: "Super Orange Ball",
+      image: "https://thethaothienlong.vn/wp-content/uploads/2022/04/Kich-thuoc-qua-bong-ro-1.jpg",
+      location: "Westside Recreation Center",
+      price: 120,
+      rating: 4.8,
+      type: "basketball",
+      available: true
+    },
+    {
+      id: 6,
+      name: "Basketball Arena",
+      image: "https://redikick.com/wp-content/uploads/2025/01/San-bong-ro-ciputra.jpg",
+      location: "Eastside Sports Park",
+      price: 95,
+      rating: 4.2,
+      type: "basketball",
       available: false
     }
   ];
