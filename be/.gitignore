@@ -5,4 +5,4 @@
 *.env
 
 # Secret files
-serviceAccountKey.json
+/serviceAccountKey.json
