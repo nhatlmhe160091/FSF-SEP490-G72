@@ -13,6 +13,10 @@ import UserList from './pages/admin/user/UserList';
 import Login from './pages/account/login';
 import Register from './pages/account/register';
 import Yard from './pages/general/yard';
+import SportsVenueDashboard from './pages/manager/sportField/SportsVenueDashboard';
+import TypeDashboard from './pages/manager/type/TypeDashboard';
+import YardDetail from './pages/general/yardDetail';
+import { PublicProvider } from "./contexts/publicContext";
 /**
  * Roles include GUEST, CUSTOMER, ADMIN, MANAGER
  */
@@ -31,7 +35,7 @@ const router = createBrowserRouter([
         )
 
       },
-           {
+      {
         path: "/login",
         element: (
           <ProtectedRoute>
@@ -40,7 +44,7 @@ const router = createBrowserRouter([
         )
 
       },
-            {
+      {
         path: "/register",
         element: (
           <ProtectedRoute>
@@ -57,7 +61,7 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         )
       },
-        {
+      {
         path: "yard",
         element: (
           <ProtectedRoute>
@@ -66,10 +70,63 @@ const router = createBrowserRouter([
         )
       },
       {
+        path: "/yard/:id",
+        element: (
+          <ProtectedRoute requiredRoles={['GUEST', 'CUSTOMER']}>
+            <YardDetail />
+          </ProtectedRoute>
+        )
+      },
+      {
+        path: "manager",
+        children: [
+          {
+            path: "booking-list",
+            element: (
+              <ProtectedRoute requiredRoles={['MANAGER']}>
+                <UserList />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: "type-list",
+            element: (
+              <ProtectedRoute requiredRoles={['MANAGER']}>
+                <TypeDashboard />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: "sport-field-list",
+            element: (
+              <ProtectedRoute requiredRoles={['MANAGER']}>
+                <SportsVenueDashboard />
+              </ProtectedRoute>
+            ),
+          }
+        ]
+      },
+      {
         path: "admin",
         children: [
           {
             path: "user-list",
+            element: (
+              <ProtectedRoute>
+                <UserList />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: "type-list",
+            element: (
+              <ProtectedRoute>
+                <UserList />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: "sport-field-list",
             element: (
               <ProtectedRoute>
                 <UserList />
@@ -111,7 +168,9 @@ const router = createBrowserRouter([
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <AuthProvider>
+      <PublicProvider>
       <RouterProvider router={router} />
+      </PublicProvider>
     </AuthProvider>
   </StrictMode>
 );
