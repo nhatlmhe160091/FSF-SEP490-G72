@@ -16,7 +16,7 @@ import {
 import AdminHeader from "../components/headers/adminHeader";
 import People from "@mui/icons-material/People";
 import TableBarIcon from "@mui/icons-material/TableBar";
-
+ 
 const drawerWidth = 240;
 
 const menuItems = [
@@ -24,6 +24,16 @@ const menuItems = [
     text: "Quản lí Tài Khoản",
     icon: <People />,
     path: "/admin/user-list",
+  },
+  {
+    text: "Quản lí Loại Sân",
+    icon: <TableBarIcon />,
+    path: "/admin/type-list",
+  },
+  {
+    text: "Quản lí Sân",
+    icon: <TableBarIcon />,
+    path: "/admin/sport-field-list",
   },
 ];
 
@@ -33,8 +43,6 @@ const AdminLayout = () => {
   return (
     <Box sx={{ display: "flex", minHeight: "100vh", background: "#f6f7fb" }}>
       <CssBaseline />
-    
-
       {/* Sidebar Drawer */}
       <Drawer
         variant="permanent"
@@ -49,8 +57,7 @@ const AdminLayout = () => {
             boxShadow: 3,
           },
         }}
-      >
-       
+      >       
         <Box sx={{ textAlign: "center", py: 2 }}>
           <TableBarIcon sx={{ fontSize: 40, color: "#fff" }} />
           <Typography variant="h6" fontWeight="bold" sx={{ letterSpacing: ".2rem" }}>
@@ -86,7 +93,6 @@ const AdminLayout = () => {
           ))}
         </List>
       </Drawer>
-
       {/* Main Content */}
       <Box component="main" sx={{ flexGrow: 1, p: 3, background: "#f6f7fb", minHeight: "100vh" }}>
           <AdminHeader />
