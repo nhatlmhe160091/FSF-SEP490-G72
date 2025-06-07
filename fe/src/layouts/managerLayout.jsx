@@ -40,7 +40,7 @@ const ManagerLayout = () => {
             <ListItem disablePadding>
               <ListItemButton component={Link} to="manager/booking-list">
                 <ListItemIcon sx={{ color: 'white' }}><RestaurantMenu /></ListItemIcon>
-                <ListItemText primary="Lịch Đặt Sân" />
+                <ListItemText primary="Tài Khoản" />
               </ListItemButton>
             </ListItem>
 

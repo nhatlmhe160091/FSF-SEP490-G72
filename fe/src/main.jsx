@@ -121,7 +121,7 @@ const router = createBrowserRouter([
             path: "type-list",
             element: (
               <ProtectedRoute>
-                <UserList />
+                <TypeDashboard />
               </ProtectedRoute>
             ),
           },
@@ -129,7 +129,7 @@ const router = createBrowserRouter([
             path: "sport-field-list",
             element: (
               <ProtectedRoute>
-                <UserList />
+                <SportsVenueDashboard />
               </ProtectedRoute>
             ),
           }
