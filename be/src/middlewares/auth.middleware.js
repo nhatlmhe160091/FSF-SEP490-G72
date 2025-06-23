@@ -5,7 +5,7 @@ class AuthMiddleware {
     checkRoles = (allowedRoles) => {
         return async (req, res, next) => {
             const token = req.headers.authorization?.split(' ')[1];
-            console.log(token)
+            // console.log(token)
             if (!token) {
                 if (!allowedRoles.includes('GUEST')) {
                     return res.status(401).json({
