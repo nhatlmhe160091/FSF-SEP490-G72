@@ -3,6 +3,3 @@
 
 # Env files
 *.env
-
-# Secret files
-/serviceAccountKey.json

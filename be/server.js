@@ -8,6 +8,8 @@ const constants = require('./src/utils/constants');
 const routes = require('./src/routes/index');
 const app = express();
 const mongoose = require('mongoose');
+const { registerScheduleCrons } = require('./src/utils/schedule.cron');
+registerScheduleCrons();
 
 app.use(cors(
   {
