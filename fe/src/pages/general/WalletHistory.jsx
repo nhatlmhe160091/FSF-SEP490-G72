@@ -75,7 +75,12 @@ export default function WalletHistory() {
                   </TableCell>
                   <TableCell>{tx.amount?.toLocaleString('vi-VN')}đ</TableCell>
                   <TableCell>{tx.description}</TableCell>
-                  <                    />
+                  <TableCell>
+                    <Chip
+                      label={statusMap[tx.status]?.label || tx.status}
+                      color={statusMap[tx.status]?.color || 'default'}
+                      size="small"
+                    />
                   </TableCell>
                 </TableRow>
               ))
