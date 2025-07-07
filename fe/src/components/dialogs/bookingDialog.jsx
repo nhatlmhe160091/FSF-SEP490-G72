@@ -192,7 +192,7 @@ export default function BookingDialog({ open, onClose, selectedSlots, sportField
                       <TableCell>
                         {`${formatTimeVN(slot.time)} - ${formatTimeVN(dayjs(slot.time).add(30, 'minute').toISOString())}`}
                       </TableCell>
-                      <TableCell>{sportField.pricePerHour.toLocaleString()}đ</TableCell>
+                      <TableCell>{(sportField.pricePerHour * 0.5).toLocaleString()}đ</TableCell>
                     </TableRow>
                   );
                 })}
