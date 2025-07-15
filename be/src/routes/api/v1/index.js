@@ -17,6 +17,7 @@ const walletRouter = require('./wallet.router');
 const fakeRouter = require('./fake.router');
 const newsRouter = require('./news.router');
 
+
 router.use('/guest', guestRouter);
 router.use('/user', userRouter);
 router.use('/type', typeRouter);

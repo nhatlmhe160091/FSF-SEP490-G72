@@ -9,5 +9,6 @@ router.get('/:id', BookingController.getBookingById);
 router.post('/', BookingController.createBooking);
 router.put('/:id', BookingController.updateBooking);
 router.delete('/:id', BookingController.deleteBooking);
+router.get('/statistic/revenue', BookingController.getRevenueStatistics);
 
 module.exports = router;

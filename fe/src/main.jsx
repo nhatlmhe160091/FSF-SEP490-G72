@@ -30,6 +30,9 @@ import MatchmakingHistory from './pages/general/MatchmakingHistory';
 import WalletHistory from './pages/general/WalletHistory';
 import NewsList from './pages/general/newsList';
 import NewsDetail from './pages/general/newsDetail';
+import NewsDashboard from './pages/manager/new/NewsDashboard';
+import RevenueDashboard from './pages/manager/revenue/RevenueDashboard';
+
 /**
  * Roles include GUEST, CUSTOMER, ADMIN, MANAGER
  */
@@ -90,7 +93,7 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         )
       },
-        {
+      {
         path: "/news",
         element: (
           <ProtectedRoute requiredRoles={['GUEST', 'CUSTOMER']}>
@@ -138,7 +141,7 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         )
       },
-       {
+      {
         path: "/matchmaking-history",
         element: (
           <ProtectedRoute requiredRoles={['GUEST', 'CUSTOMER']}>
@@ -146,7 +149,7 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         )
       },
-        {
+      {
         path: "/wallet-history",
         element: (
           <ProtectedRoute requiredRoles={['GUEST', 'CUSTOMER']}>
@@ -154,7 +157,7 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         )
       },
-       {
+      {
         path: "/vnpay_return_url",
         element: (
           <ProtectedRoute requiredRoles={['GUEST', 'CUSTOMER']}>
@@ -190,6 +193,14 @@ const router = createBrowserRouter([
             ),
           },
           {
+            path: "news-list",
+            element: (
+              <ProtectedRoute requiredRoles={['MANAGER']}>
+                <NewsDashboard />
+              </ProtectedRoute>
+            ),
+          },
+          {
             path: "equipment-list",
             element: (
               <ProtectedRoute requiredRoles={['MANAGER']}>
@@ -218,6 +229,14 @@ const router = createBrowserRouter([
             element: (
               <ProtectedRoute requiredRoles={['MANAGER']}>
                 <MaintenanceSchedule />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: "revenue-statistics",
+            element: (
+              <ProtectedRoute requiredRoles={['MANAGER']}>
+                <RevenueDashboard />
               </ProtectedRoute>
             ),
           },

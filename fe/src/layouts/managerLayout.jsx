@@ -10,6 +10,7 @@ import SportsSoccerIcon from '@mui/icons-material/SportsSoccer';
 import ManagerHeader from '../components/headers/ManagerHeader';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { LineChart } from 'recharts';
 
 const drawerWidth = 240;
 
@@ -78,6 +79,16 @@ const ManagerLayout = () => {
                 <ListItemText primary="Tin Tức" />
               </ListItemButton>
             </ListItem>
+            <ListItem disablePadding>
+              <ListItemButton component={Link} to="manager/revenue-statistics">
+                <ListItemIcon sx={{ color: 'white' }}>
+                </ListItemIcon>
+                <ListItemText primary="Thống Kê Doanh Thu" />
+              </ListItemButton>
+            </ListItem>
+
+
+
           </List>
           <Divider sx={{ backgroundColor: 'rgba(255,255,255,0.2)', my: 2 }} />
         </Box>

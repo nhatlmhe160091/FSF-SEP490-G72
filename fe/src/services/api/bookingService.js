@@ -33,6 +33,11 @@ export const bookingService = {
   roundAllBookingTimesToHour: async () => {
     return handleApiCall(() => api.patch('/booking/round-all-times'));
   },
+  getRevenueStatistics: async (params) => {
+    return handleApiCall(() =>
+      api.get('/booking/statistic/revenue', { params })
+    );
+  }
 };
 
 export default bookingService;

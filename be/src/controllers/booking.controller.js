@@ -59,33 +59,44 @@ class BookingController {
             next(error);
         }
     }
-    
-  async getPaginatedBookings(req, res, next) {
-    try {
-        const { page, limit, status, from, to, type, search } = req.query;
-        const result = await BookingService.getPaginatedBookings({ page, limit, status, from, to, type, search });
-        res.status(200).json(result);
-    } catch (error) {
-        next(error);
+
+    async getPaginatedBookings(req, res, next) {
+        try {
+            const { page, limit, status, from, to, type, search } = req.query;
+            const result = await BookingService.getPaginatedBookings({ page, limit, status, from, to, type, search });
+            res.status(200).json(result);
+        } catch (error) {
+            next(error);
+        }
     }
-}
-async roundAllBookingTimesToHour(req, res, next) {
-    try {
-        const result = await BookingService.roundAllBookingTimesToHour();
-        res.status(200).json(result);
-    } catch (error) {
-        next(error);
+    async roundAllBookingTimesToHour(req, res, next) {
+        try {
+            const result = await BookingService.roundAllBookingTimesToHour();
+            res.status(200).json(result);
+        } catch (error) {
+            next(error);
+        }
     }
-}
-async getBookingsByUser(req, res, next) {
-    try {
-        const { userId } = req.params;
-        const bookings = await BookingService.getBookingsByUser(userId);
-        res.status(200).json({ success: true, data: bookings });
-    } catch (error) {
-        next(error);
+    async getBookingsByUser(req, res, next) {
+        try {
+            const { userId } = req.params;
+            const bookings = await BookingService.getBookingsByUser(userId);
+            res.status(200).json({ success: true, data: bookings });
+        } catch (error) {
+            next(error);
+        }
     }
-}
+    async getRevenueStatistics(req, res, next) {
+        try {
+            const { from, to, groupBy } = req.query; // groupBy: day/month/year
+            const data = await BookingService.getRevenueStatistics(from, to, groupBy || 'day');
+            res.status(200).json({ success: true, data });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+
 }
 
 module.exports = new BookingController();
