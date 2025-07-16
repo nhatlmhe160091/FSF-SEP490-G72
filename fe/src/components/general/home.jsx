@@ -5,10 +5,10 @@ const Home = () => {
     const [email, setEmail] = useState("");
 
     const features = [
-        { icon: <FaCalendarCheck />, title: "Instant Booking", description: "Book your pitch in under 2 minutes" },
-        { icon: <FaFootballBall />, title: "Multiple Pitch Options", description: "Choose from grass, turf or indoor pitches" },
-        { icon: <FaMoneyBillWave />, title: "Transparent Pricing", description: "Clear pricing with no hidden fees" },
-        { icon: <FaClock />, title: "24/7 Availability", description: "Book anytime, day or night" }
+        { icon: <FaCalendarCheck />, title: "Đặt sân nhanh chóng", description: "Đặt sân nhanh chóng thuận tiện" },
+        { icon: <FaFootballBall />, title: "Đa dạng lựa chọn sân", description: "Nhiều lựa chọn mặt sân cho bạn" },
+        { icon: <FaMoneyBillWave />, title: "Giá được minh bạch", description: "Giá cả được niêm yết rõ ràng, không tính thêm phí" },
+        { icon: <FaClock />, title: "Phục vụ 24/7", description: "Phục vụ bạn mọi lúc, dù đêm hay ngày" }
     ];
 
     const testimonials = [
@@ -37,9 +37,9 @@ const Home = () => {
                 />
                 <div className="absolute inset-0 bg-black/50 z-10"></div>
                 <div className="relative z-20 text-center px-4">
-                    <h1 className="text-5xl md:text-7xl font-bold text-white mb-6">Book your football pitch in seconds</h1>
-                    <p className="text-xl md:text-2xl text-white mb-8">Experience seamless booking for the best football pitches in your area</p>
-                    <button className="bg-green-500 hover:bg-green-600 text-white text-xl font-bold py-4 px-8 rounded-full transition duration-300">Book Now</button>
+                    <h1 className="text-5xl md:text-7xl font-bold text-white mb-6">Đặt sân dễ dàng, nhanh chóng</h1>
+                    <p className="text-xl md:text-2xl text-white mb-8">Trải nghiệm đặt chỗ liền mạch cho các sân thể thao tốt nhất trong khu vực của bạn</p>
+                    <button className="bg-green-500 hover:bg-green-600 text-white text-xl font-bold py-4 px-8 rounded-full transition duration-300">Đặt ngay</button>
                 </div>
             </div>
 
@@ -61,7 +61,7 @@ const Home = () => {
             {/* Testimonials Section */}
             <div className="py-20 bg-gray-50">
                 <div className="max-w-7xl mx-auto px-6">
-                    <h2 className="text-4xl font-bold text-center mb-12">What Our Customers Say</h2>
+                    <h2 className="text-4xl font-bold text-center mb-12">Khách hàng nói gì?</h2>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         {testimonials.map((testimonial, index) => (
                             <div key={index} className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition duration-300">
@@ -86,7 +86,7 @@ const Home = () => {
             {/* Partners Section */}
             <div className="py-20 bg-white">
                 <div className="max-w-7xl mx-auto px-6">
-                    <h2 className="text-4xl font-bold text-center mb-12">Our Partner Stadiums</h2>
+                    <h2 className="text-4xl font-bold text-center mb-12">Đối tác của chúng tôi</h2>
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
                         {partners.map((partner, index) => (
                             <div key={index} className="grayscale hover:grayscale-0 transition duration-300">
@@ -139,7 +139,7 @@ const Home = () => {
                         </div>
                     </div>
                     <div className="mt-8 pt-8 border-t border-gray-800 text-center text-gray-400">
-                        <p>© 2024 Football Pitch Booking. All rights reserved.</p>
+                        <p>© 2025 FPT Sports Field. All rights reserved</p>
                     </div>
                 </div>
             </footer>

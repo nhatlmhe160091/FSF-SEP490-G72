@@ -5,7 +5,7 @@ import {
   Box, Container, CssBaseline, Toolbar, Drawer, List, ListItem,
   ListItemButton, ListItemIcon, ListItemText, Divider, Typography
 } from '@mui/material';
-import { TableChart, Book } from '@mui/icons-material';
+import { TableChart, Book, RestaurantMenu } from '@mui/icons-material';
 import SportsSoccerIcon from '@mui/icons-material/SportsSoccer';
 import ManagerHeader from '../components/headers/ManagerHeader';
 import { ToastContainer } from 'react-toastify';
@@ -39,11 +39,8 @@ const ManagerLayout = () => {
           <List>
             <ListItem disablePadding>
               <ListItemButton component={Link} to="manager/booking-list">
-                <ListItemIcon sx={{ color: 'white' }}>
-                  {/* icon for sport */}
-                  <Book />
-                </ListItemIcon>
-                <ListItemText primary="Lịch Đặt Sân" />
+                <ListItemIcon sx={{ color: 'white' }}><RestaurantMenu /></ListItemIcon>
+                <ListItemText primary="Tài Khoản" />
               </ListItemButton>
             </ListItem>
 
@@ -58,18 +55,6 @@ const ManagerLayout = () => {
               <ListItemButton component={Link} to="manager/sport-field-list">
                 <ListItemIcon sx={{ color: 'white' }}><Book /></ListItemIcon>
                 <ListItemText primary="Sân Thể Thao" />
-              </ListItemButton>
-            </ListItem>
-            <ListItem disablePadding>
-              <ListItemButton component={Link} to="manager/equipment-list">
-                <ListItemIcon sx={{ color: 'white' }}><SportsSoccerIcon /></ListItemIcon>
-                <ListItemText primary="Thiết Bị" />
-              </ListItemButton>
-            </ListItem>
-            <ListItem disablePadding>
-              <ListItemButton component={Link} to="manager/consumable-list">
-                <ListItemIcon sx={{ color: 'white' }}><Book /></ListItemIcon>
-                <ListItemText primary="Vật Tư Tiêu Hao" />
               </ListItemButton>
             </ListItem>
           </List>

@@ -17,13 +17,6 @@ import SportsVenueDashboard from './pages/manager/sportField/SportsVenueDashboar
 import TypeDashboard from './pages/manager/type/TypeDashboard';
 import YardDetail from './pages/general/yardDetail';
 import { PublicProvider } from "./contexts/publicContext";
-import BookingSchedule from './pages/general/bookingSchedule';
-import BookingSuccess from './pages/general/bookingSuccess';
-import ConsumableDashboard from './pages/manager/consumable/ConsumableDashboard';
-import EquipmentDashboard from './pages/manager/equipment/EquipmentDashboard';
-import BookingList from './pages/manager/booking/BookingList';
-import MatchmakingList from './pages/general/MatchmakingList';
-import BookingHistory from './pages/general/BookingHistory';
 /**
  * Roles include GUEST, CUSTOMER, ADMIN, MANAGER
  */
@@ -77,42 +70,10 @@ const router = createBrowserRouter([
         )
       },
       {
-        path: "/yard-detail/:id",
+        path: "/yard/:id",
         element: (
           <ProtectedRoute requiredRoles={['GUEST', 'CUSTOMER']}>
             <YardDetail />
-          </ProtectedRoute>
-        )
-      },
-           {
-        path: "/booking/:typeId",
-        element: (
-          <ProtectedRoute requiredRoles={['GUEST', 'CUSTOMER']}>
-            <BookingSchedule />
-          </ProtectedRoute>
-        )
-      },
-           {
-        path: "/booking-success/:id",
-        element: (
-          <ProtectedRoute requiredRoles={['GUEST', 'CUSTOMER']}>
-            <BookingSuccess />
-          </ProtectedRoute>
-        )
-      },
-          {
-        path: "/matchmaking-list",
-        element: (
-          <ProtectedRoute requiredRoles={['GUEST', 'CUSTOMER']}>
-            <MatchmakingList />
-          </ProtectedRoute>
-        )
-      },
-          {
-        path: "/booking-history",
-        element: (
-          <ProtectedRoute requiredRoles={['GUEST', 'CUSTOMER']}>
-            <BookingHistory />
           </ProtectedRoute>
         )
       },
@@ -120,7 +81,7 @@ const router = createBrowserRouter([
         path: "manager",
         children: [
           {
-            path: "user-list",
+            path: "booking-list",
             element: (
               <ProtectedRoute requiredRoles={['MANAGER']}>
                 <UserList />
@@ -142,31 +103,7 @@ const router = createBrowserRouter([
                 <SportsVenueDashboard />
               </ProtectedRoute>
             ),
-          },
-          {
-            path: "equipment-list",
-            element: (
-              <ProtectedRoute requiredRoles={['MANAGER']}>
-                <EquipmentDashboard />
-              </ProtectedRoute>
-            ),
-          },
-          {
-            path: "consumable-list",
-            element: (
-              <ProtectedRoute requiredRoles={['MANAGER']}>
-                <ConsumableDashboard />
-              </ProtectedRoute>
-            ),
-          },
-          {
-            path: "booking-list",
-            element: (
-              <ProtectedRoute requiredRoles={['MANAGER']}>
-                <BookingList />
-              </ProtectedRoute>
-            ),
-          },
+          }
         ]
       },
       {
@@ -184,7 +121,7 @@ const router = createBrowserRouter([
             path: "type-list",
             element: (
               <ProtectedRoute>
-                <UserList />
+                <TypeDashboard />
               </ProtectedRoute>
             ),
           },
@@ -192,7 +129,7 @@ const router = createBrowserRouter([
             path: "sport-field-list",
             element: (
               <ProtectedRoute>
-                <UserList />
+                <SportsVenueDashboard />
               </ProtectedRoute>
             ),
           }
