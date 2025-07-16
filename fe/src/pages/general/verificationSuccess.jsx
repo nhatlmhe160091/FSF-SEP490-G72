@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
@@ -9,13 +8,14 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useAuth } from '../../contexts/authContext';
 import { doSignOut } from '../../firebase/auth';
 import { useNavigate } from 'react-router-dom';
+
 const theme = createTheme({
     palette: {
         primary: {
-            main: '#C7253E',
+            main: '#4caf50', // xanh lá cây
         },
-        secondary: {
-            main: '#ffff',
+        background: {
+            default: '#ffffff',
         },
     },
 });
@@ -44,48 +44,54 @@ const VerificationSuccess = () => {
         if (isUserLoggedIn) {
             const signOut = async () => {
                 await doSignOut();
-            }
+            };
             signOut();
         }
     }, [isUserLoggedIn]);
 
     return (
-        <React.Fragment>
-            <ThemeProvider theme={theme}>
-                <Box
+        <ThemeProvider theme={theme}>
+            <Box
+                sx={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    width: '100vw',
+                    height: '100vh',
+                    bgcolor: 'background.default',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                }}
+            >
+                <Card
                     sx={{
-                        position: 'fixed',
-                        top: 0,
-                        left: 0,
-                        width: '100vw',
-                        height: '100vh',
-                        bgcolor: 'primary.main',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: 'white'
+                        textAlign: 'center',
+                        px: 4,
+                        py: 5,
+                        bgcolor: '#e6ffe6', // màu xanh lá nhạt
+                        boxShadow: 3,
+                        borderRadius: 3,
+                        minWidth: 350
                     }}
                 >
-                    <Card sx={{ textAlign: 'center', padding: 2 }}>
-                        <CardContent>
-                            <CheckCircleIcon
-                                sx={{ fontSize: 100, color: 'green', marginBottom: 2 }}
-                            />
-                            <Typography variant="h4" component="div">
-                                Xác thực thành công!
-                            </Typography>
-                            <Typography variant="subtitle2" sx={{ color: "text.secondary", mt: 2 }}>
-                                Chào mừng bạn đến với hệ thống đặt sân của chúng tôi.
-                            </Typography>
-                            <Typography variant="subtitle2" sx={{ color: "text.secondary" }}>
-                                Trở về trang chủ sau {count}.
-                            </Typography>
-                        </CardContent>
-                    </Card>
-                </Box>
-            </ThemeProvider>
-        </React.Fragment>
-
+                    <CardContent>
+                        <CheckCircleIcon
+                            sx={{ fontSize: 100, color: '#4caf50', mb: 2 }}
+                        />
+                        <Typography variant="h4" component="div" sx={{ color: '#2e7d32', fontWeight: 600 }}>
+                            Xác thực thành công!
+                        </Typography>
+                        <Typography variant="subtitle1" sx={{ mt: 2, color: '#2e7d32' }}>
+                            Chào mừng bạn đến với hệ thống đặt sân của chúng tôi.
+                        </Typography>
+                        <Typography variant="subtitle2" sx={{ mt: 1, color: '#2e7d32' }}>
+                            Trở về trang chủ sau {count} giây.
+                        </Typography>
+                    </CardContent>
+                </Card>
+            </Box>
+        </ThemeProvider>
     );
 };
 
