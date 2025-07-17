@@ -16,6 +16,7 @@ import Yard from './pages/general/yard';
 import SportsVenueDashboard from './pages/manager/sportField/SportsVenueDashboard';
 import TypeDashboard from './pages/manager/type/TypeDashboard';
 import YardDetail from './pages/general/yardDetail';
+import Policy from './pages/general/policy';
 import { PublicProvider } from "./contexts/publicContext";
 /**
  * Roles include GUEST, CUSTOMER, ADMIN, MANAGER
@@ -74,6 +75,14 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute requiredRoles={['GUEST', 'CUSTOMER']}>
             <YardDetail />
+          </ProtectedRoute>
+        )
+      },
+      {
+        path: "/policy",
+        element: (
+          <ProtectedRoute requiredRoles={['GUEST', 'CUSTOMER']}>
+            <Policy />
           </ProtectedRoute>
         )
       },

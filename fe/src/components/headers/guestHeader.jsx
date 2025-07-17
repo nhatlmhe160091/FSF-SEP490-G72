@@ -74,6 +74,16 @@ function GuestHeader() {
                             >
                                 Ưu đãi hấp dẫn
                             </Link>
+                            <Link
+                                sx={{ ml: 3, textAlign: 'center', textTransform: "uppercase", fontWeight: "bold" }}
+                                component="button"
+                                color="inherit"
+                                variant="body2"
+                                underline="hover"
+                                onClick={() => navigate('/policy')}
+                            >
+                                Chính sách pháp lý
+                            </Link>
                         </Box>
                         <Box sx={{ display: 'flex' }} >
                             <Person3Icon sx={{ p: 0 }}> </Person3Icon>
