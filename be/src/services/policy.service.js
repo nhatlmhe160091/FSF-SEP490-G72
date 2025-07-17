@@ -2,30 +2,24 @@ const Policy = require('../models/policy.model');
 const PolicyDetail = require('../models/policyDetail.model');
 
 class PolicyService {
-    async getPolicy() {
-        const details = await PolicyDetail.find()
-            .populate('categoryPolicyId', 'title')
-            .populate('policyId', 'content')
-            .lean();
-
-        const grouped = {};
-        
-        for (const item of details) {
-            const categoryTitle = item.categoryPolicyId?.title || 'Uncategorized';
-            if (!grouped[categoryTitle]) grouped[categoryTitle] = [];
-
-            grouped[categoryTitle].push({
-                policyId: item.policyId?._id,
-                title: item.policyId?.title,
-                content: item.policyId?.content
-            });
-        }
-        
-        return grouped;
+    async createPolicy(data) {
+        return await Policy.create(data);
     }
 
-    async getPolicyById(policyId) {
-        return await Policy.findById(policyId);
+    async getPolicy() {
+        return await Policy.find().populate('categoryPolicyId');
+    }
+
+    async getPolicyById(id) {
+        return await Policy.findById(id).populate('categoryPolicyId');
+    }
+
+    async updatePolicy(id, data) {
+        return await Policy.findByIdAndUpdate(id, data, { new: true });
+    }
+
+    async deletePolicy(id) {
+        return await Policy.findByIdAndDelete(id);
     }
 }
 

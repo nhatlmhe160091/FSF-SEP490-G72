@@ -11,6 +11,11 @@ const policySchema = new Schema({
         type: String,
         default: "",
         required: true
+    },
+    categoryPolicyId: {
+        type: Schema.Types.ObjectId,
+        ref: 'CategoryPolicy',
+        required: true
     }
 }, { timestamps: true });
 
