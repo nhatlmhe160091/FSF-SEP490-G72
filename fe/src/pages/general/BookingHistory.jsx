@@ -1,4 +1,5 @@
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Table, TableHead, TableRow, TableCell, TableBody, Paper, Chip, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Button, Divider } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -165,6 +166,8 @@ const BookingHistory = () => {
 };
 
 =======
+=======
+>>>>>>> Stashed changes
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Table, TableHead, TableRow, TableCell, TableBody, Paper, Chip, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Button, Divider } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -330,5 +333,8 @@ const BookingHistory = () => {
   );
 };
 
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 export default BookingHistory;
