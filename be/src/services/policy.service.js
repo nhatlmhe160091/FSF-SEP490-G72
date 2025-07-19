@@ -1,5 +1,4 @@
 const Policy = require('../models/policy.model');
-const PolicyDetail = require('../models/policyDetail.model');
 
 class PolicyService {
     async createPolicy(data) {
@@ -23,4 +22,4 @@ class PolicyService {
     }
 }
 
-module.exports = PolicyService;
+module.exports = new PolicyService();

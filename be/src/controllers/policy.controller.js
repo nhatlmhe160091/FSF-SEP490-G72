@@ -1,4 +1,4 @@
-const { PolicyService } = require('../services/policy.service');
+const PolicyService = require('../services/policy.service');
 
 class PolicyController {
     async createPolicy(req, res, next) {
