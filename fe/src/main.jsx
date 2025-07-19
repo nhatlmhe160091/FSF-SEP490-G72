@@ -112,7 +112,23 @@ const router = createBrowserRouter([
                 <SportsVenueDashboard />
               </ProtectedRoute>
             ),
-          }
+          },
+          {
+            path: "category-policy-list",
+            element: (
+              <ProtectedRoute requiredRoles={['MANAGER']}>
+                <CategoryPolicyList />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: "policy-list",
+            element: (
+              <ProtectedRoute requiredRoles={['MANAGER']}>
+                <PolicyList />
+              </ProtectedRoute>
+            ),
+          },
         ]
       },
       {
