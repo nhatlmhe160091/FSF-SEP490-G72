@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Box, Paper, Table, TableHead, TableRow, Typography } from "@mui/material";
-import policyService from "../../services/api/policyService";
+import { Box, Paper, Table, TableBody, TableCell, TableHead, TableRow, Typography } from "@mui/material";
+import { policyService } from "../../services/api/policyService";
 
 const Policy = () => {
     const [policy, setPolicy] = useState({});
@@ -10,10 +10,22 @@ const Policy = () => {
         const fetchPolicies = async () => {
             setLoading(true);
             try {
-                const res = await policyService.getPolicy();
-                setPolicy(res.data || {});
+                const res = await policyService.getPolicies();
+                const list = Array.isArray(res) ? res : res.data;
+
+                const grouped = list.reduce((acc, item) => {
+                    const category = item.categoryPolicyId?.title || "Khác";
+                    if (!acc[category]) acc[category] = [];
+                    acc[category].push({
+                        policyId: item._id,
+                        content: item.content
+                    });
+                    return acc;
+                }, {});
+
+                setPolicy(grouped);
             } catch (error) {
-                console.error('Error fetching policies:', error);
+                console.error("Error fetching policies:", error);
             } finally {
                 setLoading(false);
             }
@@ -38,24 +50,11 @@ const Policy = () => {
                         <Typography variant="h6" sx={{ mb: 2, color: '#1976d2' }}>
                             {category}
                         </Typography>
-                        <Paper>
-                            <Table>
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell>Tiêu đề</TableCell>
-                                        <TableCell>Mô tả</TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {items.map(policy => (
-                                        <TableRow key={policy.policyId}>
-                                            <TableCell>{policy.title}</TableCell>
-                                            <TableCell>{policy.description}</TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </Paper>
+                        {items.map(policy => (
+                            <Box key={policy.policyId} sx={{ mb: 2 }}>
+                                <Typography variant="body2">{policy.content}</Typography>
+                            </Box>
+                        ))}
                     </Box>
                 ))
             )}
