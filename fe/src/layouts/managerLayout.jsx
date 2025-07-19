@@ -5,7 +5,7 @@ import {
   Box, Container, CssBaseline, Toolbar, Drawer, List, ListItem,
   ListItemButton, ListItemIcon, ListItemText, Divider, Typography
 } from '@mui/material';
-import { TableChart, Book } from '@mui/icons-material';
+import { TableChart, Book, Newspaper } from '@mui/icons-material';
 import SportsSoccerIcon from '@mui/icons-material/SportsSoccer';
 import ManagerHeader from '../components/headers/ManagerHeader';
 import { ToastContainer } from 'react-toastify';
@@ -81,7 +81,14 @@ const ManagerLayout = () => {
                 <ListItemText primary="Vật Tư Tiêu Hao" />
               </ListItemButton>
             </ListItem>
+            <ListItem disablePadding>
+              <ListItemButton component={Link} to="manager/new-list">
+                <ListItemIcon sx={{ color: 'white' }}><Newspaper /></ListItemIcon>
+                <ListItemText primary="Tin tức" />
+              </ListItemButton>
+            </ListItem>
           </List>
+
           <Divider sx={{ backgroundColor: 'rgba(255,255,255,0.2)', my: 2 }} />
         </Box>
       </Drawer>

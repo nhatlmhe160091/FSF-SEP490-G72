@@ -33,6 +33,9 @@ import Voucher from './pages/general/voucher';
 import Event from './pages/general/Event';
 import EventDashboard from './pages/manager/event/EventDashboard';
 import About from './pages/general/About';
+import NewsList from './pages/general/newsList';
+import NewsDetail from './pages/general/newsDetail';
+import NewsDashboard from './pages/manager/new/NewsDashboard';
 /**
  * Roles include GUEST, CUSTOMER, ADMIN, MANAGER
  */
@@ -94,6 +97,22 @@ const router = createBrowserRouter([
         )
       },
       {
+        path: "/news",
+        element: (
+          <ProtectedRoute requiredRoles={['GUEST', 'CUSTOMER']}>
+            <NewsList />
+          </ProtectedRoute>
+        )
+      },
+      {
+        path: "/news/:id",
+        element: (
+          <ProtectedRoute requiredRoles={['GUEST', 'CUSTOMER']}>
+            <NewsDetail />
+          </ProtectedRoute>
+        )
+      },
+      {
         path: "/booking/:typeId",
         element: (
           <ProtectedRoute requiredRoles={['GUEST', 'CUSTOMER']}>
@@ -125,7 +144,7 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         )
       },
-       {
+      {
         path: "/matchmaking-history",
         element: (
           <ProtectedRoute requiredRoles={['GUEST', 'CUSTOMER']}>
@@ -133,7 +152,7 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         )
       },
-        {
+      {
         path: "/wallet-history",
         element: (
           <ProtectedRoute requiredRoles={['GUEST', 'CUSTOMER']}>
@@ -141,7 +160,7 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         )
       },
-       {
+      {
         path: "/vnpay_return_url",
         element: (
           <ProtectedRoute requiredRoles={['GUEST', 'CUSTOMER']}>
@@ -157,7 +176,7 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         )
       },
-          {
+      {
         path: "/event",
         element: (
           <ProtectedRoute requiredRoles={['GUEST', 'CUSTOMER']}>
@@ -165,7 +184,7 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         )
       },
-          {
+      {
         path: "/about",
         element: (
           <ProtectedRoute requiredRoles={['GUEST', 'CUSTOMER']}>
@@ -240,7 +259,7 @@ const router = createBrowserRouter([
               </ProtectedRoute>
             ),
           },
-              {
+          {
             path: "event-list",
             element: (
               <ProtectedRoute requiredRoles={['MANAGER']}>
@@ -248,6 +267,15 @@ const router = createBrowserRouter([
               </ProtectedRoute>
             ),
           },
+          {
+            path: "/manager/new-list",
+            element: (
+              <ProtectedRoute requiredRoles={['MANAGER']}>
+                <NewsDashboard />
+              </ProtectedRoute>
+            )
+          },
+
         ]
       },
       {
