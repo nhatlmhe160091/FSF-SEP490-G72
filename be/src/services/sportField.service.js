@@ -34,9 +34,22 @@ class SportFieldService {
         return await sportFieldModel.find().populate('type');
     }
 
-    async getSportFieldById(sportFieldId) {
-        return await sportFieldModel.findById(sportFieldId).populate('type');
-    }
+   async getSportFieldById(sportFieldId) {
+    const sportField = await sportFieldModel.findById(sportFieldId).populate('type');
+    if (!sportField) return null;
+
+    // Tìm các sân cùng loại, khác id, cùng location (hoặc có thể chỉ cùng loại)
+    const similarFields = await sportFieldModel.find({
+        _id: { $ne: sportFieldId },
+        type: sportField.type._id,
+        // location: sportField.location // Nếu muốn chỉ cùng loại, bỏ dòng này
+    }).limit(5);
+
+    return {
+        ...sportField.toObject(),
+        similarFields
+    };
+}
 
     async updateSportField(sportFieldId, sportFieldData, imageFiles = []) {
         let imageUrls = [];

@@ -17,12 +17,17 @@ const Yard = () => {
     const itemsPerPage = 8;
 
     const categories = [
-        { id: "all", name: "Tất cả", icon: FaRunning },
-        { id: "bóng đá", name: "Bóng đá", icon: FaFutbol },
-        { id: "bóng rổ", name: "Bóng rổ", icon: FaBasketballBall },
-        { id: "bóng chuyền", name: "Bóng chuyền", icon: FaVolleyballBall },
+        { id: "all", name: "All Sports", icon: FaRunning },
+        { id: "football", name: "Football", icon: FaFutbol },
+        { id: "basketball", name: "Basketball", icon: FaBasketballBall },
+        { id: "volleyball", name: "Volleyball", icon: FaVolleyballBall },
+        { id: "swimming", name: "Swimming", icon: FaSwimmer },
         { id: "tennis", name: "Tennis", icon: MdSportsTennis },
+        { id: "cricket", name: "Cricket", icon: GiCricketBat },
+        { id: "tableTennis", name: "Table Tennis", icon: FaTableTennis },
+        { id: "bóng đá", name: "Bóng đá", icon: FaFutbol },
         { id: "pickleball", name: "Pickleball", icon: FaTableTennis },
+        { id: "tenis", name: "Tenis", icon: MdSportsTennis },
     ];
 
 
@@ -63,10 +68,10 @@ const Yard = () => {
     return (
         <div className="min-h-screen bg-gray-100 p-6 flex">
             <div className="w-64 bg-white p-4 rounded-lg shadow-lg mr-6 h-fit sticky top-6">
-                <h2 className="text-xl font-bold mb-4">Lọc</h2>
+                <h2 className="text-xl font-bold mb-4">Filters</h2>
 
                 <div className="mb-6">
-                    <h3 className="text-lg font-semibold mb-3">Thể loại</h3>
+                    <h3 className="text-lg font-semibold mb-3">Categories</h3>
                     {categories.map((category) => (
                         <button
                             key={category.id}
@@ -80,7 +85,7 @@ const Yard = () => {
                 </div>
 
                 <div className="mb-6">
-                    <h3 className="text-lg font-semibold mb-3">Mức giá</h3>
+                    <h3 className="text-lg font-semibold mb-3">Price Range</h3>
                     <div className="space-y-2">
                         <input
                             type="range"
@@ -91,8 +96,8 @@ const Yard = () => {
                             className="w-full"
                         />
                         <div className="flex justify-between text-sm text-gray-600">
-                            <span>{priceRange[0]}VND</span>
-                            <span>{priceRange[1]}VND</span>
+                            <span>${priceRange[0]}</span>
+                            <span>${priceRange[1]}</span>
                         </div>
                     </div>
                 </div>
@@ -124,7 +129,7 @@ const Yard = () => {
                                 <p className="text-gray-600 mb-2">{field.location}</p>
                                 <div className="flex justify-between items-center mb-3">
                                     <span className="text-gray-600">Capacity: {field.capacity}</span>
-                                    <span className="text-blue-600 font-bold">{field.pricePerHour}VND/hr</span>
+                                    <span className="text-blue-600 font-bold">${field.pricePerHour}/hr</span>
                                 </div>
                                 <div className="flex space-x-2">
                                     {field.amenities.map((amenity, index) => (
@@ -137,7 +142,7 @@ const Yard = () => {
                                     className="mt-4 w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition-colors"
                                     onClick={(e) => {
                                         e.stopPropagation();
-                                        navigate(`/yard/${field._id}`);
+                                        navigate(`/yard-detail/${field._id}`);
                                     }}
                                 >
                                     Xem chi tiết
@@ -182,7 +187,7 @@ const Yard = () => {
                                     <p className="text-gray-600">{selectedField.location}</p>
                                     <div className="flex justify-between items-center">
                                         <span className="text-gray-600">Capacity: {selectedField.capacity}</span>
-                                        <span className="text-blue-600 font-bold">{selectedField.pricePerHour}VND/hr</span>
+                                        <span className="text-blue-600 font-bold">${selectedField.pricePerHour}/hr</span>
                                     </div>
                                     <div className="flex items-center space-x-2">
                                         <span className="text-gray-600">Status:</span>

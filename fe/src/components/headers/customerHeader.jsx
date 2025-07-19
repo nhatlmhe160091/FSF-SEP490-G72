@@ -87,7 +87,16 @@ function CustomerHeader() {
                             >
                                 Danh sách Sân
                             </Link>
-                     
+                        <Link
+                                sx={{ ml: 3, textAlign: 'center', textTransform: "uppercase", fontWeight: "bold" }}
+                                component="button"
+                                color="inherit"
+                                variant="body2"
+                                underline="hover"
+                                onClick={() => navigate('/matchmaking-list')}
+                            >
+                                Ghép trận
+                            </Link>
                             <Link
                                 sx={{ ml: 3, textAlign: 'center', textTransform: "uppercase", fontWeight: "bold" }}
                                 component="button"
@@ -135,6 +144,10 @@ function CustomerHeader() {
                                 </MenuItem>
                                 <MenuItem onClick={handleCloseUserMenu}>
                                     <Typography sx={{ textAlign: 'center' }} onClick={() => setOpenProfileDialog(true)}>Thông tin tài khoản</Typography>
+                                </MenuItem>
+                                {/* Lịch sử đặt lịch */}
+                                <MenuItem onClick={handleCloseUserMenu}>
+                                    <Typography sx={{ textAlign: 'center' }} onClick={() => navigate('/booking-history')}>Lịch sử đặt sân</Typography>
                                 </MenuItem>
                                 <MenuItem onClick={handleSignOut}>
                                     <Typography sx={{ textAlign: 'center' }}>Đăng xuất</Typography>
