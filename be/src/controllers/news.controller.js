@@ -7,7 +7,7 @@ class NewsController {
             const newsList = await NewsService.getAllNews();
             res.status(200).json(newsList);
         } catch (err) {
-            next(err);
+            console.log("NewsService: ", NewsService);
         }
     }
 

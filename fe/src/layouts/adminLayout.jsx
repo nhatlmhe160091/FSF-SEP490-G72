@@ -35,6 +35,11 @@ const menuItems = [
     icon: <TableBarIcon />,
     path: "/admin/sport-field-list",
   },
+  {
+    text: "Doanh số Sân",
+    icon: <TableBarIcon />,
+    path: "/admin/revenue",
+  },
 ];
 
 const AdminLayout = () => {
