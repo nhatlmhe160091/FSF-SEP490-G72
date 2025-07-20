@@ -16,41 +16,41 @@ class PaymentService {
     async createBookingAndPayment(bookingData, req) {
         // 1. Tạo booking (pending)
         const booking = await BookingService.createBooking(bookingData);
-         if (Array.isArray(bookingData.items) && bookingData.items.length > 0) {
-        // Thiết bị
-        const equipmentItems = bookingData.items.filter(i => i.type === 'equipment' && i.quantity > 0);
-        if (equipmentItems.length > 0) {
-            await EquipmentRental.create({
-                userId: bookingData.userId,
-                bookingId: booking._id,
-                equipments: equipmentItems.map(item => ({
-                    equipmentId: item.productId,
-                    quantity: item.quantity
-                })),
-                totalPrice: equipmentItems.reduce((sum, item) => sum + (item.price || 0) * item.quantity, 0)
-            });
+        if (Array.isArray(bookingData.items) && bookingData.items.length > 0) {
+            // Thiết bị
+            const equipmentItems = bookingData.items.filter(i => i.type === 'equipment' && i.quantity > 0);
+            if (equipmentItems.length > 0) {
+                await EquipmentRental.create({
+                    userId: bookingData.userId,
+                    bookingId: booking._id,
+                    equipments: equipmentItems.map(item => ({
+                        equipmentId: item.productId,
+                        quantity: item.quantity
+                    })),
+                    totalPrice: equipmentItems.reduce((sum, item) => sum + (item.price || 0) * item.quantity, 0)
+                });
+            }
+            // Đồ tiêu thụ
+            const consumableItems = bookingData.items.filter(i => i.type === 'consumable' && i.quantity > 0);
+            if (consumableItems.length > 0) {
+                await ConsumablePurchase.create({
+                    userId: bookingData.userId,
+                    bookingId: booking._id,
+                    consumables: consumableItems.map(item => ({
+                        consumableId: item.productId,
+                        quantity: item.quantity
+                    })),
+                    totalPrice: consumableItems.reduce((sum, item) => sum + (item.price || 0) * item.quantity, 0)
+                });
+            }
         }
-        // Đồ tiêu thụ
-        const consumableItems = bookingData.items.filter(i => i.type === 'consumable' && i.quantity > 0);
-        if (consumableItems.length > 0) {
-            await ConsumablePurchase.create({
-                userId: bookingData.userId,
-                bookingId: booking._id,
-                consumables: consumableItems.map(item => ({
-                    consumableId: item.productId,
-                    quantity: item.quantity
-                })),
-                totalPrice: consumableItems.reduce((sum, item) => sum + (item.price || 0) * item.quantity, 0)
-            });
-        }
-    }
         // 2. Tạo payment (pending)
-        const payment = await Payment.create({ 
-            bookingId: booking._id, 
-            userId: bookingData.userId, 
-            amount: bookingData.totalPrice, 
+        const payment = await Payment.create({
+            bookingId: booking._id,
+            userId: bookingData.userId,
+            amount: bookingData.totalPrice,
             paymentMethod: 'vnpay',
-            status: 'pending' 
+            status: 'pending'
         });
 
         // 3. Tạo URL thanh toán VNPAY
@@ -60,10 +60,10 @@ class PaymentService {
     }
 
     // Tạo URL thanh toán VNPAY cho payment (dùng cho cả booking và nạp ví)
-     async createPaymentUrl(payment, req) {
-        const ipAddr = req.headers['x-forwarded-for'] || 
-            req.connection.remoteAddress || 
-            req.socket.remoteAddress || 
+    async createPaymentUrl(payment, req) {
+        const ipAddr = req.headers['x-forwarded-for'] ||
+            req.connection.remoteAddress ||
+            req.socket.remoteAddress ||
             req.connection.socket?.remoteAddress;
 
         const tmnCode = process.env.VNP_TMN_CODE;
@@ -98,11 +98,11 @@ class PaymentService {
             'vnp_IpAddr': ipAddr,
             'vnp_CreateDate': createDate,
         };
-    if (bankCode !== null && bankCode !== '') {
-                vnp_Params['vnp_BankCode'] = bankCode;
-            }
+        if (bankCode !== null && bankCode !== '') {
+            vnp_Params['vnp_BankCode'] = bankCode;
+        }
 
-        vnp_Params = sortObject(vnp_Params);
+        vnp_Params = this.sortObject(vnp_Params);
         const signData = querystring.stringify(vnp_Params, { encode: false });
         const hmac = crypto.createHmac("sha512", secretKey);
         const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest("hex");
@@ -110,7 +110,7 @@ class PaymentService {
         vnpUrl += '?' + querystring.stringify(vnp_Params, { encode: false });
 
         // Lưu transaction
-        await Transaction.create({ 
+        await Transaction.create({
             userId: payment.userId,
             bookingId: payment.bookingId || undefined,
             amount,
@@ -118,7 +118,7 @@ class PaymentService {
             description,
             type,
             language: locale,
-            paymentStatus: 'Pending' 
+            paymentStatus: 'Pending'
         });
 
         return vnpUrl;
@@ -130,7 +130,7 @@ class PaymentService {
         const secureHash = responseData.vnp_SecureHash;
         delete responseData.vnp_SecureHash;
         delete responseData.vnp_SecureHashType;
-        
+
         const secretKey = process.env.VNP_HASH_SECRET;
         const sortedData = this.sortObject(responseData);
         const signData = querystring.stringify(sortedData, { encode: false });
@@ -140,10 +140,10 @@ class PaymentService {
         if (secureHash !== signed) {
             throw new Error('Checksum validation failed');
         }
-        
+
         const paymentId = responseData.vnp_TxnRef;
         const payment = await Payment.findById(paymentId);
-        
+
         if (!payment) throw new Error('Payment not found');
 
         // Cập nhật trạng thái transaction
@@ -164,6 +164,14 @@ class PaymentService {
                 payment.bookingId,
                 { status: responseData.vnp_ResponseCode === '00' ? 'confirmed' : 'cancelled' }
             );
+
+            // Nếu thanh toán thất bại, trả lại slot về available
+            if (responseData.vnp_ResponseCode !== '00') {
+                const booking = await Booking.findById(payment.bookingId);
+                if (booking) {
+                    await BookingService.releaseScheduleSlots(booking);
+                }
+            }
         } else {
             // Nếu là nạp ví
             if (responseData.vnp_ResponseCode === '00') {
@@ -174,7 +182,7 @@ class PaymentService {
                 }
                 wallet.balance += payment.amount;
                 await wallet.save();
-                
+
                 await WalletTransaction.create({
                     walletId: wallet._id,
                     userId: payment.userId,
@@ -183,7 +191,7 @@ class PaymentService {
                     status: 'completed',
                     description: 'Nạp tiền vào ví'
                 });
-                
+
                 payment.status = 'completed';
                 await payment.save();
             } else {
@@ -191,7 +199,7 @@ class PaymentService {
                 await payment.save();
             }
         }
-        
+
         return responseData.vnp_ResponseCode === '00' ? 'Payment successful' : 'Payment failed';
     }
 
@@ -247,58 +255,58 @@ class PaymentService {
         }
         return sorted;
     }
-   async getBookingByPaymentId(paymentId) {
-    const payment = await Payment.findById(paymentId);
-    if (!payment || !payment.bookingId) throw new Error('Không tìm thấy payment hoặc bookingId');
-    // Lấy booking và populate fieldId để lấy tên sân
-    const booking = await Booking.findById(payment.bookingId).populate('fieldId');
-    if (!booking) throw new Error('Không tìm thấy booking');
+    async getBookingByPaymentId(paymentId) {
+        const payment = await Payment.findById(paymentId);
+        if (!payment || !payment.bookingId) throw new Error('Không tìm thấy payment hoặc bookingId');
+        // Lấy booking và populate fieldId để lấy tên sân
+        const booking = await Booking.findById(payment.bookingId).populate('fieldId');
+        if (!booking) throw new Error('Không tìm thấy booking');
 
-    // Lấy thiết bị đã thuê
-    const equipmentRental = await EquipmentRental.findOne({ bookingId: booking._id }).populate('equipments.equipmentId');
-    // Lấy đồ tiêu thụ đã mua
-    const consumablePurchase = await ConsumablePurchase.findOne({ bookingId: booking._id }).populate('consumables.consumableId');
+        // Lấy thiết bị đã thuê
+        const equipmentRental = await EquipmentRental.findOne({ bookingId: booking._id }).populate('equipments.equipmentId');
+        // Lấy đồ tiêu thụ đã mua
+        const consumablePurchase = await ConsumablePurchase.findOne({ bookingId: booking._id }).populate('consumables.consumableId');
 
-    // Build danh sách items
-    let selectedItems = [];
-    if (equipmentRental && equipmentRental.equipments) {
-        selectedItems = selectedItems.concat(
-            equipmentRental.equipments.map(e => ({
-                _id: e.equipmentId?._id,
-                name: e.equipmentId?.name,
-                type: 'equipment',
-                price: e.equipmentId?.pricePerUnit,
-                quantity: e.quantity
-            }))
-        );
+        // Build danh sách items
+        let selectedItems = [];
+        if (equipmentRental && equipmentRental.equipments) {
+            selectedItems = selectedItems.concat(
+                equipmentRental.equipments.map(e => ({
+                    _id: e.equipmentId?._id,
+                    name: e.equipmentId?.name,
+                    type: 'equipment',
+                    price: e.equipmentId?.pricePerUnit,
+                    quantity: e.quantity
+                }))
+            );
+        }
+        if (consumablePurchase && consumablePurchase.consumables) {
+            selectedItems = selectedItems.concat(
+                consumablePurchase.consumables.map(c => ({
+                    _id: c.consumableId?._id,
+                    name: c.consumableId?.name,
+                    type: 'consumable',
+                    price: c.consumableId?.pricePerUnit,
+                    quantity: c.quantity
+                }))
+            );
+        }
+
+        // Build bookingData object
+        const bookingData = {
+            _id: booking._id,
+            fieldName: booking.fieldId?.name,
+            startTime: booking.startTime,
+            endTime: booking.endTime,
+            totalPrice: booking.totalPrice,
+            customerName: booking.customerName,
+            phoneNumber: booking.phoneNumber,
+            note: booking.notes,
+            selectedItems
+        };
+
+        return bookingData;
     }
-    if (consumablePurchase && consumablePurchase.consumables) {
-        selectedItems = selectedItems.concat(
-            consumablePurchase.consumables.map(c => ({
-                _id: c.consumableId?._id,
-                name: c.consumableId?.name,
-                type: 'consumable',
-                price: c.consumableId?.pricePerUnit,
-                quantity: c.quantity
-            }))
-        );
-    }
-
-    // Build bookingData object
-    const bookingData = {
-        _id: booking._id,
-        fieldName: booking.fieldId?.name,
-        startTime: booking.startTime,
-        endTime: booking.endTime,
-        totalPrice: booking.totalPrice,
-        customerName: booking.customerName,
-        phoneNumber: booking.phoneNumber,
-        note: booking.notes,
-        selectedItems
-    };
-
-    return bookingData;
-}
 }
 
 module.exports = new PaymentService();
