@@ -169,6 +169,16 @@ function CustomerHeader() {
                             >
                                 TIN TỨC
                             </Link>
+                            <Link
+                                sx={{ ml: 3, textAlign: 'center', textTransform: "uppercase", fontWeight: "bold" }}
+                                component="button"
+                                color="inherit"
+                                variant="body2"
+                                underline="hover"
+                                onClick={() => navigate('/policy')}
+                            >
+                                Chính sách pháp lý
+                            </Link>
                         </Box>
                         {/* Ví và nạp tiền */}
                         <Box sx={{ flexGrow: 0, display: 'flex', alignItems: 'center', mr: 2 }}>
@@ -198,7 +208,7 @@ function CustomerHeader() {
                                         variant="body1"
                                         underline="hover"
                                     >
-                                        Tài khoản : {user?.lname} {user?.fname}
+                                        Tài khoản: {user?.lname} {user?.fname}
                                     </Link>
                                 </Box>
                             </Tooltip>

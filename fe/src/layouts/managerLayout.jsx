@@ -5,7 +5,7 @@ import {
   Box, Container, CssBaseline, Toolbar, Drawer, List, ListItem,
   ListItemButton, ListItemIcon, ListItemText, Divider, Typography
 } from '@mui/material';
-import { TableChart, Book, Newspaper } from '@mui/icons-material';
+import { TableChart, Book, Newspaper, Policy } from '@mui/icons-material';
 import SportsSoccerIcon from '@mui/icons-material/SportsSoccer';
 import ManagerHeader from '../components/headers/ManagerHeader';
 import { ToastContainer } from 'react-toastify';
@@ -85,6 +85,18 @@ const ManagerLayout = () => {
               <ListItemButton component={Link} to="manager/new-list">
                 <ListItemIcon sx={{ color: 'white' }}><Newspaper /></ListItemIcon>
                 <ListItemText primary="Tin tức" />
+              </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding>
+            <ListItemButton component={Link} to="manager/category-policy-list">
+                <ListItemIcon sx={{ color: 'white' }}><Policy /></ListItemIcon>
+                <ListItemText primary="Danh mục chính sách" />
+              </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding>
+              <ListItemButton component={Link} to="manager/policy-list">
+                <ListItemIcon sx={{ color: 'white' }}><Policy /></ListItemIcon>
+                <ListItemText primary="Danh sách chính sách" />
               </ListItemButton>
             </ListItem>
           </List>

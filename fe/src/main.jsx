@@ -16,6 +16,7 @@ import Yard from './pages/general/yard';
 import SportsVenueDashboard from './pages/manager/sportField/SportsVenueDashboard';
 import TypeDashboard from './pages/manager/type/TypeDashboard';
 import YardDetail from './pages/general/yardDetail';
+import Policy from './pages/general/policy';
 import { PublicProvider } from "./contexts/publicContext";
 import BookingSchedule from './pages/general/bookingSchedule';
 import BookingSuccess from './pages/general/bookingSuccess';
@@ -193,6 +194,14 @@ const router = createBrowserRouter([
         )
       },
       {
+        path: "/policy",
+        element: (
+          <ProtectedRoute requiredRoles={['GUEST', 'CUSTOMER']}>
+            <Policy />
+          </ProtectedRoute>
+        )
+      },
+      {
         path: "manager",
         children: [
           {
@@ -275,7 +284,22 @@ const router = createBrowserRouter([
               </ProtectedRoute>
             )
           },
-
+          {
+            path: "category-policy-list",
+            element: (
+              <ProtectedRoute requiredRoles={['MANAGER']}>
+                <CategoryPolicyList />
+              </ProtectedRoute>
+            )
+          },
+          {
+            path: "policy-list",
+            element: (
+              <ProtectedRoute requiredRoles={['MANAGER']}>
+                <PolicyList />
+              </ProtectedRoute>
+            )
+          }
         ]
       },
       {

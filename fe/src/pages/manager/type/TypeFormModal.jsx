@@ -58,14 +58,14 @@ const TypeFormModal = ({ isOpen, onClose, onSubmit, initialData }) => {
       <DialogContent dividers>
         <TextField
           margin="dense"
-          label="Name"
+          label="Tên"
           fullWidth
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
         <TextField
           margin="dense"
-          label="Description"
+          label="Mô tả"
           fullWidth
           multiline
           minRows={2}

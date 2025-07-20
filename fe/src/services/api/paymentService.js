@@ -17,9 +17,9 @@ export const paymentService = {
     // Thanh toán booking bằng ví
     payBookingByWallet: (walletData) =>
         handleApiCall(() => api.post('/payment/wallet', walletData)),
+
     // Lấy booking theo paymentId
     getBookingByPaymentId: (paymentId) =>
         handleApiCall(() => api.get(`/payment/booking-by-payment/${paymentId}`)),
-    
 };
 
