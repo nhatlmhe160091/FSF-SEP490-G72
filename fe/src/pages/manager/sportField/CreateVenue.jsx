@@ -75,7 +75,7 @@ export default function CreateVenue({ open, onClose, onCreate, types }) {
     setImagePreviews([]);
     onClose();
   };
-console.log("types", types);
+  console.log("types", types);
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>

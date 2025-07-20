@@ -18,6 +18,7 @@ const paymentRouter = require('./payment.router');
 const walletRouter = require('./wallet.router');
 const fakeRouter = require('./fake.router');
 const newsRouter = require('./news.router');
+const statisticRouter = require('./statistic.router');
 
 
 router.use('/news', newsRouter);
@@ -38,5 +39,6 @@ router.use('/equipment-rental', equipmentRentalRouter);
 router.use('/payment', paymentRouter);
 router.use('/wallet', walletRouter);
 router.use('/fake', fakeRouter);
+router.use('/statistic', statisticRouter);
 
 module.exports = router;
