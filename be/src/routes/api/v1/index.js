@@ -14,6 +14,8 @@ const maintenanceRouter = require('./maintenance.router');
 const scheduleRouter = require('./schedule.router');
 const consumablePurchaseRouter = require('./consumablePurchase.router');
 const equipmentRentalRouter = require('./equipmentRental.router');
+const paymentRouter = require('./payment.router');
+const walletRouter = require('./wallet.router');
 const fakeRouter = require('./fake.router');
 
 router.use('/guest', guestRouter);
@@ -22,7 +24,6 @@ router.use('/type', typeRouter);
 router.use('/sport-field', sportFieldRouter);
 router.use('/category-policy', categoryPolicyRouter);
 router.use('/policy', policyRouter);
-
 router.use('/equipment', equipmentRouter);
 router.use('/consumable', consumableRouter);
 router.use('/booking', bookingRouter);
@@ -31,5 +32,7 @@ router.use('/maintenance', maintenanceRouter);
 router.use('/schedule', scheduleRouter);
 router.use('/consumable-purchase', consumablePurchaseRouter);
 router.use('/equipment-rental', equipmentRentalRouter);
+router.use('/payment', paymentRouter);
+router.use('/wallet', walletRouter);
 router.use('/fake', fakeRouter);
 module.exports = router;
