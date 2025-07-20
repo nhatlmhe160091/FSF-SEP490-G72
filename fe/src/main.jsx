@@ -37,6 +37,9 @@ import About from './pages/general/About';
 import NewsList from './pages/general/newsList';
 import NewsDetail from './pages/general/newsDetail';
 import NewsDashboard from './pages/manager/new/NewsDashboard';
+import CategoryPolicyList from './pages/manager/policy/CategoryPolicyList';
+import PolicyList from './pages/manager/policy/PolicyList';
+
 /**
  * Roles include GUEST, CUSTOMER, ADMIN, MANAGER
  */
