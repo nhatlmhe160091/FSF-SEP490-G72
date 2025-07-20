@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
   Box,
   Typography,
@@ -8,22 +8,23 @@ import {
   TableCell,
   TableHead,
   TableRow,
-  IconButton,
   TextField,
-  Button
+  Button,
+  useMediaQuery,
+  Paper,
+  Slider
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import StarIcon from '@mui/icons-material/Star';
 import LockIcon from '@mui/icons-material/Lock';
+import CloseIcon from '@mui/icons-material/Close';
 import { toast } from 'react-toastify';
 import { useAuth } from '../../contexts/authContext';
 import dayjs from 'dayjs';
 import BookingDialog from '../../components/dialogs/bookingDialog';
 import scheduleService from '../../services/api/scheduleService';
-import { formatTimeSchedule } from '../../utils/handleFormat';
-import { useParams } from 'react-router-dom';
 
 const BookingSchedule = () => {
   const { typeId } = useParams();
@@ -33,8 +34,11 @@ const BookingSchedule = () => {
   const [schedule, setSchedule] = useState([]);
   const [selectedSlots, setSelectedSlots] = useState([]);
   const [openBookingDialog, setOpenBookingDialog] = useState(false);
+  const [slotWidth, setSlotWidth] = useState(50); // default slot width
   const navigate = useNavigate();
   const { currentUser } = useAuth();
+  const isMobile = useMediaQuery('(max-width:600px)');
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -50,11 +54,19 @@ const BookingSchedule = () => {
     };
     if (typeId) fetchData();
   }, [typeId, selectedDate]);
-useEffect(() => {
-  // Reset selectedSlots khi đổi ngày
-  setSelectedSlots([]);
-}, [selectedDate]);
+
+  useEffect(() => {
+    setSelectedSlots([]);
+  }, [selectedDate]);
+
+  // Kiểm tra slot đã qua chưa
+  const isPastSlot = (slotTime) => {
+    const slotDateTime = dayjs(`${selectedDate.format('YYYY-MM-DD')}T${slotTime}:00`);
+    return slotDateTime.isBefore(dayjs());
+  };
+
   const getSlotStatus = (fieldId, slotTime) => {
+    if (isPastSlot(slotTime)) return 'past';
     const fieldSchedule = schedule.find(s => s.fieldId === fieldId);
     if (!fieldSchedule) return 'available';
 
@@ -71,66 +83,85 @@ useEffect(() => {
   };
 
   const handleSlotClick = (fieldId, slotTime) => {
-  const status = getSlotStatus(fieldId, slotTime);
-  if (status !== 'available') {
-    toast.warn('Khung giờ này không khả dụng');
-    return;
-  }
-
-  const slotDateTime = `${selectedDate.toISOString().split('T')[0]}T${slotTime}:00`;
-
-  // Nếu đã chọn slot này rồi thì bỏ chọn, ngược lại thì kiểm tra liên tục rồi thêm vào
-  const exists = selectedSlots.find(slot => slot.fieldId === fieldId && slot.time === slotDateTime);
-  if (exists) {
-    setSelectedSlots(selectedSlots.filter(slot => !(slot.fieldId === fieldId && slot.time === slotDateTime)));
-    return;
-  }
-
-  // Nếu chưa chọn slot nào, cho phép chọn
-  if (selectedSlots.length === 0) {
-    setSelectedSlots([{ fieldId, time: slotDateTime }]);
-    return;
-  }
-
-  // Kiểm tra tất cả slot đã chọn cùng 1 fieldId
-  if (selectedSlots.some(slot => slot.fieldId !== fieldId)) {
-    toast.warn('Chỉ được chọn các khung giờ liên tục trên cùng một sân');
-    return;
-  }
-
-  // Lấy danh sách slot đã chọn và slot mới, sắp xếp tăng dần theo thời gian
-  const allSlots = [...selectedSlots, { fieldId, time: slotDateTime }]
-    .map(slot => slot.time)
-    .sort();
-
-  // Kiểm tra các slot có liên tục nhau không (mỗi slot cách nhau đúng 30 phút)
-  let isContinuous = true;
-  for (let i = 1; i < allSlots.length; i++) {
-    const prev = dayjs(allSlots[i - 1]);
-    const curr = dayjs(allSlots[i]);
-    if (curr.diff(prev, 'minute') !== 30) {
-      isContinuous = false;
-      break;
+    const status = getSlotStatus(fieldId, slotTime);
+    if (status !== 'available') {
+      toast.warn(
+        status === 'past'
+          ? 'Không thể chọn khung giờ đã qua'
+          : 'Khung giờ này không khả dụng'
+      );
+      return;
     }
-  }
 
-  if (!isContinuous) {
-    toast.warn('Chỉ được chọn các khung giờ liên tục!');
-    return;
-  }
+    const slotDateTime = `${selectedDate.format('YYYY-MM-DD')}T${slotTime}:00`;
 
-  setSelectedSlots([...selectedSlots, { fieldId, time: slotDateTime }]);
-};
+    const exists = selectedSlots.find(slot => slot.fieldId === fieldId && slot.time === slotDateTime);
+    if (exists) {
+      setSelectedSlots(selectedSlots.filter(slot => !(slot.fieldId === fieldId && slot.time === slotDateTime)));
+      return;
+    }
+
+    if (selectedSlots.length === 0) {
+      setSelectedSlots([{ fieldId, time: slotDateTime }]);
+      return;
+    }
+
+    if (selectedSlots.some(slot => slot.fieldId !== fieldId)) {
+      toast.warn('Chỉ được chọn các khung giờ liên tục trên cùng một sân');
+      return;
+    }
+
+    const allSlots = [...selectedSlots, { fieldId, time: slotDateTime }]
+      .map(slot => slot.time)
+      .sort();
+
+    let isContinuous = true;
+    for (let i = 1; i < allSlots.length; i++) {
+      const prev = dayjs(allSlots[i - 1]);
+      const curr = dayjs(allSlots[i]);
+      if (curr.diff(prev, 'minute') !== 30) {
+        isContinuous = false;
+        break;
+      }
+    }
+
+    if (!isContinuous) {
+      toast.warn('Chỉ được chọn các khung giờ liên tục!');
+      return;
+    }
+
+    setSelectedSlots([...selectedSlots, { fieldId, time: slotDateTime }]);
+  };
 
   const handleBookingSuccess = (bookingData) => {
     setSelectedSlots([]);
-  // console.log('Booking successful:', bookingData);
     navigate(`/booking-success/${bookingData._id}`, { state: { bookingData } });
   };
 
+  // Responsive: Table scroll on mobile
+  const tableContainerSx = isMobile
+    ? { overflowX: 'auto', bgcolor: 'white', border: '1px solid #e0e0e0', width: '100vw', maxWidth: '100vw' }
+    : { bgcolor: 'white', border: '1px solid #e0e0e0' };
+
   return (
-    <Box sx={{ p: 4, bgcolor: '#f5f5f5' }}>
-      <Typography variant="h4" sx={{ mb: 2, color: '#388e3c' }}>
+    <Box
+      sx={{
+        p: isMobile ? 1 : 4,
+        bgcolor: '#f5f5f5',
+        minHeight: '100vh',
+        width: '100vw',
+        boxSizing: 'border-box'
+      }}
+    >
+      <Typography
+        variant={isMobile ? "h6" : "h4"}
+        sx={{
+          mb: 2,
+          color: '#388e3c',
+          textAlign: isMobile ? 'center' : 'left',
+          fontWeight: 'bold'
+        }}
+      >
         Đặt lịch ngay trực quan
       </Typography>
 
@@ -139,73 +170,175 @@ useEffect(() => {
           label="Chọn ngày"
           value={selectedDate}
           onChange={(newValue) => setSelectedDate(newValue)}
-          renderInput={(params) => <TextField {...params} sx={{ mb: 2, width: '200px' }} />}
+          slotProps={{
+            textField: {
+              sx: { mb: 2, width: isMobile ? '100%' : '200px' }
+            }
+          }}
         />
       </LocalizationProvider>
 
-      <Box sx={{ display: 'flex', mb: 2 }}>
+      {/* Thanh điều chỉnh độ rộng slot */}
+      <Box sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
+        <Typography fontSize={isMobile ? 12 : 14}>Độ rộng slot:</Typography>
+        <Slider
+          value={slotWidth}
+          min={36}
+          max={160}
+          step={4}
+          onChange={(_, value) => setSlotWidth(value)}
+          valueLabelDisplay="auto"
+          sx={{ width: isMobile ? 120 : 200 }}
+        />
+        <Typography fontSize={isMobile ? 12 : 14}>{slotWidth}px</Typography>
+      </Box>
+
+      <Box sx={{
+        display: 'flex',
+        mb: 2,
+        flexWrap: 'wrap',
+        gap: 2,
+        justifyContent: isMobile ? 'center' : 'flex-start'
+      }}>
         <Box sx={{ display: 'flex', alignItems: 'center', mr: 2 }}>
           <Box sx={{ width: 20, height: 20, bgcolor: 'white', border: '1px solid #ccc', mr: 1 }} />
-          <Typography>Trống</Typography>
+          <Typography fontSize={isMobile ? 12 : 14}>Trống</Typography>
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', mr: 2 }}>
           <Box sx={{ width: 20, height: 20, bgcolor: '#f44336', mr: 1 }} />
-          <Typography>Đã đặt</Typography>
+          <Typography fontSize={isMobile ? 12 : 14}>Đã đặt</Typography>
+        </Box>
+        <Box sx={{ display: 'flex', alignItems: 'center', mr: 2 }}>
+          <Box sx={{ width: 20, height: 20, bgcolor: '#9e9e9e', mr: 1 }} />
+          <Typography fontSize={isMobile ? 12 : 14}>Khóa</Typography>
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <Box sx={{ width: 20, height: 20, bgcolor: '#9e9e9e', mr: 1 }} />
-          <Typography>Khóa</Typography>
+          <Box sx={{
+            width: 20,
+            height: 20,
+            bgcolor: '#e0e0e0',
+            mr: 1,
+            border: '1px solid #ccc',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}>
+            <CloseIcon fontSize="small" sx={{ color: '#bdbdbd' }} />
+          </Box>
+          <Typography fontSize={isMobile ? 12 : 14}>Đã qua</Typography>
         </Box>
       </Box>
 
-      <Typography sx={{ mb: 2, color: '#f57c00' }}>
-        Lưu ý: Nếu bạn cần đặt lịch có định vui lòng liên hệ: 0374.857.068 để được hỗ trợ
+      <Typography sx={{ mb: 2, color: '#f57c00', fontSize: isMobile ? 12 : 14, textAlign: isMobile ? 'center' : 'left' }}>
+        Lưu ý: Nếu bạn cần đặt lịch cố định vui lòng liên hệ: 0374.857.068 để được hỗ trợ
       </Typography>
 
-      <Table sx={{ bgcolor: 'white', border: '1px solid #e0e0e0' }}>
-        <TableHead>
-          <TableRow>
-            <TableCell />
-            {timeSlots.map((time, index) => (
-              <TableCell key={index} sx={{ textAlign: 'center', bgcolor: '#e3f2fd' }}>
-                {formatTimeSchedule(time)}
-              </TableCell>
-            ))}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {sportFields.map(field => (
-            <TableRow key={field._id}>
-              <TableCell sx={{ fontWeight: 'bold' }}>{field.name.split(' ')[1]}</TableCell>
-              {timeSlots.map((time, index) => {
-                const status = getSlotStatus(field._id, time);
-                const isSelected = selectedSlots.some(
-                  slot => slot.fieldId === field._id && slot.time === `${selectedDate.toISOString().split('T')[0]}T${time}:00`
-                );
-                return (
-                  <TableCell
-                    key={index}
-                    sx={{
-                      bgcolor: status === 'booked' ? '#f44336' : status === 'maintenance' ? '#9e9e9e' : isSelected ? '#4caf50' : 'white',
-                      textAlign: 'center',
-                      cursor: status === 'available' ? 'pointer' : 'default',
-                      border: '1px solid #e0e0e0'
-                    }}
-                    onClick={() => handleSlotClick(field._id, time)}
-                  >
-                    {status === 'booked' && <StarIcon sx={{ color: 'yellow' }} />}
-                    {status === 'maintenance' && <LockIcon sx={{ color: 'white' }} />}
-                  </TableCell>
-                );
-              })}
+      <Box sx={tableContainerSx} component={Paper} elevation={isMobile ? 0 : 1}>
+        <Table
+          size={isMobile ? "small" : "medium"}
+          sx={{
+            minWidth: isMobile ? 600 : 800,
+            tableLayout: 'fixed'
+          }}
+        >
+          <TableHead>
+            <TableRow>
+              <TableCell
+      sx={{
+        minWidth: isMobile ? 80 : 120,
+        maxWidth: isMobile ? 120 : 200,
+        width: isMobile ? 100 : 150,
+        fontWeight: 'bold',
+        fontSize: isMobile ? 12 : 16,
+        whiteSpace: 'nowrap'
+      }}
+    >
+      Sân
+    </TableCell>
+              {timeSlots.map((time, index) => (
+                <TableCell
+                  key={index}
+                  sx={{
+                    textAlign: 'center',
+                    bgcolor: '#e3f2fd',
+                    minWidth: slotWidth,
+                    maxWidth: slotWidth,
+                    width: slotWidth,
+                    fontSize: isMobile ? 11 : 14,
+                    p: isMobile ? 0.5 : 1
+                  }}
+                >
+                  {time}
+                </TableCell>
+              ))}
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHead>
+          <TableBody>
+            {sportFields.map(field => (
+              <TableRow key={field._id}>
+             <TableCell
+  sx={{
+    fontWeight: 'bold',
+    fontSize: isMobile ? 12 : 14,
+    minWidth: isMobile ? 80 : 120,
+    maxWidth: isMobile ? 120 : 200,
+    width: isMobile ? 100 : 150, // Thêm width cố định
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis'
+  }}
+>
+                  {field.name}
+                </TableCell>
+                {timeSlots.map((time, index) => {
+                  const status = getSlotStatus(field._id, time);
+                  const isSelected = selectedSlots.some(
+                    slot => slot.fieldId === field._id && slot.time === `${selectedDate.format('YYYY-MM-DD')}T${time}:00`
+                  );
+                  let cellBg;
+                  if (status === 'booked') cellBg = '#f44336';
+                  else if (status === 'maintenance') cellBg = '#9e9e9e';
+                  else if (status === 'past') cellBg = '#e0e0e0';
+                  else if (isSelected) cellBg = '#4caf50';
+                  else cellBg = 'white';
+
+                  return (
+                    <TableCell
+                      key={index}
+                      sx={{
+                        bgcolor: cellBg,
+                        textAlign: 'center',
+                        cursor: status === 'available' ? 'pointer' : 'default',
+                        border: '1px solid #e0e0e0',
+                        p: isMobile ? 0.5 : 1,
+                        minWidth: slotWidth,
+                        maxWidth: slotWidth,
+                        width: slotWidth
+                      }}
+                      onClick={() => handleSlotClick(field._id, time)}
+                    >
+                      {status === 'booked' && <StarIcon sx={{ color: 'yellow', fontSize: isMobile ? 16 : 20 }} />}
+                      {status === 'maintenance' && <LockIcon sx={{ color: 'white', fontSize: isMobile ? 16 : 20 }} />}
+                      {status === 'past' && <CloseIcon sx={{ color: '#bdbdbd', fontSize: isMobile ? 16 : 20 }} />}
+                    </TableCell>
+                  );
+                })}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </Box>
 
       <Button
         variant="contained"
-        sx={{ mt: 2, bgcolor: '#388e3c', '&:hover': { bgcolor: '#2e7d32' } }}
+        sx={{
+          mt: 2,
+          bgcolor: '#388e3c',
+          '&:hover': { bgcolor: '#2e7d32' },
+          width: isMobile ? '100%' : 'auto',
+          fontWeight: 'bold',
+          fontSize: isMobile ? 14 : 16
+        }}
         onClick={() => setOpenBookingDialog(true)}
       >
         Đặt lịch

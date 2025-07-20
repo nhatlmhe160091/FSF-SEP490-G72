@@ -1,4 +1,4 @@
-import api from '../api';
+import api from '../index';
 import { handleApiCall } from '../../utils/handleApi';
 
 export const paymentService = {
@@ -22,3 +22,4 @@ export const paymentService = {
     getBookingByPaymentId: (paymentId) =>
         handleApiCall(() => api.get(`/payment/booking-by-payment/${paymentId}`)),
 };
+
