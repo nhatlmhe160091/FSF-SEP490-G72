@@ -16,7 +16,6 @@ import Yard from './pages/general/yard';
 import SportsVenueDashboard from './pages/manager/sportField/SportsVenueDashboard';
 import TypeDashboard from './pages/manager/type/TypeDashboard';
 import YardDetail from './pages/general/yardDetail';
-import Policy from './pages/general/policy';
 import { PublicProvider } from "./contexts/publicContext";
 import BookingSchedule from './pages/general/bookingSchedule';
 import BookingSuccess from './pages/general/bookingSuccess';
@@ -34,12 +33,6 @@ import Voucher from './pages/general/voucher';
 import Event from './pages/general/Event';
 import EventDashboard from './pages/manager/event/EventDashboard';
 import About from './pages/general/About';
-import NewsList from './pages/general/newsList';
-import NewsDetail from './pages/general/newsDetail';
-import NewsDashboard from './pages/manager/new/NewsDashboard';
-import CategoryPolicyList from './pages/manager/policy/CategoryPolicyList';
-import PolicyList from './pages/manager/policy/PolicyList';
-
 /**
  * Roles include GUEST, CUSTOMER, ADMIN, MANAGER
  */
@@ -101,22 +94,6 @@ const router = createBrowserRouter([
         )
       },
       {
-        path: "/news",
-        element: (
-          <ProtectedRoute requiredRoles={['GUEST', 'CUSTOMER']}>
-            <NewsList />
-          </ProtectedRoute>
-        )
-      },
-      {
-        path: "/news/:id",
-        element: (
-          <ProtectedRoute requiredRoles={['GUEST', 'CUSTOMER']}>
-            <NewsDetail />
-          </ProtectedRoute>
-        )
-      },
-      {
         path: "/booking/:typeId",
         element: (
           <ProtectedRoute requiredRoles={['GUEST', 'CUSTOMER']}>
@@ -148,7 +125,7 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         )
       },
-      {
+       {
         path: "/matchmaking-history",
         element: (
           <ProtectedRoute requiredRoles={['GUEST', 'CUSTOMER']}>
@@ -156,7 +133,7 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         )
       },
-      {
+        {
         path: "/wallet-history",
         element: (
           <ProtectedRoute requiredRoles={['GUEST', 'CUSTOMER']}>
@@ -164,7 +141,7 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         )
       },
-      {
+       {
         path: "/vnpay_return_url",
         element: (
           <ProtectedRoute requiredRoles={['GUEST', 'CUSTOMER']}>
@@ -180,7 +157,7 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         )
       },
-      {
+          {
         path: "/event",
         element: (
           <ProtectedRoute requiredRoles={['GUEST', 'CUSTOMER']}>
@@ -188,19 +165,11 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         )
       },
-      {
+          {
         path: "/about",
         element: (
           <ProtectedRoute requiredRoles={['GUEST', 'CUSTOMER']}>
             <About />
-          </ProtectedRoute>
-        )
-      },
-      {
-        path: "/policy",
-        element: (
-          <ProtectedRoute requiredRoles={['GUEST', 'CUSTOMER']}>
-            <Policy />
           </ProtectedRoute>
         )
       },
@@ -271,7 +240,7 @@ const router = createBrowserRouter([
               </ProtectedRoute>
             ),
           },
-          {
+              {
             path: "event-list",
             element: (
               <ProtectedRoute requiredRoles={['MANAGER']}>
@@ -279,30 +248,6 @@ const router = createBrowserRouter([
               </ProtectedRoute>
             ),
           },
-          {
-            path: "/manager/new-list",
-            element: (
-              <ProtectedRoute requiredRoles={['MANAGER']}>
-                <NewsDashboard />
-              </ProtectedRoute>
-            )
-          },
-          {
-            path: "category-policy-list",
-            element: (
-              <ProtectedRoute requiredRoles={['MANAGER']}>
-                <CategoryPolicyList />
-              </ProtectedRoute>
-            )
-          },
-          {
-            path: "policy-list",
-            element: (
-              <ProtectedRoute requiredRoles={['MANAGER']}>
-                <PolicyList />
-              </ProtectedRoute>
-            )
-          }
         ]
       },
       {
