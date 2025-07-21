@@ -2,6 +2,7 @@ const { User } = require('../models');
 const bookingModel = require('../models/booking.model');
 const SportField = require('../models/sportField.model');
 const Schedule = require('../models/schedule.model');
+const Feedback = require('../models/feedback.model');
 const mongoose = require('mongoose');
 class BookingService {
     async createBooking(bookingData) {
@@ -13,15 +14,11 @@ class BookingService {
         const start = new Date(startTime);
         const end = new Date(endTime);
 
-        // +7 giờ cho múi giờ Việt Nam
-        const startVN = new Date(start.getTime() + 7 * 60 * 60 * 1000);
-        const endVN = new Date(end.getTime() + 7 * 60 * 60 * 1000);
-
         const now = new Date();
         if (start >= end) {
             throw { status: 400, message: 'Thời gian bắt đầu phải nhỏ hơn thời gian kết thúc.' };
         }
-        if (startVN < now || endVN < now) {
+        if (start < now || end < now) {
             throw { status: 400, message: 'Không thể đặt sân cho thời gian trong quá khứ.' };
         }
 
@@ -43,8 +40,8 @@ class BookingService {
             status: { $in: ['pending', 'confirmed'] },
             $or: [
                 {
-                    startTime: { $lt: endTime },
-                    endTime: { $gt: startTime }
+                    startTime: { $lt: end },
+                    endTime: { $gt: start }
                 }
             ]
         });
@@ -95,10 +92,16 @@ class BookingService {
     }
 
     async updateBooking(bookingId, bookingData) {
-        return await bookingModel.findByIdAndUpdate(bookingId, bookingData, { new: true })
+        const updatedBooking = await bookingModel.findByIdAndUpdate(bookingId, bookingData, { new: true })
             .populate('userId')
             .populate('fieldId')
             .populate('participants');
+
+        if (bookingData.status === 'cancelled' && updatedBooking) {
+            await this.releaseScheduleSlots(updatedBooking);
+        }
+
+        return updatedBooking;
     }
 
     async deleteBooking(bookingId) {
@@ -164,8 +167,8 @@ class BookingService {
         return { success: true, message: 'Đã làm tròn thời gian và cập nhật endTime cho tất cả booking.' };
     }
     async getBookingsByUser(userId) {
-       return await bookingModel.aggregate([
-        { $match: { userId: typeof userId === 'string' ? new mongoose.Types.ObjectId(userId) : userId } },
+        return await bookingModel.aggregate([
+            { $match: { userId: typeof userId === 'string' ? new mongoose.Types.ObjectId(userId) : userId } },
             {
                 $lookup: {
                     from: 'matchmakings', // collection name in MongoDB
@@ -192,8 +195,42 @@ class BookingService {
                     foreignField: '_id',
                     as: 'participants'
                 }
+            },
+            {
+                $lookup: {
+                    from: 'feedbacks',
+                    localField: '_id',
+                    foreignField: 'bookingId',
+                    as: 'feedbacks'
+                }
             }
         ]);
+    }
+    async releaseScheduleSlots(booking) {
+        const { startTime, endTime, fieldId } = booking;
+        const bookingDate = new Date(startTime);
+        const scheduleDate = new Date(Date.UTC(
+            bookingDate.getUTCFullYear(),
+            bookingDate.getUTCMonth(),
+            bookingDate.getUTCDate(),
+            0, 0, 0, 0
+        ));
+        const schedule = await Schedule.findOne({ fieldId, date: scheduleDate });
+        if (schedule) {
+            let updated = false;
+            for (const slot of schedule.timeSlots) {
+                // Nếu slot giao với khoảng booking thì cập nhật lại về available
+                if (
+                    slot.startTime < endTime &&
+                    slot.endTime > startTime &&
+                    slot.status === 'booked'
+                ) {
+                    slot.status = 'available';
+                    updated = true;
+                }
+            }
+            if (updated) await schedule.save();
+        }
     }
 }
 

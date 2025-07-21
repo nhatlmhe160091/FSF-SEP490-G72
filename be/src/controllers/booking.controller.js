@@ -86,7 +86,6 @@ async getBookingsByUser(req, res, next) {
         next(error);
     }
 }
-
 }
 
 module.exports = new BookingController();

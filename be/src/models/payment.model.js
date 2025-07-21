@@ -5,7 +5,7 @@ const paymentSchema = new Schema({
     bookingId: {
         type: Schema.Types.ObjectId,
         ref: 'Booking',
-        required: false
+         required: false
     },
     userId: {
         type: Schema.Types.ObjectId,
@@ -37,4 +37,4 @@ const paymentSchema = new Schema({
     },
 }, { timestamps: true });
 
-module.exports = mongoose.model("Payment", paymentSchema);
+module.exports = mongoose.model('Payment', paymentSchema);

@@ -1,16 +1,3 @@
-//   "Maintenance": {
-//     "description": "Stores maintenance schedules for fields",
-//     "schema": {
-//       "_id": "ObjectId",
-//       "fieldId": "ObjectId (reference to SportField)",
-//       "startTime": "Date",
-//       "endTime": "Date",
-//       "description": "String",
-//       "status": "String (enum: ['scheduled', 'in_progress', 'completed'])",
-//       "createdAt": "Date",
-//       "updatedAt": "Date"
-//     }
-//   },
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 

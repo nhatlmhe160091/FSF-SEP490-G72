@@ -48,7 +48,7 @@ class PaymentController {
             next(error);
         }
     }
-    async getBookingByPaymentId(req, res, next) {
+        async getBookingByPaymentId(req, res, next) {
         try {
             const booking = await PaymentService.getBookingByPaymentId(req.params.paymentId);
             res.status(200).json({ success: true, data: booking });

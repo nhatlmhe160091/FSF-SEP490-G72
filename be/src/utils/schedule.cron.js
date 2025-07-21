@@ -10,16 +10,38 @@ const TIME_SLOTS = [
     '19:00', '19:30', '20:00', '20:30', '21:00', '21:30', '22:00'
 ];
 
-// Helper: tạo timeSlots cho một ngày
+// Helper: tạo timeSlots cho một ngày (dựa trên UTC)
 function generateTimeSlots(date) {
+    // Đảm bảo date là UTC 00:00
+    const utcDate = new Date(Date.UTC(
+        date.getUTCFullYear(),
+        date.getUTCMonth(),
+        date.getUTCDate(),
+        0, 0, 0, 0
+    ));
     const slots = [];
     for (let i = 0; i < TIME_SLOTS.length - 1; i++) {
         const [startHour, startMin] = TIME_SLOTS[i].split(':').map(Number);
         const [endHour, endMin] = TIME_SLOTS[i + 1].split(':').map(Number);
-        const startTime = new Date(date);
-        startTime.setHours(startHour, startMin, 0, 0);
-        const endTime = new Date(date);
-        endTime.setHours(endHour, endMin, 0, 0);
+
+        const startTime = new Date(Date.UTC(
+            utcDate.getUTCFullYear(),
+            utcDate.getUTCMonth(),
+            utcDate.getUTCDate(),
+            startHour,
+            startMin,
+            0,
+            0
+        ));
+        const endTime = new Date(Date.UTC(
+            utcDate.getUTCFullYear(),
+            utcDate.getUTCMonth(),
+            utcDate.getUTCDate(),
+            endHour,
+            endMin,
+            0,
+            0
+        ));
         slots.push({ startTime, endTime, status: 'available' });
     }
     return slots;
@@ -28,9 +50,14 @@ function generateTimeSlots(date) {
 // 1. Tạo lịch mới cho ngày tiếp theo, đồng bộ với Maintenance
 async function createNextDaySchedule() {
     try {
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        tomorrow.setHours(0, 0, 0, 0);
+        const now = new Date();
+        // Lấy ngày tiếp theo, set về 00:00:00 UTC
+        const tomorrow = new Date(Date.UTC(
+            now.getUTCFullYear(),
+            now.getUTCMonth(),
+            now.getUTCDate() + 1,
+            0, 0, 0, 0
+        ));
 
         const sportFields = await SportField.find();
         for (const field of sportFields) {
@@ -68,7 +95,7 @@ async function createNextDaySchedule() {
 
             await Schedule.create({
                 fieldId: field._id,
-                date: tomorrow,
+                date: tomorrow, // luôn là UTC 00:00
                 timeSlots
             });
 
@@ -82,21 +109,37 @@ async function createNextDaySchedule() {
 // 2. Xóa các schedule cũ (trước ngày hiện tại)
 async function cleanupOldSchedules() {
     try {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+        const now = new Date();
+        const today = new Date(Date.UTC(
+            now.getUTCFullYear(),
+            now.getUTCMonth(),
+            now.getUTCDate(),
+            0, 0, 0, 0
+        ));
         const result = await Schedule.deleteMany({ date: { $lt: today } });
         console.log(`[Schedule Cron] Đã xóa ${result.deletedCount} schedule cũ trước ngày ${today.toISOString().slice(0, 10)}`);
     } catch (err) {
         console.error('[Schedule Cron] Lỗi khi xóa schedule cũ:', err);
     }
 }
+
+// 3. Kiểm tra và bù lịch thiếu
 async function checkAndCreateMissingSchedules(days = 1) {
     try {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+        const now = new Date();
+        const today = new Date(Date.UTC(
+            now.getUTCFullYear(),
+            now.getUTCMonth(),
+            now.getUTCDate(),
+            0, 0, 0, 0
+        ));
         for (let i = 1; i <= days; i++) {
-            const targetDate = new Date(today);
-            targetDate.setDate(today.getDate() + i);
+            const targetDate = new Date(Date.UTC(
+                today.getUTCFullYear(),
+                today.getUTCMonth(),
+                today.getUTCDate() + i,
+                0, 0, 0, 0
+            ));
 
             const sportFields = await SportField.find();
             for (const field of sportFields) {
@@ -105,7 +148,6 @@ async function checkAndCreateMissingSchedules(days = 1) {
                     date: targetDate
                 });
                 if (!existingSchedule) {
-                    // Tạo timeSlots
                     const timeSlots = generateTimeSlots(targetDate);
 
                     // Lấy các maintenance cho sân này trong ngày đó
@@ -129,7 +171,7 @@ async function checkAndCreateMissingSchedules(days = 1) {
 
                     await Schedule.create({
                         fieldId: field._id,
-                        date: targetDate,
+                        date: targetDate, // luôn là UTC 00:00
                         timeSlots
                     });
 
@@ -141,10 +183,10 @@ async function checkAndCreateMissingSchedules(days = 1) {
         console.error('[Schedule Cron] Lỗi khi kiểm tra/bù lịch:', err);
     }
 }
-// 3. Đăng ký cron
-function registerScheduleCrons() {
 
-     // Kiểm tra và bù lịch khi server khởi động (bù cho ngày tiếp theo)
+// 4. Đăng ký cron
+function registerScheduleCrons() {
+    // Kiểm tra và bù lịch khi server khởi động (bù cho ngày tiếp theo)
     checkAndCreateMissingSchedules(1);
 
     // Tạo lịch mới mỗi ngày lúc 00:01

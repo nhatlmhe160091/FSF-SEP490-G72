@@ -11,8 +11,7 @@ const WalletService = require('./wallet.service');
 const PaymentService = require('./payment.service');
 const ConsumablePurchaseService = require('./consumablePurchase.service');
 const EquipmentRentalService = require('./equipmentRental.service');
-// const FeedbackService = require('./feedback.service');
-const NewsService = require('./news.service');
+const FeedbackService = require('./feedback.service');
 module.exports = {
     GuestService,
     UserService,
@@ -26,6 +25,5 @@ module.exports = {
     PaymentService,
     ConsumablePurchaseService,
     EquipmentRentalService,
-    NewsService,    
-    // FeedbackService
+    FeedbackService
 };

@@ -3,41 +3,48 @@ const SportField = require('../models/sportField.model');
 const Schedule = require('../models/schedule.model');
 class MaintenanceService {
     async createMaintenance(data) {
-        const { fieldId, startTime, endTime, description, status } = data;
+    const { fieldId, startTime, endTime, description, status } = data;
 
-        // Validate fieldId tồn tại
-        const field = await SportField.findById(fieldId);
-        if (!field) {
-            throw { status: 404, message: 'Sân không tồn tại.' };
-        }
+    // Validate fieldId tồn tại
+    const field = await SportField.findById(fieldId);
+    if (!field) {
+        throw { status: 404, message: 'Sân không tồn tại.' };
+    }
 
-        // Validate thời gian
-        if (!startTime || !endTime) {
-            throw { status: 400, message: 'Start time và end time là bắt buộc.' };
-        }
-        if (new Date(startTime) >= new Date(endTime)) {
-            throw { status: 400, message: 'Thời gian bắt đầu phải nhỏ hơn thời gian kết thúc.' };
-        }
+    // Validate thời gian
+    if (!startTime || !endTime) {
+        throw { status: 400, message: 'Start time và end time là bắt buộc.' };
+    }
+    if (new Date(startTime) >= new Date(endTime)) {
+        throw { status: 400, message: 'Thời gian bắt đầu phải nhỏ hơn thời gian kết thúc.' };
+    }
 
-        // Không cho phép trùng lịch bảo trì cùng sân
-        const overlap = await Maintenance.findOne({
-            fieldId,
-            $or: [
-                { startTime: { $lt: endTime }, endTime: { $gt: startTime } }
-            ],
-            status: { $in: ['scheduled', 'in_progress'] }
-        });
-        if (overlap) {
-            throw { status: 409, message: 'Sân đã có lịch bảo trì trong khoảng thời gian này.' };
-        }
+    // Không cho phép trùng lịch bảo trì cùng sân
+    const overlap = await Maintenance.findOne({
+        fieldId,
+        $or: [
+            { startTime: { $lt: endTime }, endTime: { $gt: startTime } }
+        ],
+        status: { $in: ['scheduled', 'in_progress'] }
+    });
+    if (overlap) {
+        throw { status: 409, message: 'Sân đã có lịch bảo trì trong khoảng thời gian này.' };
+    }
 
-        // Tạo maintenance
+    // Tạo maintenance
     const maintenance = await Maintenance.create({ fieldId, startTime, endTime, description, status });
 
     // Cập nhật trạng thái các timeSlot trong Schedule thành 'maintenance'
-    // Tìm tất cả schedule của sân này có timeSlot giao với maintenance
-    const schedules = await Schedule.find({ fieldId });
-    for (const schedule of schedules) {
+    // Tìm schedule đúng ngày của startTime (UTC 00:00)
+    const maintenanceDate = new Date(startTime);
+    const scheduleDate = new Date(Date.UTC(
+        maintenanceDate.getUTCFullYear(),
+        maintenanceDate.getUTCMonth(),
+        maintenanceDate.getUTCDate(),
+        0, 0, 0, 0
+    ));
+    const schedule = await Schedule.findOne({ fieldId, date: scheduleDate });
+    if (schedule) {
         let updated = false;
         for (const slot of schedule.timeSlots) {
             if (
@@ -52,7 +59,7 @@ class MaintenanceService {
     }
 
     return maintenance;
-    }
+}
 
     async getAllMaintenances() {
         return await Maintenance.find()
