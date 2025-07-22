@@ -18,18 +18,12 @@ const Yard = () => {
 
     const categories = [
         { id: "all", name: "All Sports", icon: FaRunning },
-        { id: "football", name: "Football", icon: FaFutbol },
-        { id: "basketball", name: "Basketball", icon: FaBasketballBall },
-        { id: "volleyball", name: "Volleyball", icon: FaVolleyballBall },
-        { id: "swimming", name: "Swimming", icon: FaSwimmer },
-        { id: "tennis", name: "Tennis", icon: MdSportsTennis },
-        { id: "cricket", name: "Cricket", icon: GiCricketBat },
-        { id: "tableTennis", name: "Table Tennis", icon: FaTableTennis },
         { id: "bóng đá", name: "Bóng đá", icon: FaFutbol },
+        { id: "bóng rổ", name: "Bóng rổ", icon: FaBasketballBall },
         { id: "pickleball", name: "Pickleball", icon: FaTableTennis },
-        { id: "tenis", name: "Tenis", icon: MdSportsTennis },
+        { id: "tennis", name: "Tennis", icon: MdSportsTennis },
+        { id: "cầu lông", name: "Cầu lông", icon: GiCricketBat },
     ];
-
 
     const filteredFields = sportFields
         .filter(field =>
