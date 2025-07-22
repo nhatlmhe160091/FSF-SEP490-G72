@@ -18,6 +18,8 @@ const statisticRouter = require('./statistic.router');
 const eventRouter = require('./event.router');
 const feedbackRouter = require('./feedback.router');
 const fakeRouter = require('./fake.router');
+const categoryPolicyRouter = require('./categoryPolicy.router');
+const policyRouter = require('./policy.router');
 
 router.use('/guest', guestRouter);
 router.use('/user', userRouter);
@@ -37,4 +39,6 @@ router.use('/statistic', statisticRouter);
 router.use('/event', eventRouter);
 router.use('/feedback', feedbackRouter);
 router.use('/fake', fakeRouter);
+router.use('/category-policy', categoryPolicyRouter);
+router.use('/policy', policyRouter);
 module.exports = router;

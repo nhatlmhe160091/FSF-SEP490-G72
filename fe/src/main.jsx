@@ -33,6 +33,9 @@ import Voucher from './pages/general/voucher';
 import Event from './pages/general/Event';
 import EventDashboard from './pages/manager/event/EventDashboard';
 import About from './pages/general/About';
+import Policy from './pages/general/Policy';
+import CategoryPolicyList from './pages/manager/policy/CategoryPolicyList';
+import PolicyList from './pages/manager/policy/PolicyList';
 /**
  * Roles include GUEST, CUSTOMER, ADMIN, MANAGER
  */
@@ -174,6 +177,14 @@ const router = createBrowserRouter([
         )
       },
       {
+        path: "/policy",
+        element: (
+          <ProtectedRoute requiredRoles={['GUEST', 'CUSTOMER']}>
+            <Policy />
+          </ProtectedRoute>
+        )
+      },
+      {
         path: "manager",
         children: [
           {
@@ -245,6 +256,22 @@ const router = createBrowserRouter([
             element: (
               <ProtectedRoute requiredRoles={['MANAGER']}>
                 <EventDashboard />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: "category-policy-list",
+            element: (
+              <ProtectedRoute requiredRoles={['MANAGER']}>
+                <CategoryPolicyList />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: "policy-list",
+            element: (
+              <ProtectedRoute requiredRoles={['MANAGER']}>
+                <PolicyList />
               </ProtectedRoute>
             ),
           },

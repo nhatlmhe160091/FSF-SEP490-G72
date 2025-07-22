@@ -81,6 +81,18 @@ const ManagerLayout = () => {
                 <ListItemText primary="Vật Tư Tiêu Hao" />
               </ListItemButton>
             </ListItem>
+            <ListItem disablePadding>
+              <ListItemButton component={Link} to="manager/category-policy-list">
+                <ListItemIcon sx={{ color: 'white' }}><Book /></ListItemIcon>
+                <ListItemText primary="Danh mục chính sách" />
+              </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding>
+              <ListItemButton component={Link} to="manager/policy-list">
+                <ListItemIcon sx={{ color: 'white' }}><Book /></ListItemIcon>
+                <ListItemText primary="Danh sách chính sách" />
+              </ListItemButton>
+            </ListItem>
           </List>
           <Divider sx={{ backgroundColor: 'rgba(255,255,255,0.2)', my: 2 }} />
         </Box>
