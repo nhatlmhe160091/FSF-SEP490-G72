@@ -34,7 +34,10 @@ import Event from './pages/general/Event';
 import EventDashboard from './pages/manager/event/EventDashboard';
 import About from './pages/general/About';
 import NewsList from './pages/general/newsList';
-import NewsDetail from './pages/general/newsDetail';/**
+import NewsDetail from './pages/general/newsDetail';
+import NewsDashboard from './pages/manager/new/NewsDashboard';
+
+/**
  * Roles include GUEST, CUSTOMER, ADMIN, MANAGER
  */
 
@@ -264,6 +267,14 @@ const router = createBrowserRouter([
                 <EventDashboard />
               </ProtectedRoute>
             ),
+          },
+          {
+            path: "/manager/new-list",
+            element: (
+              <ProtectedRoute requiredRoles={['MANAGER']}>
+                <NewsDashboard />
+              </ProtectedRoute>
+            )
           },
         ]
       },
