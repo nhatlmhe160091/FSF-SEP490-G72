@@ -129,7 +129,7 @@ function CustomerHeader() {
                             >
                                 Ghép trận
                             </Link>
-                               <Link
+                            <Link
                                 sx={{ ml: 3, textAlign: 'center', textTransform: "uppercase", fontWeight: "bold" }}
                                 component="button"
                                 color="inherit"
@@ -149,16 +149,26 @@ function CustomerHeader() {
                             >
                                 Ưu đãi hấp dẫn
                             </Link>
-                                   <Link
-                                                            sx={{ ml: 3, textAlign: 'center', textTransform: "uppercase", fontWeight: "bold" }}
-                                                            component="button"
-                                                            color="inherit"
-                                                            variant="body2"
-                                                            underline="hover"
-                                                            onClick={() => navigate('/about')}
-                                                        >
-                                                            Giới thiệu
-                                                        </Link>
+                            <Link
+                                sx={{ ml: 3, textAlign: 'center', textTransform: "uppercase", fontWeight: "bold" }}
+                                component="button"
+                                color="inherit"
+                                variant="body2"
+                                underline="hover"
+                                onClick={() => navigate('/about')}
+                            >
+                                Giới thiệu
+                            </Link>
+                            <Link
+                                sx={{ ml: 3, textAlign: 'center', textTransform: "uppercase", fontWeight: "bold" }}
+                                component="button"
+                                color="inherit"
+                                variant="body2"
+                                underline="hover"
+                                onClick={() => navigate('/news')}
+                            >
+                                TIN TỨC
+                            </Link>
                         </Box>
                         {/* Ví và nạp tiền */}
                         <Box sx={{ flexGrow: 0, display: 'flex', alignItems: 'center', mr: 2 }}>

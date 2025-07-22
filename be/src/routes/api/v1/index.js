@@ -18,6 +18,7 @@ const statisticRouter = require('./statistic.router');
 const eventRouter = require('./event.router');
 const feedbackRouter = require('./feedback.router');
 const fakeRouter = require('./fake.router');
+const newsRouter = require('./news.router');
 
 router.use('/guest', guestRouter);
 router.use('/user', userRouter);
@@ -37,4 +38,5 @@ router.use('/statistic', statisticRouter);
 router.use('/event', eventRouter);
 router.use('/feedback', feedbackRouter);
 router.use('/fake', fakeRouter);
+router.use('/news', newsRouter);
 module.exports = router;
