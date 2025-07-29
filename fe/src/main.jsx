@@ -36,6 +36,7 @@ import About from './pages/general/About';
 import NewsList from './pages/general/newsList';
 import NewsDetail from './pages/general/newsDetail';
 import NewsDashboard from './pages/manager/new/NewsDashboard';
+import FavoriteList from './pages/general/favoriteList';
 
 /**
  * Roles include GUEST, CUSTOMER, ADMIN, MANAGER
@@ -190,6 +191,14 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute requiredRoles={['GUEST', 'CUSTOMER']}>
             <About />
+          </ProtectedRoute>
+        )
+      },
+      {
+        path: "/favorite",
+        element: (
+          <ProtectedRoute requiredRoles={['CUSTOMER']}>
+            <FavoriteList />
           </ProtectedRoute>
         )
       },

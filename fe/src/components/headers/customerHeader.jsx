@@ -169,6 +169,16 @@ function CustomerHeader() {
                             >
                                 TIN TỨC
                             </Link>
+                            <Link
+                                sx={{ ml: 3, textAlign: 'center', textTransform: "uppercase", fontWeight: "bold" }}
+                                component="button"
+                                color="inherit"
+                                variant="body2"
+                                underline="hover"
+                                onClick={() => navigate('/favorite')}
+                            >
+                                Danh sách yêu thích
+                            </Link>
                         </Box>
                         {/* Ví và nạp tiền */}
                         <Box sx={{ flexGrow: 0, display: 'flex', alignItems: 'center', mr: 2 }}>
