@@ -337,11 +337,9 @@ const router = createBrowserRouter([
 ]);
 
 createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    <AuthProvider>
-      <PublicProvider>
-        <RouterProvider router={router} />
-      </PublicProvider>
-    </AuthProvider>
-  </StrictMode>
+  <AuthProvider>
+    <PublicProvider>
+      <RouterProvider router={router} />
+    </PublicProvider>
+  </AuthProvider>
 );
