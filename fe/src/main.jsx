@@ -202,6 +202,7 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         )
       },
+     
       {
         path: "manager",
         children: [
@@ -278,13 +279,15 @@ const router = createBrowserRouter([
             ),
           },
           {
-            path: "/manager/new-list",
+            path: "new-list",
             element: (
               <ProtectedRoute requiredRoles={['MANAGER']}>
                 <NewsDashboard />
               </ProtectedRoute>
             )
           },
+         
+
         ]
       },
       {
