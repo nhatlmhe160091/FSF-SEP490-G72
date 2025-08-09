@@ -10,6 +10,7 @@ import SportsSoccerIcon from '@mui/icons-material/SportsSoccer';
 import ManagerHeader from '../components/headers/ManagerHeader';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { GiChampions } from 'react-icons/gi';
 
 const drawerWidth = 240;
 
@@ -97,6 +98,12 @@ const ManagerLayout = () => {
               <ListItemButton component={Link} to="manager/policy-list">
                 <ListItemIcon sx={{ color: 'white' }}><Book /></ListItemIcon>
                 <ListItemText primary="Danh sách chính sách" />
+              </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding>
+              <ListItemButton component={Link} to="manager/tournament-dashboard">
+                <ListItemIcon sx={{ color: 'white' }}><GiChampions /></ListItemIcon>
+                <ListItemText primary="Giải đấu" />
               </ListItemButton>
             </ListItem>
           </List>

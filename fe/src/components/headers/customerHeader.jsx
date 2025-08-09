@@ -179,17 +179,17 @@ function CustomerHeader() {
                             >
                                 Danh sách yêu thích
                             </Link>
-                            <Link
-                                sx={{ ml: 3, textAlign: 'center', textTransform: "uppercase", fontWeight: "bold" }}
-                                component="button"
-                                color="inherit"
-                                variant="body2"
-                                underline="hover"
-                                onClick={() => navigate('/policy')}
-                            >
-                                Chính sách pháp lý
-                            </Link>
-                        </Box>
+                                <Link
+                                    sx={{ ml: 3, textAlign: 'center', textTransform: "uppercase", fontWeight: "bold" }}
+                                    component="button"
+                                    color="inherit"
+                                    variant="body2"
+                                    underline="hover"
+                                    onClick={() => navigate('/policy')}
+                                >
+                                    Chính sách pháp lý
+                                </Link>
+                            </Box>
                         {/* Ví và nạp tiền */}
                         <Box sx={{ flexGrow: 0, display: 'flex', alignItems: 'center', mr: 2 }}>
                             {walletLoading ? (
