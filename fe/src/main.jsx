@@ -40,7 +40,7 @@ import FavoriteList from './pages/general/favoriteList';
 import Policy from './pages/general/Policy';
 import CategoryPolicyList from './pages/manager/policy/CategoryPolicyList';
 import PolicyList from './pages/manager/policy/PolicyList';
-
+import Coupon from "./pages/admin/voucher/CouponManager";
 /**
  * Roles include GUEST, CUSTOMER, ADMIN, MANAGER
  */
@@ -290,7 +290,6 @@ const router = createBrowserRouter([
             ),
           },
           {
-            path: "/manager/new-list",
             path: "new-list",
             element: (
               <ProtectedRoute requiredRoles={['MANAGER']}>
@@ -342,6 +341,14 @@ const router = createBrowserRouter([
             element: (
               <ProtectedRoute>
                 <UserList />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: "voucher-list",
+            element: (
+              <ProtectedRoute>
+                <Coupon />
               </ProtectedRoute>
             ),
           }
