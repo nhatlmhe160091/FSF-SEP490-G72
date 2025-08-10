@@ -19,9 +19,9 @@ import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import dayjs from 'dayjs';
 import NotificationSnackbar from '../snackbars/notificationSnackbar';
-import ThankForBooking from './thankForBooking';
-import EditProfileDialog from './editProfileDialog';
-import sportFieldService from '../../services/api/sportFieldService';
+// import ThankForBooking from './thankForBooking';
+// import EditProfileDialog from './editProfileDialog';
+// import sportFieldService from '../../services/api/sportFieldService';
 import { useState, useEffect } from 'react';
 import { formatTimeVN } from '../../utils/handleFormat';
 import { paymentService } from '../../services/api/paymentService';
@@ -268,7 +268,7 @@ const [createdBookingData, setCreatedBookingData] = useState(null);
                       <TableCell>
                         {formatTimeVN(time)} - {formatTimeVN(time.add(30, 'minute'))}
                       </TableCell>
-                      <TableCell>{sportField.pricePerHour.toLocaleString()}đ</TableCell>
+                      <TableCell>{(sportField.pricePerHour * 0.5).toLocaleString()}đ</TableCell>
                     </TableRow>
                   );
                 })}
