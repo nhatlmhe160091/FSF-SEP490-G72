@@ -1,5 +1,29 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Table, TableHead, TableRow, TableCell, TableBody, Paper, Chip, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Button, Divider } from '@mui/material';
+import { 
+  Box, 
+  Typography, 
+  Table, 
+  TableHead, 
+  TableRow, 
+  TableCell, 
+  TableBody, 
+  Paper, 
+  Chip, 
+  IconButton, 
+  Dialog, 
+  DialogTitle, 
+  DialogContent, 
+  DialogActions, 
+  Button, 
+  Divider,
+  TextField,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Grid,
+  TablePagination
+} from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import dayjs from 'dayjs';
 import { useAuth } from '../../contexts/authContext';
@@ -15,25 +39,148 @@ const statusMap = {
 const MatchmakingHistory = () => {
   const { currentUser } = useAuth();
   const [matchmakings, setMatchmakings] = useState([]);
+  const [filteredMatchmakings, setFilteredMatchmakings] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedMatchmaking, setSelectedMatchmaking] = useState(null);
+
+  // Pagination states
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  // Filter states
+  const [filters, setFilters] = useState({
+    searchTerm: '',
+    timeRange: 'all', // 'all', 'today', 'week', 'month'
+    status: 'all', // 'all', 'open', 'full', 'closed'
+  });
+
+  const applyFilters = (matches) => {
+    let filtered = [...matches];
+
+    // Apply search filter
+    if (filters.searchTerm) {
+      filtered = filtered.filter(match =>
+        match.bookingId?.fieldId?.name?.toLowerCase().includes(filters.searchTerm.toLowerCase())
+      );
+    }
+
+    // Apply time range filter
+    const now = dayjs();
+    switch (filters.timeRange) {
+      case 'today':
+        filtered = filtered.filter(match =>
+          dayjs.utc(match.bookingId?.startTime).local().isSame(now, 'day')
+        );
+        break;
+      case 'week':
+        filtered = filtered.filter(match =>
+          dayjs.utc(match.bookingId?.startTime).local().isAfter(now.subtract(7, 'day'))
+        );
+        break;
+      case 'month':
+        filtered = filtered.filter(match =>
+          dayjs.utc(match.bookingId?.startTime).local().isAfter(now.subtract(30, 'day'))
+        );
+        break;
+      default:
+        break;
+    }
+
+    // Apply status filter
+    if (filters.status !== 'all') {
+      filtered = filtered.filter(match => match.status === filters.status);
+    }
+
+    setFilteredMatchmakings(filtered);
+  };
+
+  const handleFilterChange = (filterName, value) => {
+    setFilters(prev => ({
+      ...prev,
+      [filterName]: value
+    }));
+    setPage(0); // Reset to first page when filter changes
+  };
+
+  // Pagination handlers
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
   useEffect(() => {
     const fetchMatchmakings = async () => {
       if (!currentUser?._id) return;
       setLoading(true);
       const res = await matchmakingService.getMatchmakingsByUser(currentUser._id);
-      setMatchmakings(res?.data || []);
+      const data = res?.data || [];
+      setMatchmakings(data);
+      applyFilters(data);
       setLoading(false);
     };
     fetchMatchmakings();
   }, [currentUser]);
+
+  useEffect(() => {
+    applyFilters(matchmakings);
+  }, [filters]);
 
   return (
     <Box sx={{ p: 4, bgcolor: '#f5f5f5' }}>
       <Typography variant="h4" sx={{ mb: 2, color: '#388e3c' }}>
         Lịch sử ghép trận của bạn
       </Typography>
+
+      {/* Filter Section */}
+      <Paper sx={{ p: 2, mb: 2 }}>
+        <Grid container spacing={2} alignItems="center">
+          <Grid item xs={12} sm={4}>
+            <TextField
+              fullWidth
+              label="Tìm kiếm theo tên sân"
+              variant="outlined"
+              value={filters.searchTerm}
+              onChange={(e) => handleFilterChange('searchTerm', e.target.value)}
+              size="small"
+            />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <FormControl fullWidth size="small">
+              <InputLabel>Thời gian</InputLabel>
+              <Select
+                value={filters.timeRange}
+                label="Thời gian"
+                onChange={(e) => handleFilterChange('timeRange', e.target.value)}
+              >
+                <MenuItem value="all">Tất cả</MenuItem>
+                <MenuItem value="today">Hôm nay</MenuItem>
+                <MenuItem value="week">7 ngày qua</MenuItem>
+                <MenuItem value="month">30 ngày qua</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <FormControl fullWidth size="small">
+              <InputLabel>Trạng thái</InputLabel>
+              <Select
+                value={filters.status}
+                label="Trạng thái"
+                onChange={(e) => handleFilterChange('status', e.target.value)}
+              >
+                <MenuItem value="all">Tất cả</MenuItem>
+                <MenuItem value="open">Đang mở</MenuItem>
+                <MenuItem value="full">Đã đủ</MenuItem>
+                <MenuItem value="closed">Đã đóng</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+        </Grid>
+      </Paper>
+
       <Paper>
         <Table>
           <TableHead>
@@ -55,7 +202,9 @@ const MatchmakingHistory = () => {
                 <TableCell colSpan={5} align="center">Bạn chưa có lịch sử ghép trận nào</TableCell>
               </TableRow>
             ) : (
-              matchmakings.map(m => (
+              filteredMatchmakings
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map(m => (
                 <TableRow key={m._id}>
                   <TableCell>{m.bookingId?.fieldId?.name}</TableCell>
                   <TableCell>
@@ -81,6 +230,17 @@ const MatchmakingHistory = () => {
             )}
           </TableBody>
         </Table>
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25]}
+          component="div"
+          count={filteredMatchmakings.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+          labelRowsPerPage="Số hàng mỗi trang:"
+          labelDisplayedRows={({ from, to, count }) => `${from}-${to} trong ${count}`}
+        />
       </Paper>
 
       {/* Dialog chi tiết ghép trận */}
