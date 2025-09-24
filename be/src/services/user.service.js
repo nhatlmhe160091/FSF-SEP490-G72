@@ -1,6 +1,5 @@
 const { User } = require('../models/index');
 const admin = require('../configs/firebaseAdmin');
-const { serverHostPort, serverHostUrl } = require('../utils/constants');
 const { sendVerificationEmail, sendNewPassword } = require('../configs/nodemailer.config');
 const { generateRandomPassword } = require('../utils/handleGenerate');
 class UserService {
@@ -49,7 +48,7 @@ class UserService {
                 firebaseUID: userRecord.uid,
             }]);
 
-            const emailVerificationLink = `http://${serverHostUrl}:${serverHostPort}/api/v1/user/verify-email?uid=${userRecord.uid}`;
+            const emailVerificationLink = `${process.env.BE_HOST_URL}/api/v1/user/verify-email?uid=${userRecord.uid}`;
             await sendVerificationEmail(email, emailVerificationLink);
 
             return newUser[0];
@@ -97,7 +96,12 @@ class UserService {
         try {
             return await admin.auth().updateUser(firebaseUID, { emailVerified: true });
         } catch (error) {
-            throw { message: 'Có lỗi xảy ra khi xác minh tài khoản.', status: 500 };
+            console.error('Verify email error:', error);
+            throw { 
+                message: 'Có lỗi xảy ra khi xác minh tài khoản.', 
+                status: 500,
+                error: error.message 
+            };
         }
     };
 
@@ -107,7 +111,7 @@ class UserService {
     sendEmailVerification = async (email) => {
         try {
             const userRecord = await admin.auth().getUserByEmail(email);
-            const emailVerificationLink = `http://${serverHostUrl}:${serverHostPort}/api/v1/user/verify-email?uid=${userRecord.uid}`;
+            const emailVerificationLink = `${process.env.BE_HOST_URL}/api/v1/user/verify-email?uid=${userRecord.uid}`;
             await sendVerificationEmail(email, emailVerificationLink);
             return {
                 data: {
@@ -116,7 +120,12 @@ class UserService {
                 }
             };
         } catch (error) {
-            throw new Error('Email chưa được đăng ký!');
+            console.error('Send email verification error:', error);
+            throw { 
+                message: 'Email chưa được đăng ký!',
+                status: 404,
+                error: error.message 
+            };
         }
     };
 
@@ -127,9 +136,13 @@ class UserService {
     resetPassword = async (email) => {
         try {
             const userRecord = await admin.auth().getUserByEmail(email);
+            console.log('User record found for password reset:', userRecord);
             const newPassword = generateRandomPassword();
+            console.log('Generated new password:', newPassword);
             await admin.auth().updateUser(userRecord.uid, { password: newPassword });
+            console.log('Password updated in Firebase for user:', userRecord.uid);
             await sendNewPassword(email, newPassword);
+            console.log('New password email sent to:', email);
             return {
                 data: {
                     success: true,
@@ -137,9 +150,13 @@ class UserService {
                 }
             };
         } catch (error) {
-            throw new Error('Email chưa được đăng ký!');
+            console.error('Reset password error:', error);
+            throw { 
+                message: 'Email chưa được đăng ký!',
+                status: 404,
+                error: error.message 
+            };
         }
-
     };
 
     getPaginatedUsers = async (page = 1, limit = 6, search = '', role = '') => {
@@ -285,7 +302,12 @@ class UserService {
             await admin.auth().updateUser(firebaseUID, { disabled });
             return { message: `Tài khoản đã được ${disabled ? 'vô hiệu hóa' : 'kích hoạt lại'}.` };
         } catch (error) {
-            throw new Error(`Không thể cập nhật trạng thái tài khoản: ${error.message}`);
+            console.error('Update account status error:', error);
+            throw { 
+                message: `Không thể cập nhật trạng thái tài khoản`,
+                status: 500,
+                error: error.message 
+            };
         }
     };
 

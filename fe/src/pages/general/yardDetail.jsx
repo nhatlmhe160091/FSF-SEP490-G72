@@ -3,11 +3,9 @@ import { useParams } from "react-router-dom";
 import { FaRestroom, FaParking, FaWifi, FaShower } from "react-icons/fa";
 import { MdSecurity, MdSportsSoccer } from "react-icons/md";
 import sportFieldService from "../../services/api/sportFieldService";
-import { feedbackService } from '../../services/api/feedbackService';
+// import { feedbackService } from '../../services/api/feedbackService';
 import Feedback from '../../components/Feedback/Feedback';
 import { useNavigate } from "react-router-dom";
-import { Skeleton } from "@mui/material";
-
 const amenityIcons = {
     restrooms: FaRestroom,
     parking: FaParking,
@@ -15,16 +13,15 @@ const amenityIcons = {
     showers: FaShower,
     security: MdSecurity,
 };
-
 const YardDetail = () => {
     const { id } = useParams();
     const navigate = useNavigate();
+    const [selectedTime, setSelectedTime] = useState("");
+    const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
     const [fieldData, setFieldData] = useState(null);
-    const [loading, setLoading] = useState(true);
-
+    // Simulating fetching field data based on _id
     useEffect(() => {
         const fetchFieldData = async () => {
-            setLoading(true);
             try {
                 const response = await sportFieldService.getSportFieldById(id);
                 if (response) {
@@ -35,69 +32,79 @@ const YardDetail = () => {
             } catch (error) {
                 console.error("Error fetching field data:", error);
             }
-            setLoading(false);
         };
         fetchFieldData();
     }, [id]);
+    console.log("Field Data:", fieldData);
+    //   const fieldData = {
+    //     type: "Bóng đá",
+    //     name: "Soccer Field A1",
+    //     status: "Available",
+    //     price: 50,
+    //     capacity: 2,
+    //     location: "123 Sports Complex, District 1, Ho Chi Minh City",
+    //     mainImage: "https://images.unsplash.com/photo-1529900748604-07564a03e7a6?ixlib=rb-4.0.3",
+    //     galleryImages: [
+    //       "https://images.unsplash.com/photo-1459865264687-595d652de67e?ixlib=rb-4.0.3",
+    //       "https://images.unsplash.com/photo-1516132006923-6cf348e5dee2?ixlib=rb-4.0.3",
+    //       "https://images.unsplash.com/photo-1518604666860-9ed391f76460?ixlib=rb-4.0.3"
+    //     ],
+    //     amenities: [
+    //       { name: "Restrooms", icon: FaRestroom },
+    //       { name: "Parking", icon: FaParking },
+    //       { name: "WiFi", icon: FaWifi },
+    //       { name: "Showers", icon: FaShower },
+    //       { name: "Security", icon: MdSecurity }
+    //     ]
+    //   };
 
-    if (loading) {
-        return (
-            <div className="min-h-screen bg-gray-900 text-gray-200 p-6 flex justify-center">
-                <div className="w-full max-w-7xl space-y-8">
-                    <Skeleton variant="rectangular" height={60} className="rounded-xl" />
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                        <div className="lg:col-span-8 space-y-4">
-                            <Skeleton variant="rectangular" height={500} className="rounded-xl" />
-                            <div className="grid grid-cols-3 gap-4">
-                                <Skeleton variant="rectangular" height={96} className="rounded-lg" />
-                                <Skeleton variant="rectangular" height={96} className="rounded-lg" />
-                                <Skeleton variant="rectangular" height={96} className="rounded-lg" />
-                            </div>
-                        </div>
-                        <div className="lg:col-span-4 space-y-6">
-                            <Skeleton variant="rectangular" height={250} className="rounded-xl" />
-                            <Skeleton variant="rectangular" height={250} className="rounded-xl" />
-                        </div>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-    if (!fieldData) {
-        return (
-            <div className="min-h-screen bg-gray-900 text-gray-200 flex items-center justify-center p-6">
-                <p className="text-xl text-gray-400">Không tìm thấy thông tin sân.</p>
-            </div>
-        );
-    }
+    const timeSlots = [
+        "08:00", "09:00", "10:00", "11:00", "14:00", "15:00", "16:00", "17:00"
+    ];
 
     return (
-        <div className="min-h-screen bg-gray-900 text-gray-200 p-6 flex justify-center">
-            <div className="w-full max-w-7xl">
+        <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-7xl mx-auto">
                 {/* Header Section */}
                 <div className="mb-8">
-                    <div className="flex items-center justify-between flex-wrap">
+                    <div className="flex items-center justify-between">
                         <div>
-                            <h1 className="text-4xl font-bold text-teal-500 flex items-center gap-2 mb-2">
-                                <MdSportsSoccer className="text-green-500" />
+                            <h1 className="text-4xl font-bold text-gray-900 flex items-center gap-2">
+                                <MdSportsSoccer className="text-green-600" />
                                 {fieldData?.type?.name || "Soccer Field"}
                             </h1>
-                            <h2 className="text-2xl font-semibold text-gray-100">{fieldData?.name}</h2>
+                            <h2 className="text-2xl text-gray-700 mt-2">{fieldData?.name}</h2>
                         </div>
-                        <span className={`mt-4 lg:mt-0 px-4 py-2 rounded-full text-sm font-semibold ${fieldData?.status === "available" ? "bg-green-600 text-white" : "bg-red-600 text-white"}`}>
-                            {fieldData?.status}
-                        </span>
+                                                {(() => {
+                                                    let statusInfo = { color: "bg-gray-300 text-gray-800", text: "Không xác định" };
+                                                    switch (fieldData?.status) {
+                                                        case "available":
+                                                            statusInfo = { color: "bg-green-500 text-white", text: "Còn trống" };
+                                                            break;
+                                                        case "unavailable":
+                                                            statusInfo = { color: "bg-red-500 text-white", text: "Đã đặt" };
+                                                            break;
+                                                        case "maintenance":
+                                                            statusInfo = { color: "bg-yellow-500 text-white", text: "Đang bảo trì" };
+                                                            break;
+                                                    }
+                                                    return (
+                                                        <span className={`px-4 py-2 rounded-full text-sm font-semibold ${statusInfo.color}`}>
+                                                            {statusInfo.text}
+                                                        </span>
+                                                    );
+                                                })()}
                     </div>
                 </div>
 
                 {/* Image Gallery */}
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">
                     <div className="lg:col-span-8">
-                        <div className="bg-gray-800 p-2 rounded-3xl shadow-xl">
+                        <div className="relative overflow-hidden rounded-lg shadow-lg">
                             <img
                                 src={fieldData?.images && fieldData?.images.length > 0 ? fieldData?.images[0] : "https://images.unsplash.com/photo-1518604666860-9ed391f76460?ixlib=rb-4.0.3"}
                                 alt="Main field view"
-                                className="w-full h-[500px] object-cover rounded-2xl transition-transform duration-300 hover:scale-105"
+                                className="w-full h-[500px] object-cover transform transition-transform duration-300 hover:scale-105"
                                 onError={(e) => {
                                     e.target.src = "https://images.unsplash.com/photo-1518604666860-9ed391f76460?ixlib=rb-4.0.3";
                                 }}
@@ -120,17 +127,32 @@ const YardDetail = () => {
 
                     {/* Information Cards */}
                     <div className="lg:col-span-4 space-y-6">
-                        <div className="bg-gray-800 rounded-3xl shadow-xl p-6">
-                            <h3 className="text-xl font-semibold mb-4 text-teal-400">Thông tin chung</h3>
-                            <div className="space-y-3">
-                                <div className="flex justify-between items-center text-gray-300">
-                                    <span>Sức chứa tối đa:</span>
-                                    <span className="font-semibold text-gray-50">{fieldData?.capacity} người</span>
-                                </div>
-                                <div className="flex justify-between items-center">
-                                    <span className="text-gray-300">Giá mỗi giờ:</span>
-                                    <span className="text-2xl font-bold text-green-500">{fieldData?.pricePerHour?.toLocaleString()} VNĐ</span>
-                                </div>
+                        <div className="bg-white rounded-xl shadow-md p-6">
+                            <h3 className="text-xl font-semibold mb-4">Vị trí</h3>
+                            <p className="text-gray-600">{fieldData?.location}</p>
+                                                        <div className="mt-4 h-48 rounded-lg overflow-hidden">
+                                                            <iframe
+                                                                title="FPT University Hanoi Map"
+                                                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3724.5062169040193!2d105.52271427476879!3d21.012421688340503!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135abc60e7d3f19%3A0x2be9d7d0b5abcbf4!2zVHLGsOG7nW5nIMSQ4bqhaSBo4buNYyBGUFQgSMOgIE7hu5lp!5e0!3m2!1svi!2sus!4v1758140210104!5m2!1svi!2sus"
+                                                                width="100%"
+                                                                height="100%"
+                                                                style={{ border: 0 }}
+                                                                allowFullScreen=""
+                                                                loading="lazy"
+                                                                referrerPolicy="no-referrer-when-downgrade"
+                                                            ></iframe>
+                                                        </div>
+                        </div>
+
+                        <div className="bg-white rounded-xl shadow-md p-6">
+                            <h3 className="text-xl font-semibold mb-4">Sức chứa & Giá cả</h3>
+                            <div className="flex justify-between items-center mb-4">
+                                <span className="text-gray-600">Sức chứa tối đa:</span>
+                                <span className="font-semibold">{fieldData?.capacity} người</span>
+                            </div>
+                            <div className="flex justify-between items-center mb-6">
+                                <span className="text-gray-600">Giá theo giờ:</span>
+                                <span className="text-2xl font-bold text-green-600">${fieldData?.pricePerHour}</span>
                             </div>
                             <button
                                 onClick={() => {
@@ -140,32 +162,32 @@ const YardDetail = () => {
                                         alert("Không tìm thấy loại sân!");
                                     }
                                 }}
-                                className="w-full mt-6 bg-teal-600 text-white py-3 rounded-xl font-semibold hover:bg-teal-700 transition-colors shadow-lg"
+                                className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors"
                             >
-                                Đặt sân ngay
+                                Đặt ngay
                             </button>
                         </div>
-                        <div className="bg-gray-800 rounded-3xl shadow-xl p-6">
-                            <h3 className="text-xl font-semibold mb-4 text-teal-400">Tiện ích</h3>
+
+                        <div className="bg-white rounded-xl shadow-md p-6">
+                            <h3 className="text-xl font-semibold mb-4">Tiện nghi</h3>
                             <div className="grid grid-cols-2 gap-4">
                                 {fieldData?.amenities?.map((amenity, index) => {
                                     const Icon = amenityIcons[amenity.toLowerCase()];
                                     return (
-                                        <div key={index} className="flex items-center space-x-2 text-gray-300">
-                                            {Icon && <Icon className="text-green-500 text-xl" />}
-                                            <span className="capitalize">{amenity}</span>
+                                        <div key={index} className="flex items-center space-x-2">
+                                            {Icon && <Icon className="text-green-600 text-xl" />}
+                                            <span className="text-gray-600 capitalize">{amenity}</span>
                                         </div>
                                     );
                                 })}
                             </div>
                         </div>
-                       
                     </div>
                 </div>
 
                 {/* Reviews Section */}
-                <div className="mb-8 bg-gray-800 rounded-3xl shadow-xl p-6">
-                    <h3 className="text-2xl font-semibold mb-6 text-teal-400 border-b border-gray-700 pb-4">Đánh giá khách hàng</h3>
+                <div className="mb-8 bg-white rounded-xl shadow-md p-6">
+                    <h3 className="text-2xl font-semibold mb-6">Đánh giá khách hàng</h3>
                     {fieldData?._id && (
                         <Feedback fieldId={fieldData._id} />
                     )}
@@ -173,19 +195,22 @@ const YardDetail = () => {
 
                 {/* Related Fields Section */}
                 <div className="mb-8">
-                    <h3 className="text-2xl font-semibold mb-6 text-gray-100 border-l-4 border-teal-600 pl-4 py-2">Sân tương tự gần đó</h3>
+                    <h3 className="text-2xl font-semibold mb-6">Các sân tương tự gần đây</h3>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         {(fieldData?.similarFields || []).map((field, index) => (
-                            <div key={field._id || index} className="bg-gray-800 rounded-3xl shadow-xl overflow-hidden hover:shadow-2xl transition-shadow">
+                            <div key={field._id || index} className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow">
                                 <img
-                                    src={field.images && field.images.length > 0 ? field.images[0] : "https://images.unsplash.com/photo-1518604666860-9ed391f76460?ixlib=rb-4.0.3"}
+                                    src={field.images && field.images.length > 0
+                                        ? field.images[0]
+                                        : "https://images.unsplash.com/photo-1518604666860-9ed391f76460?ixlib=rb-4.0.3"}
                                     alt={field.name}
-                                    className="w-full h-48 object-cover transition-transform duration-300 hover:scale-105"
+                                    className="w-full h-48 object-cover"
                                 />
                                 <div className="p-4">
-                                    <h4 className="font-semibold text-lg mb-2 text-gray-100">{field.name}</h4>
-                                    <div className="flex justify-between items-center text-sm">
-                                        <span className="text-green-500 font-bold">{field.pricePerHour?.toLocaleString()}đ/hr</span>
+                                    <h4 className="font-semibold text-lg mb-2">{field.name}</h4>
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-green-600 font-bold">{field.pricePerHour?.toLocaleString()}đ/hr</span>
+                                        {/* Nếu có rating thì hiển thị, không thì bỏ qua */}
                                         {field.rating && (
                                             <span className="flex items-center text-yellow-400">
                                                 ★ {field.rating}
@@ -197,6 +222,44 @@ const YardDetail = () => {
                         ))}
                     </div>
                 </div>
+
+                {/* Booking Section */}
+                {isBookingModalOpen && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+                        <div className="bg-white rounded-xl p-6 max-w-md w-full">
+                            <h3 className="text-2xl font-semibold mb-4">Book Your Slot</h3>
+                            <div className="grid grid-cols-2 gap-3 mb-6">
+                                {timeSlots.map((time) => (
+                                    <button
+                                        key={time}
+                                        onClick={() => setSelectedTime(time)}
+                                        className={`p-3 rounded-lg border ${selectedTime === time ? "border-green-600 bg-green-50" : "border-gray-200"}`}
+                                    >
+                                        {time}
+                                    </button>
+                                ))}
+                            </div>
+                            <div className="flex justify-end space-x-4">
+                                <button
+                                    onClick={() => setIsBookingModalOpen(false)}
+                                    className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        alert(`Booking confirmed for ${selectedTime}`);
+                                        setIsBookingModalOpen(false);
+                                    }}
+                                    className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+                                    disabled={!selectedTime}
+                                >
+                                    Confirm Booking
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

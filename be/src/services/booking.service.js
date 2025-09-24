@@ -37,7 +37,7 @@ class BookingService {
         // Kiểm tra trùng lịch đặt sân
         const overlap = await bookingModel.findOne({
             fieldId,
-            status: { $in: ['pending', 'confirmed'] },
+            status: { $in: ['pending', 'waiting', 'confirmed'] },
             $or: [
                 {
                     startTime: { $lt: end },
@@ -171,7 +171,7 @@ class BookingService {
             { $match: { userId: typeof userId === 'string' ? new mongoose.Types.ObjectId(userId) : userId } },
             {
                 $lookup: {
-                    from: 'matchmakings', // collection name in MongoDB
+                    from: 'matchmakings',
                     localField: '_id',
                     foreignField: 'bookingId',
                     as: 'matchmaking'
@@ -202,6 +202,69 @@ class BookingService {
                     localField: '_id',
                     foreignField: 'bookingId',
                     as: 'feedbacks'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'consumablepurchases',
+                    localField: '_id',
+                    foreignField: 'bookingId',
+                    as: 'consumablePurchases'
+                }
+            },
+            {
+                $unwind: { path: '$consumablePurchases', preserveNullAndEmptyArrays: true }
+            },
+            {
+                $lookup: {
+                    from: 'consumables',
+                    let: { consumables: { $ifNull: ['$consumablePurchases.consumables', []] } },
+                    pipeline: [
+                        { $match: { $expr: { $in: ['$_id', { $map: { input: '$$consumables', as: 'c', in: '$$c.consumableId' } }] } } },
+                        { $project: { _id: 1, name: 1, price: 1 } }
+                    ],
+                    as: 'consumableDetails'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'equipmentrentals',
+                    localField: '_id',
+                    foreignField: 'bookingId',
+                    as: 'equipmentRentals'
+                }
+            },
+            {
+                $unwind: { path: '$equipmentRentals', preserveNullAndEmptyArrays: true }
+            },
+            {
+                $lookup: {
+                    from: 'equipment',
+                    let: { equipments: { $ifNull: ['$equipmentRentals.equipments', []] } },
+                    pipeline: [
+                        { $match: { $expr: { $in: ['$_id', { $map: { input: '$$equipments', as: 'e', in: '$$e.equipmentId' } }] } } },
+                        { $project: { _id: 1, name: 1, price: 1 } }
+                    ],
+                    as: 'equipmentDetails'
+                }
+            },
+            {
+                $project: {
+                    _id: 1,
+                    field: 1,
+                    startTime: 1,
+                    endTime: 1,
+                    totalPrice: 1,
+                    customerName: 1,
+                    phoneNumber: 1,
+                    consumablePurchases: 1,
+                    consumableDetails: 1,
+                    equipmentRentals: 1,
+                    equipmentDetails: 1,
+                    status: 1,
+                    feedbacks: 1,
+                    participants: 1,
+                    matchmaking: 1
                 }
             }
         ]);
