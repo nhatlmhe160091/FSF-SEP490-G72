@@ -123,14 +123,14 @@ const BookingList = ({ userId }) => {
                         ))}
                     </Select>
                 </FormControl>
-                  <FormControl sx={{ minWidth: 140 }}>
-                     <TextField
-        label="Tìm kiếm tên sân"
-        value={search}
-        onChange={e => { setSearch(e.target.value); setPage(1); }}
-        size="small"
-        sx={{ width: '200px' }}
-    />
+                <FormControl sx={{ minWidth: 140 }}>
+                    <TextField
+                        label="Tìm kiếm tên sân"
+                        value={search}
+                        onChange={e => { setSearch(e.target.value); setPage(1); }}
+                        size="small"
+                        sx={{ width: '200px' }}
+                    />
                 </FormControl>
                 <FormControl sx={{ minWidth: 180 }}>
                     <InputLabel>Loại sân</InputLabel>
@@ -167,6 +167,7 @@ const BookingList = ({ userId }) => {
                 <TableHead>
                     <TableRow sx={{ bgcolor: '#e3f2fd' }}>
                         <TableCell>Sân</TableCell>
+                        <TableCell>Người đặt</TableCell>
                         <TableCell>Thời gian bắt đầu</TableCell>
                         <TableCell>Thời gian kết thúc</TableCell>
                         <TableCell>Tổng tiền</TableCell>
@@ -191,6 +192,9 @@ const BookingList = ({ userId }) => {
                         bookings.map(booking => (
                             <TableRow key={booking._id}>
                                 <TableCell>{booking.fieldId?.name || ''}</TableCell>
+                                <TableCell>
+                                    {booking.userId ? `${booking.userId.fname} ${booking.userId.lname}` : "Khách"}
+                                </TableCell>
                                 <TableCell>{booking.startTime}</TableCell>
                                 <TableCell>{booking.endTime}</TableCell>
                                 <TableCell>{booking.totalPrice?.toLocaleString('vi-VN')} VNĐ</TableCell>
