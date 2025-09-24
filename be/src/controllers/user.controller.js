@@ -1,7 +1,5 @@
 const { UserService } = require('../services/index');
 const { GuestService } = require('../services/index');
-const { frontendUrl } = require('../utils/constants');
-
 
 class UserController {
     /**
@@ -100,7 +98,7 @@ class UserController {
         try {
             const { uid } = req.query;
             await UserService.verifyEmail(uid);
-            return res.redirect(`${frontendUrl}/verification-success`);
+            return res.redirect(`${process.env.FE_HOST_URL}/verification-success`);
         } catch (error) {
             next(error);
         }
