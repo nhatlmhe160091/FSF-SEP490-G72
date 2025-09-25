@@ -340,7 +340,13 @@ const BookingSchedule = () => {
           fontWeight: 'bold',
           fontSize: isMobile ? 14 : 16
         }}
-        onClick={() => setOpenBookingDialog(true)}
+        onClick={() => {
+          if (!currentUser) {
+            toast.warn('Vui lòng đăng nhập để tiến hành đặt sân!');
+            return;
+          }
+        setOpenBookingDialog(true)}
+        }
       >
         Đặt lịch
       </Button>
