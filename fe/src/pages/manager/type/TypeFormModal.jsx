@@ -41,7 +41,7 @@ const TypeFormModal = ({ isOpen, onClose, onSubmit, initialData }) => {
   return (
     <Dialog open={isOpen} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle>
-        {initialData ? "Sửa" : "Tạo"} loại sân
+        {initialData ? "Update" : "Create"} Type
         <IconButton
           aria-label="close"
           onClick={onClose}
@@ -58,14 +58,14 @@ const TypeFormModal = ({ isOpen, onClose, onSubmit, initialData }) => {
       <DialogContent dividers>
         <TextField
           margin="dense"
-          label="Tên loại sân"
+          label="Name"
           fullWidth
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
         <TextField
           margin="dense"
-          label="Mô tả"
+          label="Description"
           fullWidth
           multiline
           minRows={2}
@@ -82,10 +82,10 @@ const TypeFormModal = ({ isOpen, onClose, onSubmit, initialData }) => {
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="secondary" variant="outlined">
-          Hủy
+          Cancel
         </Button>
         <Button onClick={handleSubmit} color="primary" variant="contained">
-          {initialData ? "Sửa" : "Tạo"}
+          {initialData ? "Update" : "Create"}
         </Button>
       </DialogActions>
     </Dialog>

@@ -53,6 +53,10 @@ class PaymentService {
                         })),
                         totalPrice: equipmentItems.reduce((sum, item) => sum + (item.price || 0) * item.quantity, 0)
                     });
+                        // Giảm số lượng tồn kho thiết bị
+                        for (const item of equipmentItems) {
+                            await Equipment.findByIdAndUpdate(item.productId, { $inc: { quantity: -item.quantity } });
+                        }
                 }
                 // Đồ tiêu thụ
                 const consumableItems = bookingData.items.filter(i => i.type === 'consumable' && i.quantity > 0);
@@ -66,6 +70,10 @@ class PaymentService {
                         })),
                         totalPrice: consumableItems.reduce((sum, item) => sum + (item.price || 0) * item.quantity, 0)
                     });
+                        // Giảm số lượng tồn kho đồ tiêu thụ
+                        for (const item of consumableItems) {
+                            await Consumable.findByIdAndUpdate(item.productId, { $inc: { quantity: -item.quantity } });
+                        }
                 }
             }
             // 3. Tạo payment (pending)
