@@ -6,10 +6,11 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { toast } from 'react-toastify';
-import dayjs from 'dayjs';
 import bookingService from '../../../services/api/bookingService';
 import { PublicContext } from "../../../contexts/publicContext";
-
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+dayjs.extend(utc);
 const STATUS_OPTIONS = [
     { value: '', label: 'Tất cả' },
     { value: 'pending', label: 'Đang chờ thanh toán' },
@@ -124,14 +125,14 @@ const BookingList = ({ userId }) => {
                         ))}
                     </Select>
                 </FormControl>
-                <FormControl sx={{ minWidth: 140 }}>
-                    <TextField
-                        label="Tìm kiếm tên sân"
-                        value={search}
-                        onChange={e => { setSearch(e.target.value); setPage(1); }}
-                        size="small"
-                        sx={{ width: '200px' }}
-                    />
+                  <FormControl sx={{ minWidth: 140 }}>
+                     <TextField
+        label="Tìm kiếm tên sân"
+        value={search}
+        onChange={e => { setSearch(e.target.value); setPage(1); }}
+        size="small"
+        sx={{ width: '200px' }}
+    />
                 </FormControl>
                 <FormControl sx={{ minWidth: 180 }}>
                     <InputLabel>Loại sân</InputLabel>
@@ -172,7 +173,6 @@ const BookingList = ({ userId }) => {
                 <TableHead>
                     <TableRow sx={{ bgcolor: '#e3f2fd' }}>
                         <TableCell>Sân</TableCell>
-                        <TableCell>Người đặt</TableCell>
                         <TableCell>Thời gian bắt đầu</TableCell>
                         <TableCell>Thời gian kết thúc</TableCell>
                         <TableCell>Tổng tiền</TableCell>
@@ -197,11 +197,8 @@ const BookingList = ({ userId }) => {
                         bookings.map(booking => (
                             <TableRow key={booking._id}>
                                 <TableCell>{booking.fieldId?.name || ''}</TableCell>
-                                <TableCell>
-                                    {booking.userId ? `${booking.userId.fname} ${booking.userId.lname}` : "Khách"}
-                                </TableCell>
-                                <TableCell>{booking.startTime}</TableCell>
-                                <TableCell>{booking.endTime}</TableCell>
+                                <TableCell>{dayjs(booking.startTime).utc().format('DD/MM/YYYY HH:mm')}</TableCell>
+                                <TableCell>{dayjs(booking.endTime).utc().format('DD/MM/YYYY HH:mm')}</TableCell>
                                 <TableCell>{booking.totalPrice?.toLocaleString('vi-VN')} VNĐ</TableCell>
                                 <TableCell>
                                     <Box
