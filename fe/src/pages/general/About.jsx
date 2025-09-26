@@ -175,14 +175,22 @@ const About = () => (
         </Grid>
       </Box>
 
-      <Divider sx={{ my: 5, borderColor: "#ddd" }} />
+
+      <Divider sx={{ my: 5, borderColor: "#ccc" }} />  {/* đổi màu divider */}
 
       {/* Footer */}
-      <Box sx={{ bgcolor: "#f9f9f9", py: 2, borderRadius: 2, borderTop: "1px solid #eee" }}>
+      <Box
+        sx={{
+          bgcolor: "rgba(0, 188, 212, 0.05)", // thêm nền mờ xanh nhạt
+          py: 2,
+          borderRadius: 2,
+          borderTop: "1px solid #eee",
+        }}
+      >
         <Typography
           variant="body2"
           align="center"
-          sx={{ fontWeight: 600, color: "#555" }} // đổi màu chữ
+          sx={{ fontWeight: 600, color: "#555" }}
         >
           © {new Date().getFullYear()} FPT Sports Field. All rights reserved.
         </Typography>
