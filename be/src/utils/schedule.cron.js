@@ -232,8 +232,8 @@ function registerScheduleCrons() {
     // Kiểm tra và bù lịch khi server khởi động (bù cho ngày tiếp theo)
     checkAndCreateMissingSchedules(1);
 
-    // Tạo lịch mới thử nghiệm lúc 23:59 hôm nay (giờ server UTC)
-    cron.schedule('59 23 * * *', createNextDaySchedule);
+    // Tạo lịch mới lúc 00:01 hôm sau (giờ server UTC)
+    cron.schedule('1 0 * * *', createNextDaySchedule);
 
     // Xóa lịch cũ mỗi tuần vào thứ Hai lúc 00:01
     cron.schedule('1 0 * * 1', cleanupOldSchedules);
