@@ -148,7 +148,7 @@ export default function BookingDialog({ open, setOpen, adultsCount, setAdultsCou
     //         console.log(err.message);
     //     }
     // }
-console.log("restaurant", restaurant);
+    console.log("restaurant", restaurant);
     return (
         <React.Fragment>
             <Dialog
@@ -360,136 +360,83 @@ console.log("restaurant", restaurant);
                                                     />
                                                 </Box>
                                             </Grid> */}
-                                            <Grid size={12}>
-                                                <Box sx={{ width: '100%', mt: 2 }}>
-                                                    <Box sx={{ display: 'flex' }}>
-                                                        <Typography variant="body2" gutterBottom sx={{ fontWeight: 'bold', color: 'black' }}>
-                                                            Ghi chú thêm
-                                                        </Typography>
-                                                    </Box>
-                                                    <TextField
-                                                        variant="outlined"
-                                                        sx={{ width: "100%" }}
-                                                        size="small"
-                                                        multiline
-                                                        rows={4}
-                                                        value={note}
-                                                        onChange={(e) => setNote(e.target.value)}
-                                                    />
-                                                </Box>
+
+                                            <Grid size={5} >
+                                                <Box sx={{ ...borderStyles, p: 1 }}>
+                                                    <Box sx={{ p: 2, display: 'flex' }}>
+                                                        <Grid container spacing={1}>
+                                                            <Grid size={12} sx={{ color: 'black', display: 'flex' }}>
+                                                                <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', color: 'black' }}>
+                                                                    Thông tin đặt chỗ
+                                                                </Typography>
+                                                            </Grid>
+                                                            <Grid size={12} sx={{ mb: 1 }}>
+                                                                <Divider></Divider>
+                                                            </Grid>
+                                                            <Grid size={6}>
+                                                                <Box sx={{ width: '100%' }}>
+                                                                    <Box sx={{ display: 'flex' }}>
+                                                                        <Person4Icon sx={{ mr: 1, color: "#d02028" }}></Person4Icon>
+                                                                        <Typography variant="body2" gutterBottom sx={{ fontWeight: 'bold', color: 'black' }}>
+                                                                            Người lớn:
+                                                                        </Typography>
+                                                                    </Box>
+                                                                    <FormControl sx={{ width: '100%' }}>
+                                                                        <Select
+                                                                            displayEmpty
+                                                                            inputProps={{ 'aria-label': 'Without label' }}
+                                                                            value={adultsCount}
+                                                                            onChange={(e) => setAdultsCount(e.target.value)}
+                                                                            size="small"
+
+                                                                        >
+                                                                            {
+                                                                                adultsArr?.length > 0 && adultsArr.map(number => {
+                                                                                    return (
+                                                                                        <MenuItem key={number} value={number}>{number}</MenuItem>
+                                                                                    )
+                                                                                })
+                                                                            }
+                                                                        </Select>
+                                                                    </FormControl>
+                                                                </Box>
+                                                            </Grid>
+                                                            <Grid size={6} >
+                                                                <Box sx={{ width: '100%' }}>
+                                                                    <Box sx={{ display: 'flex' }}>
+                                                                        <ChildCareIcon sx={{ mr: 1, color: "#d02028" }}></ChildCareIcon>
+                                                                        <Typography variant="body2" gutterBottom sx={{ fontWeight: 'bold', color: 'black' }}>
+                                                                            Trẻ em:
+                                                                        </Typography>
+                                                                    </Box>
+                                                                    <FormControl sx={{ width: '100%' }}>
+                                                                        <Select
+                                                                            displayEmpty
+                                                                            inputProps={{ 'aria-label': 'Without label' }}
+                                                                            value={childrenCount}
+                                                                            onChange={(e) => setChildrenCount(e.target.value)}
+                                                                            size="small"
+                                                                        >
+                                                                            {
+                                                                                childrenArr?.length > 0 && childrenArr.map(number => {
+                                                                                    return (
+                                                                                        <MenuItem key={number} value={number}>{number}</MenuItem>
+                                                                                    )
+                                                                                })
+                                                                            }
+                                                                        </Select>
+                                                                    </FormControl>
+                                                                </Box>
+                                                            </Grid>
+
+
+                                                        </DemoContainer>
+                                                    </LocalizationProvider>
                                             </Grid>
                                         </Grid>
                                     </Box>
                                 </Box>
-                            </Grid>)
-                        }
-
-                        <Grid size={5} >
-                            <Box sx={{ ...borderStyles, p: 1 }}>
-                                <Box sx={{ p: 2, display: 'flex' }}>
-                                    <Grid container spacing={1}>
-                                        <Grid size={12} sx={{ color: 'black', display: 'flex' }}>
-                                            <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', color: 'black' }}>
-                                                Thông tin đặt chỗ
-                                            </Typography>
-                                        </Grid>
-                                        <Grid size={12} sx={{ mb: 1 }}>
-                                            <Divider></Divider>
-                                        </Grid>
-                                        <Grid size={6}>
-                                            <Box sx={{ width: '100%' }}>
-                                                <Box sx={{ display: 'flex' }}>
-                                                    <Person4Icon sx={{ mr: 1, color: "#d02028" }}></Person4Icon>
-                                                    <Typography variant="body2" gutterBottom sx={{ fontWeight: 'bold', color: 'black' }}>
-                                                        Người lớn:
-                                                    </Typography>
-                                                </Box>
-                                                <FormControl sx={{ width: '100%' }}>
-                                                    <Select
-                                                        displayEmpty
-                                                        inputProps={{ 'aria-label': 'Without label' }}
-                                                        value={adultsCount}
-                                                        onChange={(e) => setAdultsCount(e.target.value)}
-                                                        size="small"
-
-                                                    >
-                                                        {
-                                                            adultsArr?.length > 0 && adultsArr.map(number => {
-                                                                return (
-                                                                    <MenuItem key={number} value={number}>{number}</MenuItem>
-                                                                )
-                                                            })
-                                                        }
-                                                    </Select>
-                                                </FormControl>
-                                            </Box>
-                                        </Grid>
-                                        <Grid size={6} >
-                                            <Box sx={{ width: '100%' }}>
-                                                <Box sx={{ display: 'flex' }}>
-                                                    <ChildCareIcon sx={{ mr: 1, color: "#d02028" }}></ChildCareIcon>
-                                                    <Typography variant="body2" gutterBottom sx={{ fontWeight: 'bold', color: 'black' }}>
-                                                        Trẻ em:
-                                                    </Typography>
-                                                </Box>
-                                                <FormControl sx={{ width: '100%' }}>
-                                                    <Select
-                                                        displayEmpty
-                                                        inputProps={{ 'aria-label': 'Without label' }}
-                                                        value={childrenCount}
-                                                        onChange={(e) => setChildrenCount(e.target.value)}
-                                                        size="small"
-                                                    >
-                                                        {
-                                                            childrenArr?.length > 0 && childrenArr.map(number => {
-                                                                return (
-                                                                    <MenuItem key={number} value={number}>{number}</MenuItem>
-                                                                )
-                                                            })
-                                                        }
-                                                    </Select>
-                                                </FormControl>
-                                            </Box>
-                                        </Grid>
-
-                                        <Grid size={12} sx={{ mt: 2 }}>
-                                            <Box sx={{ display: 'flex' }}>
-                                                <AccessTimeIcon sx={{ mr: 1, color: "#d02028" }}></AccessTimeIcon>
-                                                <Typography variant="body2" gutterBottom sx={{ fontWeight: 'bold', color: 'black' }}>
-                                                    Thời gian đến
-                                                </Typography>
-                                            </Box>
-                                            <LocalizationProvider dateAdapter={AdapterDayjs} >
-                                                <DemoContainer components={['TimePicker']}>
-                                                    <DatePicker
-                                                        sx={{ width: '100%' }}
-                                                        value={bookingTime}
-                                                        minDate={minDate}
-                                                        maxDate={maxDate}
-                                                        onChange={(newValue) => {
-                                                            setBookingTime(newValue)
-                                                        }}
-                                                    />
-                                                </DemoContainer>
-                                            </LocalizationProvider>
-                                        </Grid>
-                                        <Grid size={12}>
-                                            <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                                <DemoContainer components={['TimePicker']} >
-                                                    <TimePicker
-                                                        sx={{ width: '100%' }}
-                                                        value={bookingTime}
-                                                        onChange={(newValue) => {
-                                                            setBookingTime(newValue)
-                                                        }}
-                                                    />
-                                                </DemoContainer>
-                                            </LocalizationProvider>
-                                        </Grid>
-                                    </Grid>
-                                </Box>
-                            </Box>
-                        </Grid>
+                            </Grid>
                     </Grid>
                 </DialogContent>
                 <DialogActions>
