@@ -69,20 +69,22 @@ const About = () => (
 
       {/* SECTION 2 */}
       <Box component="section" sx={{ mb: 6 }}>
-        <Typography
-          variant="h5"
-          fontWeight={700}
-          sx={{
-            mt: 2,
-            mb: 2,
-            color: "#333",
-            borderBottom: "2px solid #00bcd4",
-            pb: 1,
-            display: "inline-block",
-          }}
-        >
-          🚀 Tính năng nổi bật
-        </Typography>
+  <Typography 
+  variant="h3"
+  component="h1"
+  fontWeight={900}
+  color="#00bcd4"
+  gutterBottom
+  sx={{ 
+    textAlign: 'center', 
+    fontSize: { xs: '2.5rem', md: '3.5rem' },
+    mb: 1.5,
+    fontFamily: 'Inter, sans-serif' 
+  }}
+>
+  Giới thiệu hệ thống đặt sân thể thao
+</Typography>
+
 
         <Box component="ul" sx={{ listStyleType: "none", pl: 0, mb: 3 }}>
           {[
