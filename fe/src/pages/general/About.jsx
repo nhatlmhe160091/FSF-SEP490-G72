@@ -12,9 +12,9 @@ const About = () => (
       elevation={16}
       sx={{
         p: { xs: 4, md: 7 },
-        borderRadius: 6,
+        borderRadius: 8,
         bgcolor: "white",
-        boxShadow: "0 15px 40px rgba(0, 0, 0, 0.15)",
+        boxShadow: "0 12px 32px rgba(0, 0, 0, 0.15)",
       }}
     >
       {/* Tiêu đề */}
@@ -105,7 +105,7 @@ const About = () => (
                 p: 1.2,
                 borderRadius: 2,
                 transition: "all 0.25s",
-                "&:hover": { bgcolor: "#f1fdfd", transform: "translateX(5px)" },
+                "&:hover": { bgcolor: "#f0fafc" }, // đổi nhẹ màu hover
               }}
             >
               {item.icon}
@@ -153,7 +153,7 @@ const About = () => (
                   p: 3,
                   borderLeft: "5px solid #00bcd4",
                   bgcolor: "#e0f7fa",
-                  borderRadius: 2,
+                  borderRadius: 3, // tăng nhẹ
                   transition: "all 0.3s",
                   "&:hover": {
                     transform: "translateY(-5px)",
@@ -178,11 +178,11 @@ const About = () => (
       <Divider sx={{ my: 5, borderColor: "#ddd" }} />
 
       {/* Footer */}
-      <Box sx={{ bgcolor: "#f9f9f9", py: 2, borderRadius: 2 }}>
+      <Box sx={{ bgcolor: "#f9f9f9", py: 2, borderRadius: 2, borderTop: "1px solid #eee" }}>
         <Typography
           variant="body2"
           align="center"
-          sx={{ fontWeight: 600, color: "#666" }}
+          sx={{ fontWeight: 600, color: "#555" }} // đổi màu chữ
         >
           © {new Date().getFullYear()} FPT Sports Field. All rights reserved.
         </Typography>
