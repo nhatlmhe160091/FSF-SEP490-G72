@@ -10,9 +10,12 @@ import {
   DialogActions,
   InputLabel,
   Autocomplete,
-  IconButton
+  IconButton,
+  CircularProgress
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import { toast } from "react-toastify";
+import { sportFieldService } from '../../../../services/api/sportFieldService';
 
 const initialState = {
   name: "",
@@ -78,7 +81,22 @@ export default function CreateVenue({ open, onClose, onCreate, types, fieldCompl
     onClose();
   };
 // console.log("types", types);
-
+// CREATE
+  const handleCreateVenue = async (newVenue) => {
+    try {
+      const { images, ...data } = newVenue;
+      const res = await sportFieldService.createSportField(data, images || []);
+      if (res && res) {
+        setSportFields(prev => [...prev, res]);
+        toast.success("Tạo sân mới thành công!");
+      }
+      setCreateDialogOpen(false);
+    }
+    catch (error) {
+      toast.error(error?.message || "Có lỗi xảy ra, vui lòng thử lại!");
+      setCreateDialogOpen(false);
+    }
+  };
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle>Thêm sân thể thao</DialogTitle>

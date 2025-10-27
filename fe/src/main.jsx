@@ -41,6 +41,9 @@ import Policy from './pages/general/Policy';
 import CategoryPolicyList from './pages/manager/policy/CategoryPolicyList';
 import PolicyList from './pages/manager/policy/PolicyList';
 import Coupon from "./pages/admin/voucher/CouponManager";
+import FieldComplexPage from './pages/admin/fieldComplex/FieldComplexPage';
+import OwnerList from './pages/admin/owner/OwnerList';
+import FieldComplex from './pages/manager/fieldComplex/FieldComplex';
 /**
  * Roles include GUEST, CUSTOMER, ADMIN, MANAGER
  */
@@ -213,7 +216,7 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         )
       },
-     
+
       {
         path: "manager",
         children: [
@@ -244,7 +247,7 @@ const router = createBrowserRouter([
           {
             path: "sport-field-list",
             element: (
-              <ProtectedRoute requiredRoles={['MANAGER']}>
+              <ProtectedRoute requiredRoles={['MANAGER','ADMIN']}>
                 <SportsVenueDashboard />
               </ProtectedRoute>
             ),
@@ -312,8 +315,15 @@ const router = createBrowserRouter([
                 <PolicyList />
               </ProtectedRoute>
             ),
-          }
-         
+          },
+            {
+            path: "field-complex-list",
+            element: (
+              <ProtectedRoute >
+                <FieldComplex />
+              </ProtectedRoute>
+            )
+          },
 
         ]
       },
@@ -329,18 +339,10 @@ const router = createBrowserRouter([
             ),
           },
           {
-            path: "type-list",
+            path: "owner-list",
             element: (
               <ProtectedRoute>
-                <TypeDashboard />
-              </ProtectedRoute>
-            ),
-          },
-          {
-            path: "sport-field-list",
-            element: (
-              <ProtectedRoute>
-                <SportsVenueDashboard />
+                <OwnerList />
               </ProtectedRoute>
             ),
           },
@@ -351,7 +353,15 @@ const router = createBrowserRouter([
                 <Coupon />
               </ProtectedRoute>
             ),
-          }
+          },
+          {
+            path: "field-complex-list",
+            element: (
+              <ProtectedRoute >
+                <FieldComplexPage />
+              </ProtectedRoute>
+            )
+          },
         ],
       },
       {
