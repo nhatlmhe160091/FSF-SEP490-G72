@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useMemo, useContext } from 'react';
 import { fieldComplexService } from '../../../services/api/fieldComplexService';
-import FieldComplexList from './components/FieldComplexList';
-import SearchFilter from './components/SearchFilter';
-import Pagination from './components/Pagination';
+//import FieldComplexList from '../../../components/fieldComplex/FieldComplexList';
+import SearchFilter from '../../../components/fieldComplex/SearchFilter';
+import Pagination from '../../../components/fieldComplex/Pagination';
 import CreateVenue from '../sportField/CreateVenue';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../contexts/authContext';
@@ -70,31 +70,31 @@ function FieldComplex() {
       setLoading(false);
     }
   };
-    const handleCreateVenue = async (newVenue) => {
-               try {
-                   const { images, fieldComplex, ...rest } = newVenue;
-                   // Đổi fieldComplex thành complex
-                   const data = { ...rest };
-                   if (fieldComplex) {
-                       data.complex = fieldComplex;
-                   }
-                   const res = await sportFieldService.createSportField(data, images || []);
-                   if (res) {
-                       toast.success("Tạo sân mới thành công!");
-                       if (selectedComplex && !selectedComplex.isActive) {
-                           await handleDelete(selectedComplex._id, true);
-                       }
-                       if (typeof refreshData === 'function') {
-                           refreshData();
-                       }
-                       // await fetchList();
-                   }
-                   setShowCreateVenue(false);
-               } catch (error) {
-                   toast.error(error?.message || "Có lỗi xảy ra, vui lòng thử lại!");
-                   setShowCreateVenue(false);
-               }
-           };
+  const handleCreateVenue = async (newVenue) => {
+    try {
+      const { images, fieldComplex, ...rest } = newVenue;
+      // Đổi fieldComplex thành complex
+      const data = { ...rest };
+      if (fieldComplex) {
+        data.complex = fieldComplex;
+      }
+      const res = await sportFieldService.createSportField(data, images || []);
+      if (res) {
+        toast.success("Tạo sân mới thành công!");
+        if (selectedComplex && !selectedComplex.isActive) {
+          await handleDelete(selectedComplex._id, true);
+        }
+        if (typeof refreshData === 'function') {
+          refreshData();
+        }
+        // await fetchList();
+      }
+      setShowCreateVenue(false);
+    } catch (error) {
+      toast.error(error?.message || "Có lỗi xảy ra, vui lòng thử lại!");
+      setShowCreateVenue(false);
+    }
+  };
   return (
     <div className="container mx-auto p-4">
       <div className="flex justify-between items-center mb-6">
@@ -115,6 +115,9 @@ function FieldComplex() {
         setKeyword={setKeyword}
         status={status}
         setStatus={setStatus}
+        owners={[]}
+        ownerFilter={'all'}
+        setOwnerFilter={() => { }}
       />
 
       {loading && (
@@ -132,8 +135,8 @@ function FieldComplex() {
             <div className="flex justify-between items-start mb-2">
               <h3 className="font-semibold text-lg">{item.name}</h3>
               <span className={`px-2 py-1 text-xs rounded-full ${item.isActive
-                  ? 'bg-green-100 text-green-800'
-                  : 'bg-red-100 text-red-800'
+                ? 'bg-green-100 text-green-800'
+                : 'bg-red-100 text-red-800'
                 }`}>
                 {item.isActive ? 'Đang hoạt động' : 'Ngừng hoạt động'}
               </span>
@@ -179,6 +182,12 @@ function FieldComplex() {
                 onClick={() => navigate(`/manager/sport-field-list?complex=${item._id}`)}
               >
                 Xem sân
+              </button>
+              <button
+                className="px-3 py-1 text-sm bg-yellow-50 text-yellow-600 rounded hover:bg-yellow-100"
+                onClick={() => navigate(`/manager/field-complex-detail/${item._id}`)}
+              >
+               Chi tiết 
               </button>
             </div>
           </div>
