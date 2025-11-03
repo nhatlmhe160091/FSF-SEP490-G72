@@ -33,6 +33,26 @@ import Voucher from './pages/general/voucher';
 import Event from './pages/general/Event';
 import EventDashboard from './pages/manager/event/EventDashboard';
 import About from './pages/general/About';
+<<<<<<< Updated upstream
+=======
+import NewsList from './pages/general/newsList';
+import NewsDetail from './pages/general/newsDetail';
+import NewsDashboard from './pages/manager/new/NewsDashboard';
+import FavoriteList from './pages/general/favoriteList';
+import Policy from './pages/general/Policy';
+import CategoryPolicyList from './pages/manager/policy/CategoryPolicyList';
+import PolicyList from './pages/manager/policy/PolicyList';
+import Coupon from "./pages/admin/voucher/CouponManager";
+<<<<<<< Updated upstream
+=======
+import FieldComplexPage from './pages/admin/fieldComplex/FieldComplexPage';
+import OwnerList from './pages/admin/owner/OwnerList';
+import FieldComplex from './pages/manager/fieldComplex/FieldComplex';
+import FieldComplexFormPage from './pages/admin/fieldComplex/FieldComplexFormPage';
+import FieldComplexDetailPage from './pages/manager/fieldComplex/FieldComplexDetailPage';
+import UpdateUserPage from './pages/admin/user/UpdateUserPage';
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
 /**
  * Roles include GUEST, CUSTOMER, ADMIN, MANAGER
  */
@@ -248,6 +268,55 @@ const router = createBrowserRouter([
               </ProtectedRoute>
             ),
           },
+<<<<<<< Updated upstream
+=======
+          {
+            path: "new-list",
+            element: (
+              <ProtectedRoute requiredRoles={['MANAGER']}>
+                <NewsDashboard />
+              </ProtectedRoute>
+            )
+          },
+          {
+            path: "category-policy-list",
+            element: (
+              <ProtectedRoute requiredRoles={['MANAGER']}>
+                <CategoryPolicyList />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: "policy-list",
+            element: (
+              <ProtectedRoute requiredRoles={['MANAGER']}>
+                <PolicyList />
+              </ProtectedRoute>
+            ),
+<<<<<<< Updated upstream
+          }
+         
+
+=======
+          },
+            {
+            path: "field-complex-list",
+            element: (
+              <ProtectedRoute >
+                <FieldComplex />
+              </ProtectedRoute>
+            )
+          },
+            {
+            path: "field-complex-detail/:id",
+            element: (
+              <ProtectedRoute >
+                <FieldComplexDetailPage />
+              </ProtectedRoute>
+            )
+          },
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
         ]
       },
       {
@@ -258,6 +327,14 @@ const router = createBrowserRouter([
             element: (
               <ProtectedRoute>
                 <UserList />
+              </ProtectedRoute>
+            ),
+          },
+           {
+            path: "update-user/:id",
+            element: (
+              <ProtectedRoute>
+                <UpdateUserPage />
               </ProtectedRoute>
             ),
           },
@@ -276,7 +353,27 @@ const router = createBrowserRouter([
                 <UserList />
               </ProtectedRoute>
             ),
+<<<<<<< Updated upstream
           }
+=======
+          },
+          {
+            path: "field-complex-list",
+            element: (
+              <ProtectedRoute >
+                <FieldComplexPage />
+              </ProtectedRoute>
+            )
+          },
+              {
+            path: "field-complex-form/:id?",
+            element: (
+              <ProtectedRoute >
+                <FieldComplexFormPage />
+              </ProtectedRoute>
+            )
+          },
+>>>>>>> Stashed changes
         ],
       },
       {
