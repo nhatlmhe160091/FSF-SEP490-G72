@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Button,
   TextField,
@@ -45,9 +45,29 @@ const STATUSES = [
   { label: "Đã đặt", value: "booked" }
 ];
 
+<<<<<<< Updated upstream
 export default function CreateVenue({ open, onClose, onCreate, types }) {
   const [venueData, setVenueData] = useState(initialState);
   const [imagePreviews, setImagePreviews] = useState([]);
+=======
+export default function CreateVenue({ open, onClose, onCreate, types, fieldComplexes }) {
+  // Lấy param complex từ URL nếu có
+  const [venueData, setVenueData] = useState(initialState);
+  const [imagePreviews, setImagePreviews] = useState([]);
+
+  useEffect(() => {
+    if (open) {
+      const params = new URLSearchParams(window.location.search);
+      const complexId = params.get('complex');
+      if (complexId && fieldComplexes && fieldComplexes.some(fc => fc._id === complexId)) {
+        setVenueData(v => ({ ...v, fieldComplex: complexId }));
+      } else if (fieldComplexes && fieldComplexes.length === 1) {
+        setVenueData(v => ({ ...v, fieldComplex: fieldComplexes[0]._id }));
+      }
+    }
+  }, [open, fieldComplexes]);
+
+>>>>>>> Stashed changes
 
   const handleChange = (e) => {
     setVenueData({ ...venueData, [e.target.name]: e.target.value });
@@ -144,7 +164,38 @@ console.log("types", types);
             <MenuItem key={t._id} value={t._id}>{t.name}</MenuItem>
           ))}
         </Select>
+<<<<<<< Updated upstream
         <TextField margin="dense" label="Địa chỉ" name="location" fullWidth value={venueData.location} onChange={handleChange} />
+=======
+
+        {/* <InputLabel sx={{ mt: 2 }}>Cụm sân</InputLabel>
+        {fieldComplexes.length === 1 ? (
+          <TextField
+            fullWidth
+            value={fieldComplexes[0].name}
+            disabled
+            sx={{ mb: 2 }}
+          />
+        ) : (
+          <Select name="complex" fullWidth value={venueData.fieldComplex || ''} onChange={handleChange}>
+            {fieldComplexes.map((fc) => (
+              <MenuItem key={fc._id} value={fc._id}>{fc.name}</MenuItem>
+            ))}
+          </Select>
+        )} */}
+        
+        {fieldComplexes.length !== 1 && (
+          <>
+            <InputLabel sx={{ mt: 2 }}>Cụm sân</InputLabel>
+            <Select name="complex" fullWidth value={venueData.fieldComplex || ''} onChange={handleChange}>
+              {fieldComplexes.map((fc) => (
+                <MenuItem key={fc._id} value={fc._id}>{fc.name}</MenuItem>
+              ))}
+            </Select>
+          </>
+        )}
+        <TextField margin="dense" label="Địa chỉ cụ thể" name="location" fullWidth value={venueData.location} onChange={handleChange} />
+>>>>>>> Stashed changes
         <TextField margin="dense" label="Sức chứa" name="capacity" fullWidth type="number" value={venueData.capacity} onChange={handleChange} />
         <InputLabel sx={{ mt: 2 }}>Trạng thái</InputLabel>
         <Select name="status" fullWidth value={venueData.status} onChange={handleChange}>
