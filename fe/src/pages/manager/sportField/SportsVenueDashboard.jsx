@@ -15,6 +15,59 @@ const SportsVenueDashboard = () => {
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [updateDialogOpen, setUpdateDialogOpen] = useState(false);
   const [selectedVenue, setSelectedVenue] = useState(null);
+<<<<<<< Updated upstream
+=======
+  const [venueToDelete, setVenueToDelete] = useState(null);
+<<<<<<< Updated upstream
+=======
+  const { currentUser } = useAuth();
+  const [fieldComplexes, setFieldComplexes] = useState([]);
+  const location = useLocation();
+  
+  useEffect(() => {
+    const fetchFieldComplexes = async () => {
+      try {
+        const response = await fieldComplexService.getAll();
+        let complexes = response;
+        if (currentUser.role !== 'ADMIN') {
+          complexes = response.filter(fc => fc.owner && fc.owner._id === currentUser._id);
+        }
+        setFieldComplexes(complexes);
+      } catch (error) {
+        console.error("Error fetching field complexes:", error);
+      }
+    };
+    fetchFieldComplexes();
+
+  
+    const params = new URLSearchParams(location.search);
+    const complexId = params.get('complex');
+    if (complexId) {
+      setFilterFieldComplex(complexId);
+    }
+  }, [location.search, currentUser]);
+>>>>>>> Stashed changes
+  // XÓA
+  const handleDeleteVenue = async (venue) => {
+    setVenueToDelete(venue);
+  };
+
+  const confirmDeleteVenue = async () => {
+    if (!venueToDelete) return;
+    try {
+      await sportFieldService.deleteSportField(venueToDelete._id || venueToDelete.id);
+      setSportFields(prev => prev.filter(v => v._id !== (venueToDelete._id || venueToDelete.id) && v.id !== (venueToDelete._id || venueToDelete.id)));
+      toast.success("Xóa sân thành công!");
+    } catch (error) {
+      toast.error(error?.message || "Có lỗi xảy ra khi xóa!");
+    }
+    setVenueToDelete(null);
+  };
+
+  const cancelDeleteVenue = () => {
+    setVenueToDelete(null);
+  };
+>>>>>>> Stashed changes
   const { types, sportFields, setSportFields } = useContext(PublicContext);
   const navigate = useNavigate();
   const itemsPerPage = 5;
