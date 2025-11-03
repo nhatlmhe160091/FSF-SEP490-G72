@@ -19,11 +19,14 @@ router.get('/', AuthMiddleware.checkRoles(['ADMIN']), UserController.getAllUsers
 /**
  * author: ccc
  */
+
 router.get('/paginated', UserController.getPaginatedUsers);
 router.post('/register-and-verify-account', UserController.registerAndVerifyAccount);
 router.patch('/update-account-info/:id', UserController.updateAccountInfo);
 router.get('/get-account-email/:firebaseUID', UserController.getEmailByFirebaseUID);
 router.patch('/disable-account/:firebaseUID', UserController.disableAccount);
 router.patch('/enable-account/:firebaseUID', UserController.enableAccount);
+
+router.get('/:id', UserController.getUserById);
 
 module.exports = router;
