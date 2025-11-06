@@ -88,8 +88,6 @@ const UserService = {
             api.patch(`/user/disable-account/${firebaseUID}`)
         )
     },
-<<<<<<< Updated upstream
-=======
     getAllUsers: async () => {
         return handleApiCall(() =>
             api.get('/user/')
@@ -101,7 +99,6 @@ const UserService = {
             api.get(`/user/${id}`)
         );
     }
->>>>>>> Stashed changes
 }
 
 export default UserService;
