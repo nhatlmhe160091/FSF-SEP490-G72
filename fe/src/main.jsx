@@ -47,6 +47,8 @@ import FieldComplex from './pages/manager/fieldComplex/FieldComplex';
 import FieldComplexFormPage from './pages/admin/fieldComplex/FieldComplexFormPage';
 import FieldComplexDetailPage from './pages/manager/fieldComplex/FieldComplexDetailPage';
 import UpdateUserPage from './pages/admin/owner/UpdateUserPage';
+import FieldComplexList from './pages/general/fieldComplexList';
+import FieldComplexDetail from './pages/general/fieldComplexDetail';
 /**
  * Roles include GUEST, CUSTOMER, ADMIN, MANAGER
  */
@@ -88,6 +90,22 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <SignOut />,
+          </ProtectedRoute>
+        )
+      },
+      {
+        path: "field-complex",
+        element: (
+          <ProtectedRoute>
+            <FieldComplexList />,
+          </ProtectedRoute>
+        )
+      },
+      {
+        path: "field-complex/:id",
+        element: (
+          <ProtectedRoute>
+            <FieldComplexDetail />,
           </ProtectedRoute>
         )
       },

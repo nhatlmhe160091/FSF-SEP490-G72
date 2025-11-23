@@ -110,14 +110,14 @@ function CustomerHeader() {
                         </Typography>
                         <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
                             <Link
-                                sx={{ ml: 3, textAlign: 'center', textTransform: "uppercase", fontWeight: "bold" }}
+                                sx={{ ml: 3, textAlign: 'center', textTransform: "uppercase", fontWeight: "bold", fontSize: '0.85rem' }}
                                 component="button"
                                 color="inherit"
                                 variant="body2"
                                 underline="hover"
-                                onClick={() => navigate('/yard')}
+                                onClick={() => navigate('/field-complex')}
                             >
-                                Danh sách Sân
+                                Cụm sân
                             </Link>
                             <Link
                                 sx={{ ml: 3, textAlign: 'center', textTransform: "uppercase", fontWeight: "bold" }}
