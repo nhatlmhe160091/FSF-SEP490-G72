@@ -94,4 +94,55 @@ const ConsumableFormModal = ({ isOpen, onClose, onSubmit, initialData, sportFiel
           className="input"
           name="pricePerUnit"
           type="number"
-  
+          value={form.pricePerUnit}
+          onChange={handleChange}
+          label="Giá mỗi đơn vị"
+          fullWidth
+          margin="normal"
+        />
+        <TextField
+          className="input"
+          name="quantityInStock"
+          type="number"
+          value={form.quantityInStock}
+          onChange={handleChange}
+          label="Số lượng tồn kho"
+          fullWidth
+          margin="normal"
+        />
+        <TextField
+          select
+          className="input"
+          name="status"
+          value={form.status}
+          onChange={handleChange}
+          label="Trạng thái"
+          fullWidth
+          margin="normal"
+        >
+          {STATUS_OPTIONS.map(option => (
+            <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
+          ))}
+        </TextField>
+        <Autocomplete
+          multiple
+          options={sportFields}
+          getOptionLabel={(option) => option.name}
+          value={sportFields.filter(f => form.sportField.includes(f._id))}
+          onChange={handleFieldChange}
+          renderInput={(params) => <TextField {...params} label="Sân áp dụng" margin="normal" />}
+          className="input"
+        />
+        <div className="text-sm text-gray-500 mt-2">
+          Mặc định: Áp dụng cho tất cả sân. Bạn có thể bỏ chọn hoặc thêm sân theo nhu cầu.
+        </div>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose}>Hủy</Button>
+        <Button onClick={handleSubmit} variant="contained">{initialData ? "Cập nhật" : "Tạo"}</Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
+
+export default ConsumableFormModal;
