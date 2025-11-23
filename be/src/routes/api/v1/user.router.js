@@ -14,7 +14,7 @@ router.post('/register-customer-account', AuthMiddleware.checkRoles(['GUEST']), 
 router.patch('/update-customer-info', AuthMiddleware.checkRoles(['CUSTOMER', 'STAFF', 'MANAGER', 'ADMIN']), UserController.updateCustomerInfo);
 router.get('/authenticated', AuthMiddleware.checkRoles(['ADMIN']), UserController.getAllAuthenticatedUsers);
 router.get('/unauthenticated', AuthMiddleware.checkRoles(['ADMIN']), UserController.getAllUnauthenticatedUser);
-router.get('/', AuthMiddleware.checkRoles(['ADMIN']), UserController.getAllUsers);
+router.get('/', UserController.getAllUsers);
 
 /**
  * author: ccc
@@ -26,6 +26,7 @@ router.patch('/update-account-info/:id', UserController.updateAccountInfo);
 router.get('/get-account-email/:firebaseUID', UserController.getEmailByFirebaseUID);
 router.patch('/disable-account/:firebaseUID', UserController.disableAccount);
 router.patch('/enable-account/:firebaseUID', UserController.enableAccount);
+router.post('/sync-emails', UserController.syncEmailsFromFirebase);
 
 router.get('/:id', UserController.getUserById);
 
