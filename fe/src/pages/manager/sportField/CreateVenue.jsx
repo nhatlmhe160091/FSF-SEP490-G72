@@ -45,11 +45,6 @@ const STATUSES = [
   { label: "Đã đặt", value: "booked" }
 ];
 
-<<<<<<< Updated upstream
-export default function CreateVenue({ open, onClose, onCreate, types }) {
-  const [venueData, setVenueData] = useState(initialState);
-  const [imagePreviews, setImagePreviews] = useState([]);
-=======
 export default function CreateVenue({ open, onClose, onCreate, types, fieldComplexes }) {
   // Lấy param complex từ URL nếu có
   const [venueData, setVenueData] = useState(initialState);
@@ -67,7 +62,6 @@ export default function CreateVenue({ open, onClose, onCreate, types, fieldCompl
     }
   }, [open, fieldComplexes]);
 
->>>>>>> Stashed changes
 
   const handleChange = (e) => {
     setVenueData({ ...venueData, [e.target.name]: e.target.value });
@@ -164,9 +158,6 @@ console.log("types", types);
             <MenuItem key={t._id} value={t._id}>{t.name}</MenuItem>
           ))}
         </Select>
-<<<<<<< Updated upstream
-        <TextField margin="dense" label="Địa chỉ" name="location" fullWidth value={venueData.location} onChange={handleChange} />
-=======
 
         {/* <InputLabel sx={{ mt: 2 }}>Cụm sân</InputLabel>
         {fieldComplexes.length === 1 ? (
@@ -195,7 +186,6 @@ console.log("types", types);
           </>
         )}
         <TextField margin="dense" label="Địa chỉ cụ thể" name="location" fullWidth value={venueData.location} onChange={handleChange} />
->>>>>>> Stashed changes
         <TextField margin="dense" label="Sức chứa" name="capacity" fullWidth type="number" value={venueData.capacity} onChange={handleChange} />
         <InputLabel sx={{ mt: 2 }}>Trạng thái</InputLabel>
         <Select name="status" fullWidth value={venueData.status} onChange={handleChange}>
