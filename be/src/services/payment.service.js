@@ -13,37 +13,54 @@ const EquipmentRental = require('../models/equipmentRental.model');
 const ConsumablePurchase = require('../models/consumablePurchase.model');
 const Equipment = require('../models/equipment.model');
 const Consumable = require('../models/consumable.model');
+const User = require('../models/user.model');
 class PaymentService {
     // Tạo booking và payment cho thanh toán online
     async createBookingAndPayment(bookingData, req) {
+            console.log('=== START createBookingAndPayment ===');
+            console.log('bookingData.items:', JSON.stringify(bookingData.items, null, 2));
+            
             // 1. Kiểm tra số lượng tồn kho trước khi tạo booking
             if (Array.isArray(bookingData.items) && bookingData.items.length > 0) {
                 // Kiểm tra thiết bị
                 const equipmentItems = bookingData.items.filter(i => i.type === 'equipment' && i.quantity > 0);
+                console.log('equipmentItems to check:', equipmentItems);
+                
                 for (const item of equipmentItems) {
                     const equipment = await Equipment.findById(item.productId);
+                    console.log(`Equipment ${item.productId} - Tồn kho: ${equipment?.quantity}, Yêu cầu: ${item.quantity}`);
+                    
                     if (!equipment) throw new Error(`Thiết bị không tồn tại: ${item.productId}`);
                     if (item.quantity > equipment.quantity) {
                         throw new Error(`Thiết bị '${equipment.name}' chỉ còn ${equipment.quantity}, bạn yêu cầu ${item.quantity}`);
                     }
                 }
+                
                 // Kiểm tra đồ tiêu thụ
                 const consumableItems = bookingData.items.filter(i => i.type === 'consumable' && i.quantity > 0);
-                for (const item of consumableItems) {
-                    const consumable = await Consumable.findById(item.productId);
-                    if (!consumable) throw new Error(`Đồ tiêu thụ không tồn tại: ${item.productId}`);
-                    if (item.quantity > consumable.quantity) {
-                        throw new Error(`Đồ tiêu thụ '${consumable.name}' chỉ còn ${consumable.quantity}, bạn yêu cầu ${item.quantity}`);
+                console.log('consumableItems to check:', consumableItems);
+                
+                    for (const item of consumableItems) {
+                        const consumable = await Consumable.findById(item.productId);
+                        console.log(`Consumable ${item.productId} - Tồn kho: ${consumable?.quantityInStock}, Yêu cầu: ${item.quantity}`);
+                    
+                        if (!consumable) throw new Error(`Đồ tiêu thụ không tồn tại: ${item.productId}`);
+                        if (item.quantity > consumable.quantityInStock) {
+                            throw new Error(`Đồ tiêu thụ '${consumable.name}' chỉ còn ${consumable.quantityInStock}, bạn yêu cầu ${item.quantity}`);
+                        }
                     }
-                }
             }
 
             // 2. Tạo booking (pending)
+            console.log('Creating booking...');
             const booking = await BookingService.createBooking(bookingData);
+            console.log('Booking created:', booking._id);
             if (Array.isArray(bookingData.items) && bookingData.items.length > 0) {
                 // Thiết bị
                 const equipmentItems = bookingData.items.filter(i => i.type === 'equipment' && i.quantity > 0);
                 if (equipmentItems.length > 0) {
+                    console.log('Creating EquipmentRental for items:', equipmentItems);
+                    
                     await EquipmentRental.create({
                         userId: bookingData.userId,
                         bookingId: booking._id,
@@ -55,12 +72,17 @@ class PaymentService {
                     });
                         // Giảm số lượng tồn kho thiết bị
                         for (const item of equipmentItems) {
+                            console.log(`Decreasing equipment ${item.productId} by ${item.quantity}`);
                             await Equipment.findByIdAndUpdate(item.productId, { $inc: { quantity: -item.quantity } });
+                            const updatedEquipment = await Equipment.findById(item.productId);
+                            console.log(`Equipment ${item.productId} new quantity: ${updatedEquipment?.quantity}`);
                         }
                 }
                 // Đồ tiêu thụ
                 const consumableItems = bookingData.items.filter(i => i.type === 'consumable' && i.quantity > 0);
                 if (consumableItems.length > 0) {
+                    console.log('Creating ConsumablePurchase for items:', consumableItems);
+                    
                     await ConsumablePurchase.create({
                         userId: bookingData.userId,
                         bookingId: booking._id,
@@ -72,11 +94,15 @@ class PaymentService {
                     });
                         // Giảm số lượng tồn kho đồ tiêu thụ
                         for (const item of consumableItems) {
-                            await Consumable.findByIdAndUpdate(item.productId, { $inc: { quantity: -item.quantity } });
+                            console.log(`Decreasing consumable ${item.productId} by ${item.quantity}`);
+                            await Consumable.findByIdAndUpdate(item.productId, { $inc: { quantityInStock: -item.quantity } });
+                            const updatedConsumable = await Consumable.findById(item.productId);
+                            console.log(`Consumable ${item.productId} new quantityInStock: ${updatedConsumable?.quantityInStock}`);
                         }
                 }
             }
             // 3. Tạo payment (pending)
+            console.log('Creating payment...');
             const payment = await Payment.create({
                 bookingId: booking._id,
                 userId: bookingData.userId,
@@ -86,7 +112,18 @@ class PaymentService {
             });
 
             // 4. Tạo URL thanh toán VNPAY
+            console.log('Creating VNPAY URL...');
             const vnpUrl = await this.createPaymentUrl(payment, req);
+            console.log('VNPAY URL created:', vnpUrl);
+            
+            // 5. Lưu paymentUrl và expiry (15 phút) vào booking
+            const expiryTime = new Date(Date.now() + 7 * 60 * 60 * 1000 + 15 * 60 * 1000); // UTC+7 + 15 phút
+            await Booking.findByIdAndUpdate(booking._id, {
+                paymentUrl: vnpUrl,
+                paymentUrlExpiry: expiryTime
+            });
+            console.log('Payment URL saved to booking with 15min expiry');
+            console.log('=== END createBookingAndPayment ===');
 
             return { booking, payment, vnpUrl };
     }
@@ -196,6 +233,27 @@ class PaymentService {
                 payment.bookingId,
                 { status: responseData.vnp_ResponseCode === '00' ? 'waiting' : 'cancelled' }
             );
+                // Nếu thanh toán thành công, cộng tiền vào ví admin
+                if (responseData.vnp_ResponseCode === '00') {
+                    const adminUser = await User.findOne({ role: 'ADMIN' });
+                    if (adminUser) {
+                        let adminWallet = await Wallet.findOne({ userId: adminUser._id });
+                        if (!adminWallet) {
+                            adminWallet = await Wallet.create({ userId: adminUser._id, balance: 0 });
+                        }
+                        adminWallet.balance += payment.amount;
+                        await adminWallet.save();
+                        await WalletTransaction.create({
+                            walletId: adminWallet._id,
+                            userId: adminUser._id,
+                            type: 'receive',
+                            amount: payment.amount,
+                            status: 'completed',
+                            description: `Nhận tiền booking #${payment.bookingId} từ khách hàng`,
+                            relatedBookingId: payment.bookingId
+                        });
+                    }
+                }
 
             // Nếu thanh toán thất bại, trả lại slot về available
             if (responseData.vnp_ResponseCode !== '00') {
@@ -236,10 +294,76 @@ class PaymentService {
     }
 
     // Thanh toán booking bằng ví (sau khi đã nạp tiền)
-    async payBookingByWallet({ bookingId, userId, amount }) {
+    async payBookingByWallet({ bookingId, userId, amount, items }) {
+        console.log('=== START payBookingByWallet ===');
+        console.log('Parameters:', { bookingId, userId, amount, items: JSON.stringify(items, null, 2) });
         const booking = await Booking.findById(bookingId);
         if (!booking) throw new Error('Booking không tồn tại');
         if (booking.status !== 'pending') throw new Error('Booking không hợp lệ để thanh toán');
+
+        // Kiểm tra booking đã hết hạn chưa (nếu có expiry)
+        if (booking.paymentUrlExpiry && new Date() > booking.paymentUrlExpiry) {
+            booking.status = 'cancelled';
+            await booking.save();
+            await BookingService.releaseScheduleSlots(booking);
+            throw new Error('Booking đã hết hạn thanh toán. Vui lòng đặt lại.');
+        }
+        // Thiết bị
+        let equipmentRental = await EquipmentRental.findOne({ bookingId: booking._id });
+        console.log('equipmentRental:', equipmentRental);
+        // Nếu chưa có equipmentRental và có items truyền vào
+        if (!equipmentRental && Array.isArray(items) && items.length > 0) {
+            const equipmentItems = items.filter(i => i.type === 'equipment' && i.quantity > 0);
+            if (equipmentItems.length > 0) {
+                equipmentRental = await EquipmentRental.create({
+                    userId,
+                    bookingId: booking._id,
+                    equipments: equipmentItems.map(item => ({
+                        equipmentId: item.productId,
+                        quantity: item.quantity
+                    })),
+                    totalPrice: equipmentItems.reduce((sum, item) => sum + (item.price || 0) * item.quantity, 0)
+                });
+            }
+        }
+        if (equipmentRental && equipmentRental.equipments) {
+            for (const item of equipmentRental.equipments) {
+                const equipment = await Equipment.findById(item.equipmentId);
+               // console.log('Check equipment:', { item, equipment });
+                if (!equipment) throw new Error(`Thiết bị không tồn tại: ${item.equipmentId}`);
+                if (item.quantity > equipment.quantity) {
+                    throw new Error(`Thiết bị '${equipment.name}' chỉ còn ${equipment.quantity}, bạn yêu cầu ${item.quantity}`);
+                }
+            }
+        }
+        // Đồ tiêu thụ
+        let consumablePurchase = await ConsumablePurchase.findOne({ bookingId: booking._id });
+       // console.log('consumablePurchase:', consumablePurchase);
+        // Nếu chưa có consumablePurchase và có items truyền vào
+        if (!consumablePurchase && Array.isArray(items) && items.length > 0) {
+            const consumableItems = items.filter(i => i.type === 'consumable' && i.quantity > 0);
+            if (consumableItems.length > 0) {
+                consumablePurchase = await ConsumablePurchase.create({
+                    userId,
+                    bookingId: booking._id,
+                    consumables: consumableItems.map(item => ({
+                        consumableId: item.productId,
+                        quantity: item.quantity
+                    })),
+                    totalPrice: consumableItems.reduce((sum, item) => sum + (item.price || 0) * item.quantity, 0)
+                });
+            }
+        }
+        if (consumablePurchase && consumablePurchase.consumables) {
+            for (const item of consumablePurchase.consumables) {
+                const consumable = await Consumable.findById(item.consumableId);
+               // console.log('Check consumable:', { item, consumable });
+                if (!consumable) throw new Error(`Đồ tiêu thụ không tồn tại: ${item.consumableId}`);
+                if (item.quantity > consumable.quantityInStock) {
+                    throw new Error(`Đồ tiêu thụ '${consumable.name}' chỉ còn ${consumable.quantity}, bạn yêu cầu ${item.quantity}`);
+                }
+            }
+        }
 
         const wallet = await Wallet.findOne({ userId });
         if (!wallet || wallet.balance < amount) throw new Error('Số dư ví không đủ');
@@ -268,6 +392,23 @@ class PaymentService {
 
         booking.status = 'waiting';
         await booking.save();
+
+        // Giảm số lượng tồn kho thiết bị
+        if (equipmentRental && equipmentRental.equipments) {
+            for (const item of equipmentRental.equipments) {
+                await Equipment.findByIdAndUpdate(item.equipmentId, { $inc: { quantity: -item.quantity } });
+                const updatedEquipment = await Equipment.findById(item.equipmentId);
+                console.log(`Equipment ${item.equipmentId} new quantity: ${updatedEquipment?.quantity}`);
+            }
+        }
+        // Giảm số lượng tồn kho đồ tiêu thụ
+        if (consumablePurchase && consumablePurchase.consumables) {
+            for (const item of consumablePurchase.consumables) {
+                await Consumable.findByIdAndUpdate(item.consumableId, { $inc: { quantityInStock: -item.quantity } });
+                const updatedConsumable = await Consumable.findById(item.consumableId);
+                console.log(`Consumable ${item.consumableId} new quantityInStock: ${updatedConsumable?.quantityInStock}`);
+            }
+        }
 
         return booking;
     }
@@ -338,6 +479,79 @@ class PaymentService {
         };
 
         return bookingData;
+    }
+
+    // Lấy payment URL từ booking để tiếp tục thanh toán
+    async getPaymentUrlFromBooking(bookingId) {
+        const booking = await Booking.findById(bookingId);
+        if (!booking) {
+            return { success: false, message: 'Booking không tồn tại' };
+        }
+        
+        // Kiểm tra trạng thái booking
+        if (booking.status !== 'pending') {
+            return { success: false, message: 'Booking không còn ở trạng thái chờ thanh toán' };
+        }
+
+        // Kiểm tra URL đã hết hạn chưa
+        if (!booking.paymentUrl || !booking.paymentUrlExpiry) {
+            return { success: false, message: 'Không tìm thấy link thanh toán' };
+        }
+
+        const now = new Date(Date.now() + 7 * 60 * 60 * 1000);
+        if (now > booking.paymentUrlExpiry) {
+            return { success: false, message: 'Link thanh toán đã hết hạn. Vui lòng đặt lại.' };
+        }
+
+        return {
+            success: true,
+            paymentUrl: booking.paymentUrl,
+            expiryTime: booking.paymentUrlExpiry,
+            remainingMinutes: Math.ceil((booking.paymentUrlExpiry - now) / (1000 * 60))
+        };
+    }
+
+    // Auto-cancel booking pending hết hạn (gọi từ cron job)
+    async cancelExpiredPendingBookings() {
+         const now = new Date(Date.now() + 7 * 60 * 60 * 1000);
+        const expiredBookings = await Booking.find({
+            status: 'pending',
+            paymentUrlExpiry: { $lt: now }
+        });
+
+        let cancelledCount = 0;
+        for (const booking of expiredBookings) {
+            try {
+                booking.status = 'cancelled';
+                await booking.save();
+                await BookingService.releaseScheduleSlots(booking);
+                
+                // Hoàn lại tồn kho thiết bị/đồ tiêu thụ nếu có
+                const equipmentRental = await EquipmentRental.findOne({ bookingId: booking._id });
+                if (equipmentRental && equipmentRental.equipments) {
+                    for (const item of equipmentRental.equipments) {
+                        await Equipment.findByIdAndUpdate(item.equipmentId, { 
+                            $inc: { quantity: item.quantity } 
+                        });
+                    }
+                }
+
+                const consumablePurchase = await ConsumablePurchase.findOne({ bookingId: booking._id });
+                if (consumablePurchase && consumablePurchase.consumables) {
+                    for (const item of consumablePurchase.consumables) {
+                        await Consumable.findByIdAndUpdate(item.consumableId, { 
+                            $inc: { quantity: item.quantity } 
+                        });
+                    }
+                }
+
+                cancelledCount++;
+            } catch (error) {
+                console.error(`Error cancelling booking ${booking._id}:`, error);
+            }
+        }
+
+        return { cancelledCount, totalExpired: expiredBookings.length };
     }
 }
 
