@@ -33,8 +33,6 @@ import Voucher from './pages/general/voucher';
 import Event from './pages/general/Event';
 import EventDashboard from './pages/manager/event/EventDashboard';
 import About from './pages/general/About';
-<<<<<<< Updated upstream
-=======
 import NewsList from './pages/general/newsList';
 import NewsDetail from './pages/general/newsDetail';
 import NewsDashboard from './pages/manager/new/NewsDashboard';
@@ -43,16 +41,12 @@ import Policy from './pages/general/Policy';
 import CategoryPolicyList from './pages/manager/policy/CategoryPolicyList';
 import PolicyList from './pages/manager/policy/PolicyList';
 import Coupon from "./pages/admin/voucher/CouponManager";
-<<<<<<< Updated upstream
-=======
 import FieldComplexPage from './pages/admin/fieldComplex/FieldComplexPage';
 import OwnerList from './pages/admin/owner/OwnerList';
 import FieldComplex from './pages/manager/fieldComplex/FieldComplex';
 import FieldComplexFormPage from './pages/admin/fieldComplex/FieldComplexFormPage';
 import FieldComplexDetailPage from './pages/manager/fieldComplex/FieldComplexDetailPage';
-import UpdateUserPage from './pages/admin/user/UpdateUserPage';
->>>>>>> Stashed changes
->>>>>>> Stashed changes
+import UpdateUserPage from './pages/admin/owner/UpdateUserPage';
 /**
  * Roles include GUEST, CUSTOMER, ADMIN, MANAGER
  */
@@ -114,6 +108,22 @@ const router = createBrowserRouter([
         )
       },
       {
+        path: "/news",
+        element: (
+          <ProtectedRoute requiredRoles={['GUEST', 'CUSTOMER']}>
+            <NewsList />
+          </ProtectedRoute>
+        )
+      },
+      {
+        path: "/news/:id",
+        element: (
+          <ProtectedRoute requiredRoles={['GUEST', 'CUSTOMER']}>
+            <NewsDetail />
+          </ProtectedRoute>
+        )
+      },
+      {
         path: "/booking/:typeId",
         element: (
           <ProtectedRoute requiredRoles={['GUEST', 'CUSTOMER']}>
@@ -145,7 +155,7 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         )
       },
-       {
+      {
         path: "/matchmaking-history",
         element: (
           <ProtectedRoute requiredRoles={['GUEST', 'CUSTOMER']}>
@@ -153,7 +163,7 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         )
       },
-        {
+      {
         path: "/wallet-history",
         element: (
           <ProtectedRoute requiredRoles={['GUEST', 'CUSTOMER']}>
@@ -161,7 +171,7 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         )
       },
-       {
+      {
         path: "/vnpay_return_url",
         element: (
           <ProtectedRoute requiredRoles={['GUEST', 'CUSTOMER']}>
@@ -177,7 +187,7 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         )
       },
-          {
+      {
         path: "/event",
         element: (
           <ProtectedRoute requiredRoles={['GUEST', 'CUSTOMER']}>
@@ -185,7 +195,7 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         )
       },
-          {
+      {
         path: "/about",
         element: (
           <ProtectedRoute requiredRoles={['GUEST', 'CUSTOMER']}>
@@ -193,6 +203,23 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         )
       },
+      {
+        path: "/favorite",
+        element: (
+          <ProtectedRoute requiredRoles={['CUSTOMER']}>
+            <FavoriteList />
+          </ProtectedRoute>
+        )
+      },
+      {
+        path: "/policy",
+        element: (
+          <ProtectedRoute requiredRoles={['GUEST', 'CUSTOMER']}>
+            <Policy />
+          </ProtectedRoute>
+        )
+      },
+
       {
         path: "manager",
         children: [
@@ -223,7 +250,7 @@ const router = createBrowserRouter([
           {
             path: "sport-field-list",
             element: (
-              <ProtectedRoute requiredRoles={['MANAGER']}>
+              <ProtectedRoute requiredRoles={['MANAGER','ADMIN']}>
                 <SportsVenueDashboard />
               </ProtectedRoute>
             ),
@@ -260,7 +287,7 @@ const router = createBrowserRouter([
               </ProtectedRoute>
             ),
           },
-              {
+          {
             path: "event-list",
             element: (
               <ProtectedRoute requiredRoles={['MANAGER']}>
@@ -268,8 +295,6 @@ const router = createBrowserRouter([
               </ProtectedRoute>
             ),
           },
-<<<<<<< Updated upstream
-=======
           {
             path: "new-list",
             element: (
@@ -293,11 +318,6 @@ const router = createBrowserRouter([
                 <PolicyList />
               </ProtectedRoute>
             ),
-<<<<<<< Updated upstream
-          }
-         
-
-=======
           },
             {
             path: "field-complex-list",
@@ -315,8 +335,6 @@ const router = createBrowserRouter([
               </ProtectedRoute>
             )
           },
->>>>>>> Stashed changes
->>>>>>> Stashed changes
         ]
       },
       {
@@ -339,23 +357,20 @@ const router = createBrowserRouter([
             ),
           },
           {
-            path: "type-list",
+            path: "owner-list",
             element: (
               <ProtectedRoute>
-                <UserList />
+                <OwnerList />
               </ProtectedRoute>
             ),
           },
           {
-            path: "sport-field-list",
+            path: "voucher-list",
             element: (
               <ProtectedRoute>
-                <UserList />
+                <Coupon />
               </ProtectedRoute>
             ),
-<<<<<<< Updated upstream
-          }
-=======
           },
           {
             path: "field-complex-list",
@@ -373,7 +388,59 @@ const router = createBrowserRouter([
               </ProtectedRoute>
             )
           },
->>>>>>> Stashed changes
+        ],
+      },
+      {
+        path: "staff",
+        children: [
+          {
+            path: "dashboard",
+            element: (
+              <ProtectedRoute requiredRoles={['MANAGER', 'STAFF']}>
+                <AnalyticsDashboard />
+              </ProtectedRoute>
+            ),
+          },
+           {
+            path: "sport-field-list",
+            element: (
+              <ProtectedRoute requiredRoles={['MANAGER','STAFF']}>
+                <SportsVenueDashboard />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: "equipment-list",
+            element: (
+              <ProtectedRoute requiredRoles={['MANAGER', 'STAFF']}>
+                <EquipmentDashboard />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: "consumable-list",
+            element: (
+              <ProtectedRoute requiredRoles={['MANAGER', 'STAFF']}>
+                <ConsumableDashboard />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: "booking-list",
+            element: (
+              <ProtectedRoute requiredRoles={['MANAGER', 'STAFF']}>
+                <BookingList />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: "new-list",
+            element: (
+              <ProtectedRoute requiredRoles={['MANAGER', 'STAFF']}>
+                <NewsDashboard />
+              </ProtectedRoute>
+            )
+          },
         ],
       },
       {
@@ -407,11 +474,9 @@ const router = createBrowserRouter([
 ]);
 
 createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    <AuthProvider>
-      <PublicProvider>
-        <RouterProvider router={router} />
-      </PublicProvider>
-    </AuthProvider>
-  </StrictMode>
+  <AuthProvider>
+    <PublicProvider>
+      <RouterProvider router={router} />
+    </PublicProvider>
+  </AuthProvider>
 );

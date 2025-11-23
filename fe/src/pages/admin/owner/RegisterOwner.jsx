@@ -73,9 +73,10 @@ const RegisterOwner = () => {
             <FormControl fullWidth margin="normal">
                 <InputLabel>Vai trò</InputLabel>
                 <Select value={role} onChange={(e) => setRole(e.target.value)}>
-                    <MenuItem value="ADMIN">Quản trị viên</MenuItem>
-                    <MenuItem value="MANAGER">Quản lí viên</MenuItem>
-                    <MenuItem value="CUSTOMER">Khách hàng</MenuItem> 
+                    {/* <MenuItem value="ADMIN">Quản trị viên</MenuItem> */}
+                    <MenuItem value="MANAGER">Chủ sân</MenuItem>
+                    {/* <MenuItem value="STAFF">Nhân viên</MenuItem>
+                    <MenuItem value="CUSTOMER">Khách hàng</MenuItem> */}
                 </Select>
             </FormControl>
             <Button type="submit" variant="contained" color="primary">Tạo mới</Button>
