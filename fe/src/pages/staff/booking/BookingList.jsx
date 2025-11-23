@@ -26,7 +26,7 @@ const STATUS_OPTIONS = [
     { value: 'cancelled', label: 'Đã hủy' }
 ];
 
-const BookingList = () => {
+const BookingListStaff = () => {
     const [selectedBooking, setSelectedBooking] = useState(null);
     const [openDetail, setOpenDetail] = useState(false);
     const { currentUser } = useAuth();
@@ -65,7 +65,7 @@ const BookingList = () => {
                 if (status) params.status = status;
                 if (type) params.type = type;
                 // if (userId) params.userId = userId;
-                const res = await bookingService.getBookingsByComplexOwner(userId, params);
+                const res = await bookingService.getBookingsByComplexStaff(userId, params);
                 if (res && res.data) {
                     setBookings(res.data);
                     setMeta(res.meta || { total: 0, totalPages: 1, currentPage: 1, perPage: 5 });
@@ -362,4 +362,4 @@ const BookingList = () => {
     );
 };
 
-export default BookingList;
+export default BookingListStaff;
