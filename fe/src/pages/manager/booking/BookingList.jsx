@@ -16,7 +16,7 @@ import { PublicContext } from "../../../contexts/publicContext";
 import { walletService } from '../../../services/api/walletService';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
-
+import { useAuth } from "../../../contexts/authContext";
 dayjs.extend(utc);
 const STATUS_OPTIONS = [
     { value: '', label: 'Tất cả' },
@@ -26,10 +26,11 @@ const STATUS_OPTIONS = [
     { value: 'cancelled', label: 'Đã hủy' }
 ];
 
-const BookingList = ({ userId }) => {
+const BookingList = () => {
     const [selectedBooking, setSelectedBooking] = useState(null);
     const [openDetail, setOpenDetail] = useState(false);
-
+    const { currentUser } = useAuth();
+    const userId = currentUser?._id;
     const handleOpenDetail = (booking) => {
         setSelectedBooking(booking);
         setOpenDetail(true);
@@ -64,7 +65,7 @@ const BookingList = ({ userId }) => {
                 if (status) params.status = status;
                 if (type) params.type = type;
                 // if (userId) params.userId = userId;
-                const res = await bookingService.getPaginatedBookings(params);
+                const res = await bookingService.getBookingsByComplexOwner(userId, params);
                 if (res && res.data) {
                     setBookings(res.data);
                     setMeta(res.meta || { total: 0, totalPages: 1, currentPage: 1, perPage: 5 });
@@ -90,11 +91,12 @@ const BookingList = ({ userId }) => {
             // Nếu booking đang ở trạng thái waiting thì hoàn tiền
             if (booking && booking.status === 'waiting') {
                 console.log('Booking ở trạng thái waiting, tiến hành hoàn tiền');
-                // Gọi refund API
+                // Gọi refund API với logic mới
                 const refundData = {
                     userId: booking.userId,
                     amount: booking.totalPrice,
-                    bookingId: booking._id,
+                    objectId: booking._id,
+                    type: 'booking',
                     description: 'Hoàn tiền do manager hủy booking ở trạng thái waiting'
                 };
                 await walletService.refundToWallet(refundData);

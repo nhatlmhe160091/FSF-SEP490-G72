@@ -25,9 +25,10 @@ import { useAuth } from '../../contexts/authContext';
 import dayjs from 'dayjs';
 import BookingDialog from '../../components/dialogs/bookingDialog';
 import scheduleService from '../../services/api/scheduleService';
+import { eventService } from '../../services/api/eventService';
 
 const BookingSchedule = () => {
-  const { typeId } = useParams();
+  const { complexId } = useParams();
   const [selectedDate, setSelectedDate] = useState(dayjs());
   const [sportFields, setSportFields] = useState([]);
   const [timeSlots, setTimeSlots] = useState([]);
@@ -42,7 +43,7 @@ const BookingSchedule = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await scheduleService.getSchedulesByType(typeId, selectedDate.format('YYYY-MM-DD'));
+        const res = await scheduleService.getSchedulesByComplexId(complexId, selectedDate.format('YYYY-MM-DD'));
         if (res && res.data) {
           console.log('Fetched schedule data:', res.data.sportFields);
           setSportFields(res.data.sportFields || []);
@@ -53,8 +54,8 @@ const BookingSchedule = () => {
         toast.error('Không thể tải dữ liệu lịch');
       }
     };
-    if (typeId) fetchData();
-  }, [typeId, selectedDate]);
+    if (complexId) fetchData();
+  }, [complexId, selectedDate]);
 
   useEffect(() => {
     setSelectedSlots([]);
@@ -66,7 +67,7 @@ const BookingSchedule = () => {
     return slotDateTime.isBefore(dayjs());
   };
 
-  const getSlotStatus = (fieldId, slotTime) => {
+    const getSlotStatus = (fieldId, slotTime) => {
     if (isPastSlot(slotTime)) return 'past';
     const fieldSchedule = schedule.find(s => s.fieldId === fieldId);
     if (!fieldSchedule) return 'available';
@@ -76,14 +77,15 @@ const BookingSchedule = () => {
       const start = new Date(slot.startTime);
       const end = new Date(slot.endTime);
       if (slotDateTime >= start && slotDateTime < end) {
-        if (slot.status === 'booked') return 'booked';
         if (slot.status === 'maintenance') return 'maintenance';
+        if (slot.status === 'event') return 'event'; // Thêm trạng thái event
+        if (slot.status === 'booked') return 'booked';
       }
     }
     return 'available';
   };
 
-  const handleSlotClick = (fieldId, slotTime) => {
+  const handleSlotClick = async (fieldId, slotTime) => {
     const status = getSlotStatus(fieldId, slotTime);
     if (status !== 'available') {
       toast.warn(
@@ -100,6 +102,23 @@ const BookingSchedule = () => {
     if (exists) {
       setSelectedSlots(selectedSlots.filter(slot => !(slot.fieldId === fieldId && slot.time === slotDateTime)));
       return;
+    }
+
+    // Kiểm tra conflict trước khi cho phép chọn slot
+    if (currentUser?._id) {
+      try {
+        const slotEnd = dayjs(slotDateTime).add(30, 'minute').format('YYYY-MM-DDTHH:mm:ssZ');
+        console.log('Check conflict:', { slotDateTime, slotEnd, userId: currentUser._id });
+        const conflictCheck = await eventService.checkTimeConflict(slotDateTime, slotEnd);
+        console.log('Conflict check result:', conflictCheck);
+        if (conflictCheck?.hasConflict) {
+          toast.warning('Bạn đã có lịch đặt sân hoặc sự kiện khác trùng thời gian này!');
+          return;
+        }
+      } catch (error) {
+        console.error('Error checking conflict:', error);
+        // Vẫn cho phép chọn nếu API lỗi
+      }
     }
 
     if (selectedSlots.length === 0) {
@@ -213,6 +232,10 @@ const BookingSchedule = () => {
           <Box sx={{ width: 20, height: 20, bgcolor: '#9e9e9e', mr: 1 }} />
           <Typography fontSize={isMobile ? 12 : 14}>Khóa</Typography>
         </Box>
+        <Box sx={{ display: 'flex', alignItems: 'center', mr: 2 }}>
+          <Box sx={{ width: 20, height: 20, bgcolor: '#fff59d', mr: 1 }} />
+          <Typography fontSize={isMobile ? 12 : 14}>Sự kiện</Typography>
+        </Box>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Box sx={{
             width: 20,
@@ -299,6 +322,7 @@ const BookingSchedule = () => {
                   let cellBg;
                   if (status === 'booked') cellBg = '#f44336';
                   else if (status === 'maintenance') cellBg = '#9e9e9e';
+                  else if (status === 'event') cellBg = '#fff59d';
                   else if (status === 'past') cellBg = '#e0e0e0';
                   else if (isSelected) cellBg = '#4caf50';
                   else cellBg = 'white';
@@ -320,6 +344,7 @@ const BookingSchedule = () => {
                     >
                       {status === 'booked' && <StarIcon sx={{ color: 'yellow', fontSize: isMobile ? 16 : 20 }} />}
                       {status === 'maintenance' && <LockIcon sx={{ color: 'white', fontSize: isMobile ? 16 : 20 }} />}
+                      {status === 'event' && <StarIcon sx={{ color: '#fff59d', fontSize: isMobile ? 16 : 20 }} />}
                       {status === 'past' && <CloseIcon sx={{ color: '#bdbdbd', fontSize: isMobile ? 16 : 20 }} />}
                     </TableCell>
                   );
