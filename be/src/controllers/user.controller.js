@@ -226,6 +226,35 @@ class UserController {
             next(error);
         }
     };
+
+    /**
+    * method: GET
+    * router(/api/v1/users/available-staff)
+    * author: Copilot
+    */
+    getAvailableStaff = async (req, res, next) => {
+        try {
+            const staffList = await UserService.getAvailableStaff();
+            res.status(200).json({ data: staffList });
+        } catch (error) {
+            next(error);
+        }
+    };
+
+    /**
+    * method: POST
+    * router(/api/v1/user/sync-emails)
+    * author: Copilot
+    * description: Đồng bộ email từ Firebase cho tất cả user chưa có email
+    */
+    syncEmailsFromFirebase = async (req, res, next) => {
+        try {
+            const result = await UserService.syncEmailsFromFirebase();
+            res.status(200).json(result);
+        } catch (error) {
+            next(error);
+        }
+    };
 }
 
 module.exports = new UserController;

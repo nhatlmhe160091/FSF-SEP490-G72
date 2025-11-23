@@ -15,6 +15,7 @@ const FieldComplexList = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(0);
     const [loading, setLoading] = useState(true);
+    const [ratingsByComplexId, setRatingsByComplexId] = useState({});
     const itemsPerPage = 9;
 
     useEffect(() => {
@@ -28,8 +29,27 @@ const FieldComplexList = () => {
                 fieldComplexService.getAll(),
                 sportFieldService.getAllSportFields()
             ]);
-            setFieldComplexes(complexRes?.data || []);
-            setSportFields(fieldsRes?.data || []);
+            setFieldComplexes(complexRes || []);
+            setSportFields(fieldsRes || []);
+
+            // Lấy rating cho từng cụm sân
+            if (complexRes && complexRes.length > 0) {
+                const feedbackService = (await import('../../services/api/feedbackService')).default;
+                const ratingPromises = complexRes.map(async (complex) => {
+                    try {
+                        const feedback = await feedbackService.getFeedbackSummaryByComplex(complex._id);
+                        return { id: complex._id, rating: feedback?.averageRating || null };
+                    } catch {
+                        return { id: complex._id, rating: null };
+                    }
+                });
+                const ratings = await Promise.all(ratingPromises);
+                const ratingsMap = {};
+                ratings.forEach(({ id, rating }) => {
+                    ratingsMap[id] = rating;
+                });
+                setRatingsByComplexId(ratingsMap);
+            }
         } catch (error) {
             console.error("Lỗi khi tải dữ liệu:", error);
             toast.error("Không thể tải danh sách cụm sân");
@@ -58,7 +78,7 @@ const FieldComplexList = () => {
     };
 
     const handleComplexClick = (complex) => {
-        navigate(`/booking-schedule/${complex._id}`);
+        navigate(`/field-complex/${complex._id}`);
     };
 
     if (loading) {
@@ -132,16 +152,23 @@ const FieldComplexList = () => {
                                                 <MdStadium className="text-white text-6xl opacity-50" />
                                             </div>
                                         )}
-                                        <div className="absolute top-4 right-4 bg-white px-3 py-1 rounded-full shadow-lg">
-                                            <div className="flex items-center space-x-1">
-                                                <FaFutbol className="text-green-600" />
-                                                <span className="font-semibold text-gray-700">
-                                                    {getFieldCount(complex._id)} sân
-                                                </span>
-                                            </div>
+                                        {/* Số sân */}
+                                        <div className="absolute top-4 right-4 bg-white px-3 py-1 rounded-full shadow-lg flex items-center gap-2">
+                                            <FaFutbol className="text-green-600" />
+                                            <span className="font-semibold text-gray-700">
+                                                {getFieldCount(complex._id)} sân
+                                            </span>
                                         </div>
+                                        {/* Số sao */}
+                                        {typeof ratingsByComplexId[complex._id] === 'number' && (
+                                            <div className="absolute top-4 left-4 bg-yellow-400 px-3 py-1 rounded-full text-white text-sm font-semibold shadow-lg flex items-center gap-1">
+                                                <span>{ratingsByComplexId[complex._id].toFixed(1)}</span>
+                                                <FaFutbol className="text-white" />
+                                                <span className="ml-1">★</span>
+                                            </div>
+                                        )}
                                         {complex.isActive && (
-                                            <div className="absolute top-4 left-4 bg-green-500 px-3 py-1 rounded-full text-white text-sm font-semibold shadow-lg">
+                                            <div className="absolute bottom-4 left-4 bg-green-500 px-3 py-1 rounded-full text-white text-sm font-semibold shadow-lg">
                                                 Đang hoạt động
                                             </div>
                                         )}
@@ -218,7 +245,71 @@ const FieldComplexList = () => {
                     </>
                 )}
 
-                {/* {isLoading && <Loading />} */}
+                {/* Modal Chi tiết */}
+                {selectedComplex && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+                        <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                            <div className="relative h-64">
+                                {selectedComplex.images && selectedComplex.images.length > 0 ? (
+                                    <img
+                                        src={selectedComplex.images[0]}
+                                        alt={selectedComplex.name}
+                                        className="w-full h-full object-cover"
+                                    />
+                                ) : (
+                                    <div className="w-full h-full bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center">
+                                        <MdStadium className="text-white text-8xl opacity-50" />
+                                    </div>
+                                )}
+                                <button
+                                    onClick={() => setSelectedComplex(null)}
+                                    className="absolute top-4 right-4 bg-white rounded-full p-2 hover:bg-gray-100 shadow-lg"
+                                >
+                                    ✕
+                                </button>
+                            </div>
+                            <div className="p-6">
+                                <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                                    {selectedComplex.name}
+                                </h2>
+                                <div className="space-y-4">
+                                    <div className="flex items-start space-x-3">
+                                        <FaMapMarkerAlt className="text-red-500 mt-1" />
+                                        <div>
+                                            <p className="font-semibold text-gray-700">Địa chỉ</p>
+                                            <p className="text-gray-600">{selectedComplex.location}</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-center space-x-3">
+                                        <FaFutbol className="text-green-600" />
+                                        <div>
+                                            <p className="font-semibold text-gray-700">Số lượng sân</p>
+                                            <p className="text-gray-600">{getFieldCount(selectedComplex._id)} sân</p>
+                                        </div>
+                                    </div>
+
+                                    {selectedComplex.description && (
+                                        <div>
+                                            <p className="font-semibold text-gray-700 mb-2">Mô tả</p>
+                                            <p className="text-gray-600">{selectedComplex.description}</p>
+                                        </div>
+                                    )}
+
+                                    <button
+                                        onClick={() => {
+                                            setSelectedComplex(null);
+                                            handleComplexClick(selectedComplex);
+                                        }}
+                                        className="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition-colors font-semibold mt-4"
+                                    >
+                                        Đặt sân ngay
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
