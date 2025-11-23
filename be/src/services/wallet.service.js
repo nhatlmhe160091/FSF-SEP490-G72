@@ -1,6 +1,8 @@
 const Wallet = require('../models/wallet.model');
 const WalletTransaction = require('../models/walletTransaction.model');
 const Booking = require('../models/booking.model');
+const User = require('../models/user.model');
+ const Event = require('../models/event.model');
 class WalletService {
     // Lấy thông tin ví của người dùng
     async getWallet(userId) {
@@ -50,7 +52,7 @@ class WalletService {
         await WalletTransaction.create({
             walletId: wallet._id,
             userId,
-            type: 'deduct',
+            type: 'payment',
             amount,
             status: 'completed',
             description,
@@ -107,18 +109,38 @@ class WalletService {
         return wallet;
     }
 
-    // Hoàn tiền vào ví khi booking bị từ chối, kiểm tra bookingId
-    async refundToWallet(userId, amount, bookingId, description = 'Hoàn tiền do booking bị từ chối') {
+    /**
+     * Hoàn tiền vào ví cho booking hoặc event
+     * @param {String} userId - id người dùng
+     * @param {Number} amount - số tiền hoàn
+     * @param {String} objectId - id của booking hoặc event
+     * @param {String} type - 'booking' hoặc 'event'
+     * @param {String} description - mô tả giao dịch
+     */
+    async refundToWallet(userId, amount, objectId, type = 'booking', description = '') {
         if (amount <= 0) {
             throw { status: 400, message: 'Số tiền hoàn phải lớn hơn 0.' };
         }
-        const booking = await Booking.findById(bookingId);
-        if (!booking) {
-            throw { status: 404, message: 'Booking không tồn tại.' };
-        }
-        // Kiểm tra trạng thái booking (ví dụ: waiting và bị từ chối)
-        if (booking.status !== 'waiting' && booking.status !== 'cancelled') {
-            throw { status: 400, message: 'Booking không ở trạng thái chờ hoặc đã bị từ chối.' };
+        let object, statusValid = false;
+        if (type === 'booking') {
+            console.log('Checking booking for refund:', objectId);
+            object = await Booking.findById(objectId);
+            if (!object) throw { status: 404, message: 'Booking không tồn tại.' };
+            statusValid = (object.status === 'waiting' || object.status === 'cancelled');
+            if (!statusValid) throw { status: 400, message: 'Booking không ở trạng thái chờ hoặc đã bị từ chối.' };
+            description = description || 'Hoàn tiền do booking bị từ chối';
+        } else if (type === 'event') {
+            console.log('Checking event for refund:', objectId);
+            object = await Event.findById(objectId);
+            if (!object) throw { status: 404, message: 'Event không tồn tại.' };
+                if (!description) {
+                    // Trường hợp hoàn tiền cho toàn bộ event bị huỷ
+                    statusValid = (object.status === 'cancelled');
+                    if (!statusValid) throw { status: 400, message: 'Event không ở trạng thái bị huỷ.' };
+                    description = 'Hoàn tiền do event bị huỷ';
+                }
+        } else {
+            throw { status: 400, message: 'Loại hoàn tiền không hợp lệ.' };
         }
         const wallet = await Wallet.findOneAndUpdate(
             { userId },
@@ -132,8 +154,33 @@ class WalletService {
             type: 'refund',
             amount,
             status: 'completed',
-            description: description + ` (BookingId: ${bookingId})`,
+            description: `${description} (${type}Id: ${objectId})`,
         });
+
+        // Trừ tiền ví admin khi hoàn tiền cho user
+
+        const adminUser = await User.findOne({ role: 'ADMIN' });
+        if (adminUser) {
+            let adminWallet = await Wallet.findOne({ userId: adminUser._id });
+            if (!adminWallet) {
+                adminWallet = await Wallet.create({ userId: adminUser._id, balance: 0 });
+            }
+            if (adminWallet.balance < amount) {
+                // Nếu số dư admin không đủ, có thể throw hoặc chỉ trừ về 0
+                adminWallet.balance = 0;
+            } else {
+                adminWallet.balance -= amount;
+            }
+            await adminWallet.save();
+            await WalletTransaction.create({
+                walletId: adminWallet._id,
+                userId: adminUser._id,
+                type: 'refund',
+                amount,
+                status: 'completed',
+                description: `Trừ tiền hoàn trả cho userId: ${userId} (${type}Id: ${objectId})`,
+            });
+        }
         return wallet;
     }
 }
