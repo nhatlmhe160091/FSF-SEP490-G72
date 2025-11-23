@@ -1,6 +1,36 @@
 const { SportFieldService } = require('../services/index');
 
+const FieldComplex = require('../models/fieldComplex.model');
+const SportField = require('../models/sportField.model');
+
 class SportFieldController {
+       
+        async getSportFieldsByStaff(req, res, next) {
+            const { staffId } = req.params;
+            try {
+                
+                const complexes = await FieldComplex.find({ staffs: staffId }).select('_id');
+                const complexIds = complexes.map(c => c._id);
+          
+                const fields = await SportField.find({ complex: { $in: complexIds }, isdeleted: false });
+                res.status(200).json(fields);
+            } catch (error) {
+                next(error);
+            }
+        }
+        async getSportFieldsByOwner(req, res, next) {
+        const { ownerId } = req.params;
+        try {
+          
+            const complexes = await FieldComplex.find({ owner: ownerId }).select('_id');
+            const complexIds = complexes.map(c => c._id);
+
+            const fields = await SportField.find({ complex: { $in: complexIds }, isdeleted: false });
+            res.status(200).json(fields);
+        } catch (error) {
+            next(error);
+        }
+    }
     async getAllSportFields(req, res, next) {
         try {
             const sportFields = await SportFieldService.getAllSportFields();
