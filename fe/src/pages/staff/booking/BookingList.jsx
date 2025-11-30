@@ -289,3 +289,109 @@ const BookingListStaff = () => {
                                                 >
                                                     Xác nhận
                                                 </Button>
+                                            )}
+                                            <Button
+                                                variant="contained"
+                                                color="error"
+                                                size="small"
+                                                onClick={() => handleOpenConfirm(booking._id)}
+                                            >
+                                                Hủy
+                                            </Button>
+                                        </>
+                                    )}
+                                </TableCell>
+                                {/* Modal chi tiết booking */}
+                                <Dialog open={openDetail} onClose={handleCloseDetail} maxWidth="md" fullWidth>
+                                    <DialogTitle>Chi tiết đặt lịch</DialogTitle>
+                                    <DialogContent>
+                                        {selectedBooking && (
+                                            <Box>
+                                                <Typography variant="h6" sx={{ mb: 2 }}>Sân: {selectedBooking.fieldId?.name}</Typography>
+                                                <Typography>Thời gian: {dayjs(selectedBooking.startTime).utc().format('HH:mm DD/MM/YYYY')} - {dayjs(selectedBooking.endTime).utc().format('HH:mm DD/MM/YYYY')}</Typography>
+                                                <Typography>Trạng thái: {selectedBooking.status}</Typography>
+                                                <Typography>Tổng tiền: {selectedBooking.totalPrice?.toLocaleString('vi-VN')} VNĐ</Typography>
+                                                <Typography>Tên người đặt: {selectedBooking.customerName}</Typography>
+                                                <Typography>Số điện thoại: {selectedBooking.phoneNumber}</Typography>
+                                                {selectedBooking.notes && <Typography>Ghi chú: {selectedBooking.notes}</Typography>}
+                                                {/* Hiển thị dịch vụ đi kèm */}
+                                                {selectedBooking.consumablePurchases && selectedBooking.consumablePurchases.length > 0 && (
+                                                    <Box sx={{ my: 2 }}>
+                                                        <Divider sx={{ mb: 1 }} />
+                                                        <Typography variant="subtitle2" fontWeight="bold" sx={{ mb: 1 }}>Đồ ăn/thức uống đã mua:</Typography>
+                                                        {selectedBooking.consumablePurchases.map((cp, idx) => (
+                                                            <Box key={cp._id || idx} sx={{ mb: 2, p: 2, bgcolor: '#e3f2fd', borderRadius: 2 }}>
+                                                                <Typography><b>Tổng tiền:</b> {cp.totalPrice?.toLocaleString('vi-VN')}đ</Typography>
+                                                                {cp.consumables && cp.consumables.length > 0 && (
+                                                                    <Box sx={{ mt: 1 }}>
+                                                                        <Typography><b>Chi tiết:</b></Typography>
+                                                                        {cp.consumables.map((item, i) => (
+                                                                            <Typography key={item._id || i} sx={{ ml: 2 }}>
+                                                                                {item.consumableId?.name ? `${item.consumableId.name} - ` : ''}Số lượng: {item.quantity}
+                                                                            </Typography>
+                                                                        ))}
+                                                                    </Box>
+                                                                )}
+                                                            </Box>
+                                                        ))}
+                                                    </Box>
+                                                )}
+                                                {selectedBooking.equipmentRentals && selectedBooking.equipmentRentals.length > 0 && (
+                                                    <Box sx={{ my: 2 }}>
+                                                        <Divider sx={{ mb: 1 }} />
+                                                        <Typography variant="subtitle2" fontWeight="bold" sx={{ mb: 1 }}>Thiết bị thuê:</Typography>
+                                                        {selectedBooking.equipmentRentals.map((eq, idx) => (
+                                                            <Box key={eq._id || idx} sx={{ mb: 2, p: 2, bgcolor: '#fffde7', borderRadius: 2 }}>
+                                                                <Typography><b>Tổng tiền:</b> {eq.totalPrice?.toLocaleString('vi-VN')}đ</Typography>
+                                                                {eq.equipments && eq.equipments.length > 0 && (
+                                                                    <Box sx={{ mt: 1 }}>
+                                                                        <Typography><b>Chi tiết:</b></Typography>
+                                                                        {eq.equipments.map((item, i) => (
+                                                                            <Typography key={item._id || i} sx={{ ml: 2 }}>
+                                                                                {item.equipmentId?.name ? `${item.equipmentId.name} - ` : ''}Số lượng: {item.quantity}
+                                                                            </Typography>
+                                                                        ))}
+                                                                    </Box>
+                                                                )}
+                                                            </Box>
+                                                        ))}
+                                                    </Box>
+                                                )}
+                                            </Box>
+                                        )}
+                                    </DialogContent>
+                                </Dialog>
+                            </TableRow>
+                        ))
+                    )}
+                </TableBody>
+            </Table>
+            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+                <Pagination
+                    count={meta.totalPages}
+                    page={page}
+                    onChange={(e, value) => setPage(value)}
+                    color="primary"
+                />
+            </Box>
+
+            {/* Dialog xác nhận hủy booking */}
+            <Dialog open={openConfirm} onClose={handleCloseConfirm}>
+                <DialogTitle>Xác nhận hủy đặt lịch</DialogTitle>
+                <DialogContent>
+                    <Typography>Bạn có chắc chắn muốn hủy đặt lịch này không?</Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseConfirm} color="primary">
+                        Hủy
+                    </Button>
+                    <Button onClick={handleCancelBooking} color="error" variant="contained">
+                        Xác nhận hủy
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        </Box>
+    );
+};
+
+export default BookingListStaff;
