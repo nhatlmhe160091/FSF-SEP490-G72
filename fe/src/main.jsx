@@ -46,9 +46,6 @@ import OwnerList from './pages/admin/owner/OwnerList';
 import FieldComplex from './pages/manager/fieldComplex/FieldComplex';
 import FieldComplexFormPage from './pages/admin/fieldComplex/FieldComplexFormPage';
 import FieldComplexDetailPage from './pages/manager/fieldComplex/FieldComplexDetailPage';
-<<<<<<< Updated upstream
-import UpdateUserPage from './pages/admin/owner/UpdateUserPage';
-=======
 import UpdateUserPage from './pages/admin/user/UpdateUserPage';
 import RegisterStaff from './pages/admin/fieldComplex/RegisterStaff';
 import EventManagement from './pages/manager/event/EventManagement';
@@ -63,7 +60,6 @@ import ConsumableDashboardStaff from './pages/staff/consumable/ConsumableDashboa
 import EquipmentDashboardStaff from './pages/staff/equipment/EquipmentDashboard';
 import BookingListStaff from './pages/staff/booking/BookingList';
 import StaffStatsPage from './pages/staff/statistics/StaffStatsPage';
->>>>>>> Stashed changes
 /**
  * Roles include GUEST, CUSTOMER, ADMIN, MANAGER
  */
@@ -157,9 +153,6 @@ const router = createBrowserRouter([
         )
       },
       {
-<<<<<<< Updated upstream
-        path: "/booking/:typeId",
-=======
         path: "/booking/:complexId",
         element: (
           <ProtectedRoute requiredRoles={['GUEST', 'CUSTOMER']}>
@@ -169,7 +162,6 @@ const router = createBrowserRouter([
       },
       {
         path: "/booking-schedule/:complexId",
->>>>>>> Stashed changes
         element: (
           <ProtectedRoute requiredRoles={['GUEST', 'CUSTOMER']}>
             <BookingSchedule />
@@ -233,11 +225,7 @@ const router = createBrowserRouter([
         )
       },
       {
-<<<<<<< Updated upstream
-        path: "/event",
-=======
         path: "/event-matching",
->>>>>>> Stashed changes
         element: (
           <ProtectedRoute requiredRoles={['GUEST', 'CUSTOMER']}>
             <EventMatching />
@@ -299,11 +287,7 @@ const router = createBrowserRouter([
           {
             path: "sport-field-list",
             element: (
-<<<<<<< Updated upstream
-              <ProtectedRoute requiredRoles={['MANAGER','ADMIN']}>
-=======
               <ProtectedRoute requiredRoles={['MANAGER', 'ADMIN']}>
->>>>>>> Stashed changes
                 <SportsVenueDashboard />
               </ProtectedRoute>
             ),
@@ -388,8 +372,6 @@ const router = createBrowserRouter([
               </ProtectedRoute>
             )
           },
-<<<<<<< Updated upstream
-=======
           {
             path: "event-schedule/:complexId",
             element: (
@@ -406,7 +388,6 @@ const router = createBrowserRouter([
               </ProtectedRoute>
             )
           },
->>>>>>> Stashed changes
         ]
       },
       {
@@ -460,8 +441,6 @@ const router = createBrowserRouter([
               </ProtectedRoute>
             )
           },
-<<<<<<< Updated upstream
-=======
           {
             path: "register-staff/:complexId",
             element: (
@@ -486,7 +465,6 @@ const router = createBrowserRouter([
               </ProtectedRoute>
             )
           },
->>>>>>> Stashed changes
         ],
       },
       {
@@ -496,17 +474,6 @@ const router = createBrowserRouter([
             path: "dashboard",
             element: (
               <ProtectedRoute requiredRoles={['MANAGER', 'STAFF']}>
-<<<<<<< Updated upstream
-                <AnalyticsDashboard />
-              </ProtectedRoute>
-            ),
-          },
-           {
-            path: "sport-field-list",
-            element: (
-              <ProtectedRoute requiredRoles={['MANAGER','STAFF']}>
-                <SportsVenueDashboard />
-=======
                 <StaffStatsPage />
               </ProtectedRoute>
             ),
@@ -516,7 +483,6 @@ const router = createBrowserRouter([
             element: (
               <ProtectedRoute requiredRoles={['MANAGER', 'STAFF']}>
                 <SportsVenueDashboardStaff />
->>>>>>> Stashed changes
               </ProtectedRoute>
             ),
           },
@@ -524,11 +490,7 @@ const router = createBrowserRouter([
             path: "equipment-list",
             element: (
               <ProtectedRoute requiredRoles={['MANAGER', 'STAFF']}>
-<<<<<<< Updated upstream
-                <EquipmentDashboard />
-=======
                 <EquipmentDashboardStaff />
->>>>>>> Stashed changes
               </ProtectedRoute>
             ),
           },
@@ -536,11 +498,7 @@ const router = createBrowserRouter([
             path: "consumable-list",
             element: (
               <ProtectedRoute requiredRoles={['MANAGER', 'STAFF']}>
-<<<<<<< Updated upstream
-                <ConsumableDashboard />
-=======
                 <ConsumableDashboardStaff />
->>>>>>> Stashed changes
               </ProtectedRoute>
             ),
           },
@@ -548,11 +506,7 @@ const router = createBrowserRouter([
             path: "booking-list",
             element: (
               <ProtectedRoute requiredRoles={['MANAGER', 'STAFF']}>
-<<<<<<< Updated upstream
-                <BookingList />
-=======
                 <BookingListStaff />
->>>>>>> Stashed changes
               </ProtectedRoute>
             ),
           },
@@ -602,8 +556,4 @@ createRoot(document.getElementById("root")).render(
       <RouterProvider router={router} />
     </PublicProvider>
   </AuthProvider>
-<<<<<<< Updated upstream
 );
-=======
-);
->>>>>>> Stashed changes
