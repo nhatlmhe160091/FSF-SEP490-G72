@@ -2,6 +2,7 @@ const { User } = require('../models/index');
 const admin = require('../configs/firebaseAdmin');
 const { sendVerificationEmail, sendNewPassword } = require('../configs/nodemailer.config');
 const { generateRandomPassword } = require('../utils/handleGenerate');
+const FieldComplex = require('../models/fieldComplex.model');
 class UserService {
     /**
     * author: XXX
@@ -43,6 +44,7 @@ class UserService {
                 lname,
                 dob,
                 phoneNumber,
+                email,
                 gender,
                 role,
                 firebaseUID: userRecord.uid,
@@ -239,6 +241,7 @@ class UserService {
                 lname,
                 dob,
                 phoneNumber,
+                email,
                 gender,
                 role,
                 restaurant,
@@ -338,6 +341,94 @@ class UserService {
             accountStatus
         };
     };
+
+        /**
+        * Đồng bộ email từ Firebase cho tất cả user chưa có email
+        */
+        syncEmailsFromFirebase = async () => {
+            try {
+                // Lấy tất cả user chưa có email hoặc email null
+                const usersWithoutEmail = await User.find({
+                    $or: [
+                        { email: { $exists: false } },
+                        { email: null },
+                        { email: '' }
+                    ]
+                });
+
+                console.log(`[Sync Email] Tìm thấy ${usersWithoutEmail.length} user chưa có email`);
+
+                let successCount = 0;
+                let failCount = 0;
+
+                for (const user of usersWithoutEmail) {
+                    try {
+                        // Lấy email từ Firebase
+                        const firebaseUser = await admin.auth().getUser(user.firebaseUID);
+                        
+                        if (firebaseUser.email) {
+                            // Cập nhật email vào MongoDB
+                            user.email = firebaseUser.email;
+                            await user.save();
+                            successCount++;
+                            console.log(`✓ Đã sync email cho user ${user.firebaseUID}: ${firebaseUser.email}`);
+                        } else {
+                            failCount++;
+                            console.log(`✗ User ${user.firebaseUID} không có email trên Firebase`);
+                        }
+                    } catch (error) {
+                        failCount++;
+                        console.error(`✗ Lỗi sync email cho user ${user.firebaseUID}:`, error.message);
+                    }
+                }
+
+                return {
+                    success: true,
+                    message: `Đã đồng bộ ${successCount}/${usersWithoutEmail.length} user. Thất bại: ${failCount}`,
+                    data: { successCount, failCount, total: usersWithoutEmail.length }
+                };
+            } catch (error) {
+                console.error('[Sync Email] Lỗi:', error);
+                throw { message: 'Lỗi khi đồng bộ email: ' + error.message, status: 500 };
+            }
+        };
+
+        /**
+        * Lấy danh sách staff chưa được gán vào cụm sân nào
+        */
+        getAvailableStaff = async () => {
+            // Lấy tất cả user có role STAFF
+            const allStaffs = await User.find({ role: 'STAFF' });
+            // Lấy tất cả staffs đã được gán vào bất kỳ FieldComplex nào
+            const complexes = await FieldComplex.find({}, 'staffs');
+            const assignedStaffIds = new Set();
+            complexes.forEach(complex => {
+                if (complex.staffs && complex.staffs.length > 0) {
+                    complex.staffs.forEach(staffId => assignedStaffIds.add(staffId.toString()));
+                }
+            });
+            // Lọc ra các staff chưa được gán
+            const availableStaffs = allStaffs.filter(staff => !assignedStaffIds.has(staff._id.toString()));
+            // Lấy email từ Firebase
+            const firebaseUIDs = availableStaffs.map(staff => ({ uid: staff.firebaseUID })).filter(u => u.uid);
+            let firebaseUsers = [];
+            try {
+                if (firebaseUIDs.length > 0) {
+                    const { users: firebaseUserRecords } = await admin.auth().getUsers(firebaseUIDs);
+                    firebaseUsers = firebaseUserRecords;
+                }
+            } catch (error) {
+                // Nếu lỗi vẫn trả về danh sách không có email
+            }
+            return availableStaffs.map(staff => {
+                const firebaseUser = firebaseUsers.find(fu => fu.uid === staff.firebaseUID);
+                return {
+                    ...staff.toObject(),
+                    email: firebaseUser ? firebaseUser.email : null,
+                    accountStatus: firebaseUser ? (firebaseUser.disabled ? 'Disabled' : 'Active') : 'Unknown',
+                };
+            });
+        };
 }
 
 module.exports = new UserService;

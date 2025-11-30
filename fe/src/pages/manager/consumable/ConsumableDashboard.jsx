@@ -16,7 +16,13 @@ import {
   Paper,
   Chip,
   IconButton,
-  Stack
+  Stack,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Pagination
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -24,8 +30,14 @@ import DeleteIcon from "@mui/icons-material/Delete";
 const ConsumableDashboard = () => {
   const { sportFields } = useContext(PublicContext);
   const [consumables, setConsumables] = useState([]);
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const itemsPerPage = 10;
   const [modalOpen, setModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
+  // Modal xem danh sách sân
+  const [fieldModalOpen, setFieldModalOpen] = useState(false);
+  const [fieldModalList, setFieldModalList] = useState([]);
 
   const fetchData = async () => {
     try {
@@ -96,6 +108,14 @@ const ConsumableDashboard = () => {
       >
         + Thêm vật tư
       </Button>
+      <TextField
+        label="Tìm kiếm vật tư theo tên"
+        value={search}
+        onChange={e => { setSearch(e.target.value); setPage(1); }}
+        fullWidth
+        size="small"
+        sx={{ mb: 2 }}
+      />
       <TableContainer component={Paper} sx={{ borderRadius: 2 }}>
         <Table>
           <TableHead sx={{ bgcolor: "#e0f2e9" }}>
@@ -110,48 +130,82 @@ const ConsumableDashboard = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {consumables?.map((item) => (
-              <TableRow key={item._id}>
-                <TableCell>{item.name}</TableCell>
-                <TableCell>
-                  <Chip label={item.type} color="primary" size="small" />
-                </TableCell>
-                <TableCell>{item.pricePerUnit?.toLocaleString()}đ</TableCell>
-                <TableCell>{item.quantityInStock}</TableCell>
-                <TableCell>
-                  <Chip
-                    label={item.status === "available" ? "Còn hàng" : "Hết hàng"}
-                    color={item.status === "available" ? "success" : "default"}
-                    size="small"
-                  />
-                </TableCell>
-                <TableCell>
-                  <Stack direction="row" spacing={1}>
-                    {item.sportField?.map((field) => (
-                      <Chip key={field._id} label={field.name} size="small" />
-                    ))}
-                  </Stack>
-                </TableCell>
-                <TableCell align="center">
-                  <IconButton color="primary" onClick={() => handleOpenEdit(item)}>
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton color="error" onClick={() => handleDelete(item._id)}>
-                    <DeleteIcon />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
-            {consumables?.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={7} align="center">
-                  <Typography color="text.secondary">Chưa có vật tư nào</Typography>
-                </TableCell>
-              </TableRow>
-            )}
+            {(() => {
+              const filtered = consumables.filter(item => item.name.toLowerCase().includes(search.toLowerCase()));
+              const paginated = filtered.slice((page - 1) * itemsPerPage, page * itemsPerPage);
+              return (
+                <>
+                  {paginated.map((item) => (
+                    <TableRow key={item._id}>
+                      <TableCell>{item.name}</TableCell>
+                      <TableCell>
+                        <Chip label={item.type} color="primary" size="small" />
+                      </TableCell>
+                      <TableCell>{item.pricePerUnit?.toLocaleString()}đ</TableCell>
+                      <TableCell>{item.quantityInStock}</TableCell>
+                      <TableCell>
+                        <Chip
+                          label={item.status === "available" ? "Còn hàng" : "Hết hàng"}
+                          color={item.status === "available" ? "success" : "default"}
+                          size="small"
+                        />
+                      </TableCell>
+                      <TableCell>
+                        {item.sportField?.length <= 3 ? (
+                          <Stack direction="row" spacing={1}>
+                            {item.sportField?.map((field) => (
+                              <Chip key={field._id} label={field.name} size="small" />
+                            ))}
+                          </Stack>
+                        ) : (
+                          <Stack direction="row" spacing={1}>
+                            {item.sportField.slice(0, 3).map((field) => (
+                              <Chip key={field._id} label={field.name} size="small" />
+                            ))}
+                            <Chip
+                              label={`...${item.sportField.length} sân`}
+                              color="info"
+                              size="small"
+                              sx={{ cursor: 'pointer' }}
+                              onClick={() => {
+                                setFieldModalList(item.sportField);
+                                setFieldModalOpen(true);
+                              }}
+                            />
+                          </Stack>
+                        )}
+                      </TableCell>
+                      <TableCell align="center">
+                        <IconButton color="primary" onClick={() => handleOpenEdit(item)}>
+                          <EditIcon />
+                        </IconButton>
+                        <IconButton color="error" onClick={() => handleDelete(item._id)}>
+                          <DeleteIcon />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                  {filtered.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={7} align="center">
+                        <Typography color="text.secondary">Chưa có vật tư nào</Typography>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </>
+              );
+            })()}
           </TableBody>
         </Table>
       </TableContainer>
+      <Box display="flex" justifyContent="center" alignItems="center" mt={2}>
+        <Pagination
+          count={Math.ceil(consumables.filter(item => item.name.toLowerCase().includes(search.toLowerCase())).length / itemsPerPage)}
+          page={page}
+          onChange={(e, value) => setPage(value)}
+          color="primary"
+        />
+      </Box>
       <ConsumableFormModal
         isOpen={modalOpen}
         onClose={() => {
@@ -162,6 +216,21 @@ const ConsumableDashboard = () => {
         initialData={editingItem}
         sportFields={sportFields}
       />
+
+      {/* Modal danh sách sân áp dụng */}
+      <Dialog open={fieldModalOpen} onClose={() => setFieldModalOpen(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>Danh sách sân áp dụng</DialogTitle>
+        <DialogContent>
+          <Stack spacing={1}>
+            {fieldModalList.map(f => (
+              <Chip key={f._id} label={f.name} size="medium" />
+            ))}
+          </Stack>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setFieldModalOpen(false)}>Đóng</Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
