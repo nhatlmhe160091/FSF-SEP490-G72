@@ -83,3 +83,33 @@ const CreateNews = ({ open, onClose, onCreate }) => {
           rows={4}
           fullWidth
           margin="normal"
+        />
+        <TextField
+          label="Tác giả"
+          name="author"
+          value={newsData.author}
+          onChange={handleChange}
+          fullWidth
+          margin="normal"
+        />
+        <TextField
+          label="Link ảnh (thumbnail)"
+          name="image"
+          value={newsData.image}
+          onChange={handleChange}
+          fullWidth
+          margin="normal"
+        />
+      </DialogContent>
+
+      <DialogActions>
+        <Button onClick={handleClose}>Hủy</Button>
+        <Button onClick={handleSubmit} variant="contained" color="primary">
+          Thêm
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
+
+export default CreateNews;
