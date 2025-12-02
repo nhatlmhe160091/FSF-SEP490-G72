@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect, useContext } from "react";
 import { FaSort, FaFilter, FaSearch, FaEdit, FaTrash, FaWifi, FaParking, FaShower, FaRestroom, FaChair } from "react-icons/fa";
-import { MdSportsSoccer, MdSportsBasketball, MdSportsVolleyball } from "react-icons/md";
+import { MdSportsSoccer, MdSportsBasketball, MdSportsVolleyball, MdEvent } from "react-icons/md";
 import CreateVenue from "./CreateVenue";
 import UpdateVenue from "./UpdateVenue";
 import sportFieldService from '../../../services/api/sportFieldService';
@@ -10,6 +10,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from '../../../contexts/authContext';
 import { fieldComplexService } from '../../../services/api/fieldComplexService';
 const SportsVenueDashboard = () => {
+  const { types, sportFields, setSportFields } = useContext(PublicContext);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("all");
   const [filterFieldComplex, setFilterFieldComplex] = useState("all");
@@ -21,8 +22,9 @@ const SportsVenueDashboard = () => {
   const { currentUser } = useAuth();
   const [fieldComplexes, setFieldComplexes] = useState([]);
   const location = useLocation();
-  
+  const { complex, owner } = location.state || {};
   useEffect(() => {
+    // Lấy danh sách cụm sân như cũ
     const fetchFieldComplexes = async () => {
       try {
         const response = await fieldComplexService.getAll();
@@ -37,13 +39,29 @@ const SportsVenueDashboard = () => {
     };
     fetchFieldComplexes();
 
-  
+    // Luôn gọi API lấy danh sách sân theo staff
+    const fetchSportFieldsByStaff = async () => {
+      if (currentUser?._id) {
+        try {
+          const res = await sportFieldService.getSportFieldsByOwner(currentUser._id);
+          setSportFields(res);
+        } catch (error) {
+          toast.error("Không thể tải danh sách sân của bạn");
+        }
+      }
+    };
+    fetchSportFieldsByStaff();
+
     const params = new URLSearchParams(location.search);
     const complexId = params.get('complex');
     if (complexId) {
       setFilterFieldComplex(complexId);
     }
+<<<<<<< Updated upstream
   }, [location.search, currentUser]);
+=======
+  }, [location.search, currentUser, setSportFields]);
+>>>>>>> Stashed changes
   // XÓA
   const handleDeleteVenue = async (venue) => {
     setVenueToDelete(venue);
@@ -64,7 +82,10 @@ const SportsVenueDashboard = () => {
   const cancelDeleteVenue = () => {
     setVenueToDelete(null);
   };
+<<<<<<< Updated upstream
   const { types, sportFields, setSportFields } = useContext(PublicContext);
+=======
+>>>>>>> Stashed changes
   const navigate = useNavigate();
   const itemsPerPage = 5;
   const getStatusColor = (status) => {
@@ -154,12 +175,19 @@ const SportsVenueDashboard = () => {
       setSelectedVenue(null);
     }
   };
-  // console.log("venues", venues);
-  // console.log("types", types);
+// console.log("complex:", complex);
+// console.log("owner:", owner);
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-7xl mx-auto">
         <h1 className="text-3xl font-bold text-gray-900 mb-8">Quản lý sân thể thao</h1>
+        {/* Thông tin cụm sân và chủ sân */}
+        {complex && (
+          <div className="mb-6 p-4 bg-white rounded-lg shadow">
+            <h2 className="text-2xl font-semibold mb-2">Cụm sân: {complex.name}</h2>
+            <p className="text-gray-600">Chủ sân: {owner?.fname} {owner?.lname} | Email: {owner?.email} | SĐT: {owner?.phoneNumber}</p>
+          </div>
+        )}
         <div className="mb-4 flex justify-end">
           <button
             className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
@@ -224,7 +252,7 @@ const SportsVenueDashboard = () => {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {paginatedVenues.map((venue) => (
-                  <tr key={venue.id} className="hover:bg-gray-50 transition-colors duration-200">
+                  <tr key={venue._id} className="hover:bg-gray-50 transition-colors duration-200">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <div className="h-16 w-16 flex-shrink-0">
@@ -302,10 +330,17 @@ const SportsVenueDashboard = () => {
                         )}
                         <button className="text-green-600 hover:text-green-900"
                           onClick={() => {
-                            navigate(`/manager/maintenance-schedule/${venue.type._id}`);
+                            navigate(`/manager/maintenance-schedule/${venue?.complex}`);
                           }}
                         >
                           <MdSportsSoccer className="h-5 w-5" />
+                        </button>
+                        <button className="text-gray-600 hover:text-green-900"
+                          onClick={() => {
+                            navigate(`/manager/event-schedule/${venue?.complex}`);
+                          }}
+                        >
+                          <MdEvent className="h-5 w-5" />
                         </button>
                       </div>
                     </td>
