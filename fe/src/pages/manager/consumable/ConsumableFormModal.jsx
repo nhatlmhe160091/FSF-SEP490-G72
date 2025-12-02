@@ -32,22 +32,16 @@ const ConsumableFormModal = ({ isOpen, onClose, onSubmit, initialData, sportFiel
   });
 
   useEffect(() => {
-    if (initialData) {
-      setForm({
-        ...initialData,
-        sportField: initialData.sportField?.map(f => f._id || f) || [],
-      });
-    } else {
-      setForm({
-        name: "",
-        type: "water",
-        pricePerUnit: 0,
-        quantityInStock: 0,
-        status: "available",
-        sportField: [],
-      });
-    }
-  }, [initialData]);
+    setForm(prev => ({
+      ...(initialData || {}),
+      name: initialData?.name || "",
+      type: initialData?.type || "water",
+      pricePerUnit: initialData?.pricePerUnit || 0,
+      quantityInStock: initialData?.quantityInStock || 0,
+      status: initialData?.status || "available",
+      sportField: sportFields.map(f => f._id), // Luôn tự động chọn tất cả sân
+    }));
+  }, [initialData, sportFields]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -140,7 +134,7 @@ const ConsumableFormModal = ({ isOpen, onClose, onSubmit, initialData, sportFiel
           className="input"
         />
         <div className="text-sm text-gray-500 mt-2">
-          Lưu ý: Vui lòng kiểm tra kỹ thông tin trước khi lưu.
+          Mặc định: Áp dụng cho tất cả sân. Bạn có thể bỏ chọn hoặc thêm sân theo nhu cầu.
         </div>
       </DialogContent>
       <DialogActions>
