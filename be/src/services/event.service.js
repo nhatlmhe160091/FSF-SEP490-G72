@@ -49,10 +49,10 @@ class EventService {
             availableSlots: { $gt: 0 },
             deadline: { $gt: new Date() }
         })
-        .populate('createdBy', 'name email avatar')
-        .populate('fieldId', 'name location pricePerHour')
-        .populate('interestedPlayers.userId', 'name email avatar')
-        .sort({ startTime: 1 });
+       .populate('createdBy', 'name email avatar')
+            .populate('fieldId', 'name location pricePerHour')
+            .populate('interestedPlayers.userId', 'name email avatar')
+            .sort({ startTime: 1 });
 
         return {
             success: true,
@@ -89,12 +89,13 @@ class EventService {
     // Tạo event matching mới
     async createEvent(data, userId) {
         // Validate thời gian
-          const now = new Date(Date.now() + 7 * 60 * 60 * 1000);
+        const now = new Date();
         const startTime = new Date(data.startTime);
         const endTime = new Date(data.endTime);
         const deadline = data.deadline ? new Date(data.deadline) : new Date(startTime.getTime() - 2 * 60 * 60 * 1000); // 2h trước
-        console.log('deadline:', deadline);
-        console.log('now:', now);
+        if (startTime <= now) {
+            throw { status: 400, message: 'Thời gian bắt đầu phải lớn hơn thời gian hiện tại' };
+        }
         if (startTime <= now) {
             throw { status: 400, message: 'Thời gian bắt đầu phải lớn hơn thời gian hiện tại' };
         }
