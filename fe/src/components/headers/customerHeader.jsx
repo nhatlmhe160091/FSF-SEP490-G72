@@ -107,7 +107,7 @@ function CustomerHeader() {
                                 fontSize: '0.95rem',
                             }}
                         >
-                            FSF FPT
+                           SFMS
                         </Typography>
                         <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
                             <Link
