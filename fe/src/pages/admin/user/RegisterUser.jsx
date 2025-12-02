@@ -75,10 +75,6 @@ const RegisterUser = () => {
                 <Select value={role} onChange={(e) => setRole(e.target.value)}>
                     <MenuItem value="ADMIN">Quản trị viên</MenuItem>
                     <MenuItem value="MANAGER">Chủ sân</MenuItem>
-<<<<<<< Updated upstream
-                    <MenuItem value="STAFF">Nhân viên</MenuItem>
-=======
->>>>>>> Stashed changes
                     <MenuItem value="CUSTOMER">Khách hàng</MenuItem> 
                 </Select>
             </FormControl>

@@ -114,17 +114,10 @@ const OwnerList = () => {
                                 onChange={(e) => setRole(e.target.value)}
                             >
                                 <MenuItem value="">Tất cả</MenuItem>
-<<<<<<< Updated upstream
                                 {/* <MenuItem value="ADMIN">Quản trị viên</MenuItem> */}
                                 <MenuItem value="MANAGER">Chủ sân</MenuItem>
                                 {/* <MenuItem value="CUSTOMER">Khách hàng</MenuItem>
                                 <MenuItem value="STAFF">Nhân viên</MenuItem> */}
-=======
-                                <MenuItem value="ADMIN">Quản trị viên</MenuItem>
-                                <MenuItem value="MANAGER">Chủ sân</MenuItem>
-                                <MenuItem value="CUSTOMER">Khách hàng</MenuItem>
-                                <MenuItem value="STAFF">Nhân viên</MenuItem>
->>>>>>> Stashed changes
                             </Select>
                         </FormControl>
                     </Box>

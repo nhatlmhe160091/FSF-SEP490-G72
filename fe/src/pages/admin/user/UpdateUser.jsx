@@ -39,13 +39,9 @@ const UpdateUser = ({ user, onClose }) => {
             <FormControl fullWidth margin="normal">
                 <InputLabel>Vai trò</InputLabel>
                 <Select value={role} onChange={(e) => setRole(e.target.value)}>
-<<<<<<< Updated upstream
-                    <MenuItem value="MANAGER">Chủ sân</MenuItem>              
-=======
                     <MenuItem value="ADMIN">Quản trị viên</MenuItem>
                     <MenuItem value="MANAGER">Chủ sân</MenuItem>
                     <MenuItem value="CUSTOMER">Khách hàng</MenuItem>               
->>>>>>> Stashed changes
                 </Select>
             </FormControl>
             <Button type="submit" variant="contained" color="primary">Cập nhật</Button>

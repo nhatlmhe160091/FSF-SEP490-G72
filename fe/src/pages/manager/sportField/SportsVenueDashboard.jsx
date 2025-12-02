@@ -57,11 +57,7 @@ const SportsVenueDashboard = () => {
     if (complexId) {
       setFilterFieldComplex(complexId);
     }
-<<<<<<< Updated upstream
-  }, [location.search, currentUser]);
-=======
   }, [location.search, currentUser, setSportFields]);
->>>>>>> Stashed changes
   // XÓA
   const handleDeleteVenue = async (venue) => {
     setVenueToDelete(venue);
@@ -82,10 +78,6 @@ const SportsVenueDashboard = () => {
   const cancelDeleteVenue = () => {
     setVenueToDelete(null);
   };
-<<<<<<< Updated upstream
-  const { types, sportFields, setSportFields } = useContext(PublicContext);
-=======
->>>>>>> Stashed changes
   const navigate = useNavigate();
   const itemsPerPage = 5;
   const getStatusColor = (status) => {
