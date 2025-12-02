@@ -61,7 +61,7 @@ const menuItems = [
     path: "/admin/category-policy-list",
   },
   {
-    text: "Quản lí ưu đãi",
+    text: "Danh sách chính sách",
     icon: <Policy />,
     path: "/admin/policy-list",
   },
