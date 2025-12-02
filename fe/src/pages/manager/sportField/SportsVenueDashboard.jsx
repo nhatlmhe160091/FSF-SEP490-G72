@@ -43,7 +43,7 @@ const SportsVenueDashboard = () => {
     if (complexId) {
       setFilterFieldComplex(complexId);
     }
-  }, [location.search, currentUser]);
+  }, [location.search, currentUser, setSportFields]);
   // XÓA
   const handleDeleteVenue = async (venue) => {
     setVenueToDelete(venue);
@@ -64,7 +64,6 @@ const SportsVenueDashboard = () => {
   const cancelDeleteVenue = () => {
     setVenueToDelete(null);
   };
-  const { types, sportFields, setSportFields } = useContext(PublicContext);
   const navigate = useNavigate();
   const itemsPerPage = 5;
   const getStatusColor = (status) => {
