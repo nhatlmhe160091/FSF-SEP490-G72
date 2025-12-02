@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, MenuItem, Select, Table, TableBody, TableCell, TableHead, TableRow, TextField, Typography } from "@mui/material";
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, IconButton, InputLabel, MenuItem, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from "@mui/material";
 import { policyService } from "../../../services/api/policyService";
 import { categoryPolicyService } from "../../../services/api/categoryPolicyService";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 const PolicyList = () => {
     const [policies, setPolicies] = useState([]);
@@ -47,7 +49,7 @@ const PolicyList = () => {
         setForm(item ? {
             categoryPolicyId: item.categoryPolicyId?._id || item.categoryPolicyId,
             content: item.content || ''
-            
+
         } : {
             categoryPolicyId: '',
             content: ''
@@ -75,30 +77,37 @@ const PolicyList = () => {
     return (
         <Box p={3}>
             <Typography variant="h4">Danh sách chính sách</Typography>
-            <Button variant="contained" color="primary" onClick={() => handleOpen()}>
-                Thêm chính sách
+            <Button variant="contained" color="success" sx={{ mb: 2, borderRadius: 2 }} onClick={() => handleOpen()}>
+                + Thêm chính sách
             </Button>
-            <Table>
-                <TableHead>
-                    <TableRow>
-                        <TableCell>Danh mục</TableCell>
-                        <TableCell>Nội dung</TableCell>
-                        <TableCell>Hành động</TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {policies.map((p) => (
-                        <TableRow key={p._id}>
-                            <TableCell>{p.categoryPolicyId?.title}</TableCell>
-                            <TableCell>{p.content}</TableCell>
-                            <TableCell>
-                                <Button onClick={() => handleOpen(p)}>Sửa</Button>
-                                <Button onClick={() => handleDelete(p._id)} color="error">Xoá</Button>
-                            </TableCell>
+
+            <TableContainer component={Paper} sx={{ borderRadius: 2 }}>
+                <Table>
+                    <TableHead sx={{ bgcolor: "#e0f2e9" }}>
+                        <TableRow>
+                            <TableCell>Danh mục</TableCell>
+                            <TableCell>Nội dung</TableCell>
+                            <TableCell>Hành động</TableCell>
                         </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
+                    </TableHead>
+                    <TableBody>
+                        {policies.map((p) => (
+                            <TableRow key={p._id}>
+                                <TableCell>{p.categoryPolicyId?.title}</TableCell>
+                                <TableCell>{p.content}</TableCell>
+                                <TableCell>
+                                    <IconButton color="primary" onClick={() => handleOpen(p)}>
+                                        <EditIcon />
+                                    </IconButton>
+                                    <IconButton onClick={() => handleDelete(p._id)} color="error">
+                                        <DeleteIcon />
+                                    </IconButton>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
 
             <Dialog open={open} onClose={() => setOpen(false)}>
                 <DialogTitle>{editing ? 'Sửa' : 'Thêm'} chính sách</DialogTitle>
