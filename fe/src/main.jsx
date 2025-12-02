@@ -341,22 +341,6 @@ const router = createBrowserRouter([
             )
           },
           {
-            path: "category-policy-list",
-            element: (
-              <ProtectedRoute requiredRoles={['MANAGER']}>
-                <CategoryPolicyList />
-              </ProtectedRoute>
-            ),
-          },
-          {
-            path: "policy-list",
-            element: (
-              <ProtectedRoute requiredRoles={['MANAGER']}>
-                <PolicyList />
-              </ProtectedRoute>
-            ),
-          },
-          {
             path: "field-complex-list",
             element: (
               <ProtectedRoute >
@@ -464,6 +448,22 @@ const router = createBrowserRouter([
                 <AdminMonthlyPayoutPage />
               </ProtectedRoute>
             )
+          },
+          {
+            path: "category-policy-list",
+            element: (
+              <ProtectedRoute requiredRoles={['ADMIN']}>
+                <CategoryPolicyList />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: "policy-list",
+            element: (
+              <ProtectedRoute requiredRoles={['ADMIN']}>
+                <PolicyList />
+              </ProtectedRoute>
+            ),
           },
         ],
       },

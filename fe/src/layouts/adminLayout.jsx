@@ -21,7 +21,7 @@ import PaymentsIcon from "@mui/icons-material/Payments";
 import SportsSoccerIcon from "@mui/icons-material/SportsSoccer";
 import Category from "@mui/icons-material/Category";
 import VoucherIcon from "@mui/icons-material/CardGiftcard";
-import { People } from "@mui/icons-material";
+import { People, Policy } from "@mui/icons-material";
 const drawerWidth = 240;
 
 const menuItems = [
@@ -54,7 +54,17 @@ const menuItems = [
     text: "Quản lí ưu đãi",
     icon: <VoucherIcon />,
     path: "/admin/voucher-list",
-  }
+  },
+  {
+    text: "Danh mục chính sách",
+    icon: <Policy />,
+    path: "/admin/category-policy-list",
+  },
+  {
+    text: "Quản lí ưu đãi",
+    icon: <Policy />,
+    path: "/admin/policy-list",
+  },
 ];
 
 const AdminLayout = () => {
