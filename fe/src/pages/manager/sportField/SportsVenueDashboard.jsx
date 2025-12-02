@@ -29,6 +29,8 @@ const SportsVenueDashboard = () => {
       try {
         const response = await fieldComplexService.getAll();
         let complexes = response;
+        // console.log("Field complexes fetched:", complexes);
+        // console.log("Current user:", currentUser.role);
         if (currentUser.role !== 'ADMIN') {
           complexes = response.filter(fc => fc.owner && fc.owner._id === currentUser._id);
         }
@@ -43,7 +45,9 @@ const SportsVenueDashboard = () => {
     const fetchSportFieldsByStaff = async () => {
       if (currentUser?._id) {
         try {
-          const res = await sportFieldService.getSportFieldsByOwner(currentUser._id);
+          const res = currentUser.role === 'ADMIN' 
+            ? await sportFieldService.getAllSportFields()
+            : await sportFieldService.getSportFieldsByOwner(currentUser._id);
           setSportFields(res);
         } catch (error) {
           toast.error("Không thể tải danh sách sân của bạn");
@@ -201,7 +205,7 @@ const SportsVenueDashboard = () => {
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
-            <select
+            {/* <select
               className="w-full sm:w-48 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               value={filterType}
               onChange={(e) => setFilterType(e.target.value)}
@@ -212,7 +216,7 @@ const SportsVenueDashboard = () => {
                   {type.name}
                 </option>
               ))}
-            </select>
+            </select> */}
 
             <select
               className="w-full sm:w-48 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
