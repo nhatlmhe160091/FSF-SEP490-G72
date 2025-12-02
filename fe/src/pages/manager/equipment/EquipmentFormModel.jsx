@@ -33,24 +33,34 @@ const EquipmentFormModel = ({ isOpen, onClose, onSubmit, initialData, sportField
     sportField: [],
   });
 
+  // useEffect(() => {
+  //   if (initialData) {
+  //     setForm({
+  //       ...initialData,
+  //       sportField: initialData.sportField?.map(f => f._id || f) || [],
+  //     });
+  //   } else {
+  //     setForm({
+  //       name: "",
+  //       type: "ball",
+  //       quantity: 0,
+  //       pricePerUnit: 0,
+  //       status: "available",
+  //       sportField: sportFields.map(f => f._id), // Tự động chọn tất cả sân
+  //     });
+  //   }
+  // }, [initialData, sportFields]);
   useEffect(() => {
-    if (initialData) {
-      setForm({
-        ...initialData,
-        sportField: initialData.sportField?.map(f => f._id || f) || [],
-      });
-    } else {
-      setForm({
-        name: "",
-        type: "ball",
-        quantity: 0,
-        pricePerUnit: 0,
-        status: "available",
-        sportField: [],
-      });
-    }
-  }, [initialData]);
-
+    setForm(prev => ({
+      ...(initialData || {}),
+      name: initialData?.name || "",
+      type: initialData?.type || "ball",
+      quantity: initialData?.quantity || 0,
+      pricePerUnit: initialData?.pricePerUnit || 0,
+      status: initialData?.status || "available",
+      sportField: sportFields.map(f => f._id), // Luôn tự động chọn tất cả sân
+    }));
+  }, [initialData, sportFields]);
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
@@ -148,7 +158,7 @@ const EquipmentFormModel = ({ isOpen, onClose, onSubmit, initialData, sportField
             renderInput={(params) => <TextField {...params} label="Sân áp dụng" size="small" variant="outlined" />}
           />
           <Typography variant="caption" color="text.secondary" sx={{ mt: 1 }}>
-            Lưu ý: Vui lòng kiểm tra kỹ thông tin trước khi lưu.
+            Mặc định: Áp dụng cho tất cả sân. Bạn có thể bỏ chọn hoặc thêm sân theo nhu cầu.
           </Typography>
         </Box>
       </DialogContent>
