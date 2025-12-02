@@ -41,8 +41,12 @@ const UpdateOwner = ({ user, onClose }) => {
                 <Select value={role} onChange={(e) => setRole(e.target.value)}>
                     {/* <MenuItem value="ADMIN">Quản trị viên</MenuItem> */}
                     <MenuItem value="MANAGER">Chủ sân</MenuItem>
+<<<<<<< Updated upstream
                     {/* <MenuItem value="STAFF">Nhân viên</MenuItem>
                     <MenuItem value="CUSTOMER">Khách hàng</MenuItem>                */}
+=======
+                    {/* <MenuItem value="CUSTOMER">Khách hàng</MenuItem> */}
+>>>>>>> Stashed changes
                 </Select>
             </FormControl>
             <Button type="submit" variant="contained" color="primary">Cập nhật</Button>
