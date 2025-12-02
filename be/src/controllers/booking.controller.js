@@ -121,6 +121,7 @@ class BookingController {
             next(error);
         }
     }
+
 }
 
 module.exports = new BookingController();

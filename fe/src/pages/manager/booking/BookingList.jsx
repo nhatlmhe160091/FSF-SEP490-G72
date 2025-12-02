@@ -2,6 +2,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
 import IconButton from '@mui/material/IconButton';
 import React, { useState, useEffect, useContext } from 'react';
 import {
@@ -26,9 +27,11 @@ const STATUS_OPTIONS = [
     { value: 'cancelled', label: 'Đã hủy' }
 ];
 
-const BookingList = () => {
+const BookingListStaff = () => {
     const [selectedBooking, setSelectedBooking] = useState(null);
     const [openDetail, setOpenDetail] = useState(false);
+    const [openConfirm, setOpenConfirm] = useState(false);
+    const [selectedBookingId, setSelectedBookingId] = useState(null);
     const { currentUser } = useAuth();
     const userId = currentUser?._id;
     const handleOpenDetail = (booking) => {
@@ -38,6 +41,16 @@ const BookingList = () => {
     const handleCloseDetail = () => {
         setOpenDetail(false);
         setSelectedBooking(null);
+    };
+
+    const handleOpenConfirm = (bookingId) => {
+        setSelectedBookingId(bookingId);
+        setOpenConfirm(true);
+    };
+
+    const handleCloseConfirm = () => {
+        setOpenConfirm(false);
+        setSelectedBookingId(null);
     };
     // const [selectedDate, setSelectedDate] = useState(dayjs());
     const [bookings, setBookings] = useState([]);
@@ -65,7 +78,7 @@ const BookingList = () => {
                 if (status) params.status = status;
                 if (type) params.type = type;
                 // if (userId) params.userId = userId;
-                const res = await bookingService.getBookingsByComplexOwner(userId, params);
+                const res = await bookingService.getBookingsByComplexStaff(userId, params);
                 if (res && res.data) {
                     setBookings(res.data);
                     setMeta(res.meta || { total: 0, totalPages: 1, currentPage: 1, perPage: 5 });
@@ -81,12 +94,13 @@ const BookingList = () => {
         fetchBookings();
     }, [fromDate, toDate, userId, page, status, type, meta.perPage, search]);
 
-    const handleCancelBooking = async (bookingId) => {
+    const handleCancelBooking = async () => {
+        if (!selectedBookingId) return;
         try {
-            const booking = bookings.find(b => b._id === bookingId);
-            await bookingService.updateBooking(bookingId, { status: 'cancelled' });
+            const booking = bookings.find(b => b._id === selectedBookingId);
+            await bookingService.updateBooking(selectedBookingId, { status: 'cancelled' });
             setBookings(bookings.map(b =>
-                b._id === bookingId ? { ...b, status: 'cancelled' } : b
+                b._id === selectedBookingId ? { ...b, status: 'cancelled' } : b
             ));
             // Nếu booking đang ở trạng thái waiting thì hoàn tiền
             if (booking && booking.status === 'waiting') {
@@ -106,6 +120,8 @@ const BookingList = () => {
             }
         } catch (error) {
             toast.error('Hủy đặt lịch hoặc hoàn tiền thất bại');
+        } finally {
+            handleCloseConfirm();
         }
     };
 
@@ -278,7 +294,7 @@ const BookingList = () => {
                                                 variant="contained"
                                                 color="error"
                                                 size="small"
-                                                onClick={() => handleCancelBooking(booking._id)}
+                                                onClick={() => handleOpenConfirm(booking._id)}
                                             >
                                                 Hủy
                                             </Button>
@@ -358,8 +374,24 @@ const BookingList = () => {
                     color="primary"
                 />
             </Box>
+
+            {/* Dialog xác nhận hủy booking */}
+            <Dialog open={openConfirm} onClose={handleCloseConfirm}>
+                <DialogTitle>Xác nhận hủy đặt lịch</DialogTitle>
+                <DialogContent>
+                    <Typography>Bạn có chắc chắn muốn hủy đặt lịch này không?</Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseConfirm} color="primary">
+                        Hủy
+                    </Button>
+                    <Button onClick={handleCancelBooking} color="error" variant="contained">
+                        Xác nhận hủy
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     );
 };
 
-export default BookingList;
+export default BookingListStaff;
