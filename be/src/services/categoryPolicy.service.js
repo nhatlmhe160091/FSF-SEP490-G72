@@ -2,7 +2,18 @@ const CategoryPolicy = require('../models/categoryPolicy.model');
 
 class CategoryPolicyService {
     async createCategory(data) {
-        return await CategoryPolicy.create(data);
+        const title = data.title.trim();
+        const existing = await CategoryPolicy.findOne({
+            title: { $regex: new RegExp(`^${title}$`, "i") }
+        });
+
+        if (existing) {
+            const err = new Error("Tiêu đề đã tồn tại!");
+            err.statusCode = 400;
+            throw err;
+        }
+
+        return await CategoryPolicy.create({ title });
     }
 
     async getAllCategory() {
@@ -14,7 +25,19 @@ class CategoryPolicyService {
     }
 
     async updateCategory(id, data) {
-        return await CategoryPolicy.findByIdAndUpdate(id, data, { new: true });
+        const title = data.title.trim();
+        const existing = await CategoryPolicy.findOne({
+            title: { $regex: new RegExp(`^${title}$`, "i") },
+            _id: { $ne: id }
+        });
+
+        if (existing) {
+            const err = new Error("Tiêu đề đã tồn tại!");
+            err.statusCode = 400;
+            throw err;
+        }
+
+        return await CategoryPolicy.findByIdAndUpdate(id, { title }, { new: true });
     }
 
     async deleteCategory(id) {
