@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { favoriteService } from "../../services/api/favoriteService";
 import { useAuth } from "../../contexts/authContext";
 import { useEffect } from "react";
+import { fieldComplexService } from "../../services/api/fieldComplexService";
 const Yard = () => {
     const navigate = useNavigate();
     const { currentUser } = useAuth();
@@ -19,6 +20,9 @@ const Yard = () => {
     const [selectedField, setSelectedField] = useState(null);
     const [priceRange, setPriceRange] = useState([0, 300000]);
     const [currentPage, setCurrentPage] = useState(0);
+    const [fieldComplexes, setFieldComplexes] = useState([]);
+    const [selectedFieldComplex, setSelectedFieldComplex] = useState("all");
+    const [showComplexDropdown, setShowComplexDropdown] = useState(false);
     const { types, sportFields } = useContext(PublicContext);
     const itemsPerPage = 8;
 
@@ -34,7 +38,18 @@ const Yard = () => {
             }
         };
 
+        const fetchFieldComplexes = async () => {
+            try {
+                const res = await fieldComplexService.getAll();
+                console.log("Fetched field complexes:", res);
+                setFieldComplexes(res || []);
+            } catch (err) {
+                console.error("Lỗi khi tải danh sách cụm sân:", err);
+            }
+        };
+
         fetchFavorites();
+        fetchFieldComplexes();
     }, [currentUser]);
 
     const categories = [
@@ -49,6 +64,7 @@ const Yard = () => {
     const filteredFields = sportFields
         .filter(field =>
             (selectedCategory === "all" || field.type?.name?.toLowerCase() === selectedCategory) &&
+            (selectedFieldComplex === "all" || field.complex?._id === selectedFieldComplex) &&
             field.pricePerHour >= priceRange[0] &&
             field.pricePerHour <= priceRange[1]
         );
@@ -121,6 +137,77 @@ const Yard = () => {
                 </div>
 
                 <div className="mb-6">
+                    <h3 className="text-lg font-semibold mb-3">Cụm Sân</h3>
+                    <div className="relative">
+                        <div className="w-full">
+                            <button
+                                type="button"
+                                className="w-full flex items-center justify-between p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition bg-white"
+                                onClick={() => setShowComplexDropdown((prev) => !prev)}
+                            >
+                                <span className="flex items-center gap-2">
+                                    {selectedFieldComplex === "all" ? (
+                                        <span className="font-semibold text-gray-700">Tất cả cụm sân</span>
+                                    ) : (
+                                        (() => {
+                                            const selected = fieldComplexes.find(fc => fc._id === selectedFieldComplex);
+                                            if (!selected) return null;
+                                            return (
+                                                <>
+                                                    {selected.images && selected.images.length > 0 ? (
+                                                        <img src={selected.images[0]} alt={selected.name} className="w-7 h-7 rounded object-cover border mr-2" />
+                                                    ) : (
+                                                        <span className="w-7 h-7 rounded bg-gray-200 flex items-center justify-center mr-2 text-gray-400">🏟️</span>
+                                                    )}
+                                                    <span className="font-semibold text-gray-700">{selected.name}</span>
+                                                    <span className="ml-2 text-xs text-gray-500">{selected.location}</span>
+                                                    <span className={`ml-2 px-2 py-0.5 rounded text-xs ${selected.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-500'}`}>{selected.isActive ? 'Hoạt động' : 'Ẩn'}</span>
+                                                </>
+                                            );
+                                        })()
+                                    )}
+                                </span>
+                                <svg className="w-4 h-4 ml-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                            </button>
+                            {showComplexDropdown && (
+                                <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-72 overflow-y-auto animate-fade-in">
+                                    <div
+                                        className={`p-2 cursor-pointer hover:bg-blue-50 rounded flex items-center gap-2 ${selectedFieldComplex === "all" ? 'bg-blue-100' : ''}`}
+                                        onClick={() => { setSelectedFieldComplex("all"); setShowComplexDropdown(false); }}
+                                    >
+                                        <span className="w-7 h-7 rounded bg-gray-200 flex items-center justify-center text-gray-400">🏟️</span>
+                                        <span className="font-semibold text-gray-700">Tất cả cụm sân</span>
+                                    </div>
+                                    {fieldComplexes.length === 0 && (
+                                        <div className="p-2 text-gray-400">Không có dữ liệu cụm sân</div>
+                                    )}
+                                    {fieldComplexes.map((complex) => (
+                                        <div
+                                            key={complex._id}
+                                            className={`p-2 cursor-pointer hover:bg-blue-50 rounded flex items-center gap-2 ${selectedFieldComplex === complex._id ? 'bg-blue-100' : ''}`}
+                                            onClick={() => { setSelectedFieldComplex(complex._id); setShowComplexDropdown(false); }}
+                                        >
+                                            {complex.images && complex.images.length > 0 ? (
+                                                <img src={complex.images[0]} alt={complex.name} className="w-7 h-7 rounded object-cover border" />
+                                            ) : (
+                                                <span className="w-7 h-7 rounded bg-gray-200 flex items-center justify-center text-gray-400">🏟️</span>
+                                            )}
+                                            <div className="flex flex-col">
+                                                <span className="font-semibold text-gray-700">{complex.name}</span>
+                                                <span className="text-xs text-gray-500">{complex.location}</span>
+                                                <span className="text-xs text-gray-400">{complex.description}</span>
+                                            </div>
+                                            <span className={`ml-auto px-2 py-0.5 rounded text-xs ${complex.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-500'}`}>{complex.isActive ? 'Hoạt động' : 'Ẩn'}</span>
+                                            <span className="ml-2 text-xs text-blue-600">{complex.staffs?.length || 0} nhân viên</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                <div className="mb-6">
                     <h3 className="text-lg font-semibold mb-3">Khoảng Giá (VND/giờ)</h3>
                     <div className="space-y-2">
                         <input
@@ -176,7 +263,10 @@ const Yard = () => {
                             </div>
                             <div className="p-4">
                                 <h3 className="text-xl font-bold text-gray-900 mb-2">{field.name}</h3>
-                                <p className="text-gray-600 mb-2">{field.location}</p>
+                                <p className="text-gray-600 mb-1">{field.location}</p>
+                                {field.complex && (
+                                    <p className="text-sm text-blue-600 mb-2">Cụm sân: {field.complex.name}</p>
+                                )}
                                 <div className="flex justify-between items-center mb-3">
                                     <span className="text-gray-600">Sức chứa: {field.capacity}</span>
                                     <span className="text-blue-600 font-bold">{field.pricePerHour} VND/giờ</span>
@@ -235,6 +325,9 @@ const Yard = () => {
                                 <h2 className="text-2xl font-bold text-gray-900 mb-4">{selectedField.name}</h2>
                                 <div className="space-y-4">
                                     <p className="text-gray-600">{selectedField.location}</p>
+                                    {selectedField.complex && (
+                                        <p className="text-sm text-blue-600">Cụm sân: {selectedField.complex.name}</p>
+                                    )}
                                     <div className="flex justify-between items-center">
                                         <span className="text-gray-600">Sức chứa: {selectedField.capacity}</span>
                                         <span className="text-blue-600 font-bold">{selectedField.pricePerHour} VND/giờ</span>
