@@ -61,7 +61,7 @@ const eventSchema = new Schema({
         required: true,
         min: 2,
         max: 8,
-        default: 8
+        default: 2
     },
     availableSlots: {
         type: Number,

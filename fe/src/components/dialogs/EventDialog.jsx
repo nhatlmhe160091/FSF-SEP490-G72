@@ -13,8 +13,8 @@ const EventDialog = ({ open, onClose, selectedSlots, sportField, onConfirm }) =>
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    minPlayers: 4,
-    maxPlayers: 8,
+    minPlayers: 1,
+    maxPlayers: 2,
     playerLevel: 'any',
     playStyle: 'casual',
     teamPreference: 'random',
@@ -163,8 +163,8 @@ const EventDialog = ({ open, onClose, selectedSlots, sportField, onConfirm }) =>
       setFormData({
         name: '',
         description: '',
-        minPlayers: 4,
-        maxPlayers: 8,
+        minPlayers: 1,
+        maxPlayers: 2,
         playerLevel: 'any',
         playStyle: 'casual',
         teamPreference: 'random',
@@ -183,8 +183,8 @@ const EventDialog = ({ open, onClose, selectedSlots, sportField, onConfirm }) =>
     setFormData({
       name: '',
       description: '',
-      minPlayers: 4,
-      maxPlayers: 8,
+      minPlayers: 1,
+      maxPlayers: 2,
       playerLevel: 'any',
       playStyle: 'casual',
       teamPreference: 'random',
@@ -267,7 +267,7 @@ const EventDialog = ({ open, onClose, selectedSlots, sportField, onConfirm }) =>
               value={formData.minPlayers}
               onChange={e => handleChange('minPlayers', parseInt(e.target.value))}
               fullWidth
-              inputProps={{ min: 4, max: 8 }}
+              inputProps={{ min: 1, max: 8 }}
             />
           </Grid>
 
@@ -278,7 +278,7 @@ const EventDialog = ({ open, onClose, selectedSlots, sportField, onConfirm }) =>
               value={formData.maxPlayers}
               onChange={e => handleChange('maxPlayers', parseInt(e.target.value))}
               fullWidth
-              inputProps={{ min: 4, max: 8 }}
+              inputProps={{ min: 2, max: 8 }}
             />
           </Grid>
 

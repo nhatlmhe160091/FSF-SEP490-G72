@@ -113,15 +113,15 @@ class EventService {
         }
 
         // Validate số lượng người chơi
-        const minPlayers = parseInt(data.minPlayers) || 4;
-        const maxPlayers = parseInt(data.maxPlayers) || 8;
+        const minPlayers = parseInt(data.minPlayers) || 1;
+        const maxPlayers = parseInt(data.maxPlayers) || 2;
 
-        if (minPlayers < 4 || minPlayers > 8) {
-            throw { status: 400, message: 'Số người tối thiểu phải từ 4 đến 8' };
+        if (minPlayers < 1 || minPlayers > 8) {
+            throw { status: 400, message: 'Số người tối thiểu phải từ 1' };
         }
 
-        if (maxPlayers < 4 || maxPlayers > 8) {
-            throw { status: 400, message: 'Số người tối đa phải từ 4 đến 8' };
+        if (maxPlayers < 2 || maxPlayers > 8) {
+            throw { status: 400, message: 'Số người tối đa phải từ 2 đến 8' };
         }
 
         if (maxPlayers < minPlayers) {
@@ -383,11 +383,11 @@ class EventService {
             const minPlayers = updates.minPlayers || event.minPlayers;
             const maxPlayers = updates.maxPlayers || event.maxPlayers;
             
-            if (minPlayers < 4 || minPlayers > 8) {
-                throw { status: 400, message: 'Số người tối thiểu phải từ 4 đến 8' };
+            if (minPlayers < 1 || minPlayers > 8) {
+                throw { status: 400, message: 'Số người tối thiểu phải từ 1' };
             }
-            if (maxPlayers < 4 || maxPlayers > 8) {
-                throw { status: 400, message: 'Số người tối đa phải từ 4 đến 8' };
+            if (maxPlayers < 2 || maxPlayers > 8) {
+                throw { status: 400, message: 'Số người tối đa phải từ 2 đến 8' };
             }
             if (maxPlayers < minPlayers) {
                 throw { status: 400, message: 'Số người tối đa phải lớn hơn hoặc bằng số người tối thiểu' };
