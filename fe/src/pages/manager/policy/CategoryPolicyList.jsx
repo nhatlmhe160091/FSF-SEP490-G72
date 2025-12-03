@@ -34,14 +34,28 @@ const CategoryPolicyList = () => {
     };
 
     const handleSave = async () => {
-        if (editing) {
-            await categoryPolicyService.updateCategory(editing._id, { title });
-        } else {
-            await categoryPolicyService.createCategory({ title });
+        const newTitle = title.trim();
+
+        const isDuplicate = categoryPolicies.some(c =>
+            c.title.trim().toLowerCase() === newTitle.toLowerCase() &&
+            c._id !== editing?._id
+        );
+
+        if (isDuplicate) {
+            alert("Tiêu đề đã tồn tại, vui lòng nhập tiêu đề khác!");
+            return;
         }
+
+        if (editing) {
+            await categoryPolicyService.updateCategory(editing._id, { title: newTitle });
+        } else {
+            await categoryPolicyService.createCategory({ title: newTitle });
+        }
+
         setOpen(false);
         fetchCategoryPolicies();
     };
+
 
     const handleDelete = async (id) => {
         if (window.confirm("Bạn có muốn xóa không?")) {

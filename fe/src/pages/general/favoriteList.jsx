@@ -132,7 +132,7 @@ const ListFavorite = () => {
               <p className="text-sm text-gray-600 mb-2">{field.location}</p>
               <div className="flex justify-between items-center mb-2">
                 <span className="text-gray-600">Capacity: {field.capacity}</span>
-                <span className="text-blue-600 font-semibold">${field.pricePerHour || 0}/hr</span>
+                <span className="text-blue-600 font-semibold">{field.pricePerHour || 0}VND/hr</span>
               </div>
               <div className="flex space-x-2">
                 {field.amenities?.map((a, i) => (
