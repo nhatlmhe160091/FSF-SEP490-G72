@@ -30,7 +30,7 @@ const Home = () => {
                     <p className="text-xl md:text-2xl text-white mb-8">Trải nghiệm các sân thể thao tốt nhất trong khu vực của bạn</p>
                                         <button
                                             className="bg-green-500 hover:bg-green-600 text-white text-xl font-bold py-4 px-8 rounded-full transition duration-300"
-                                            onClick={() => navigate('/yard')}
+                                            onClick={() => navigate('/field-complex')}
                                         >
                                             Đặt Sân Ngay
                                         </button>
@@ -40,7 +40,7 @@ const Home = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-10">
                 <div
-                    onClick={() => navigate('/yard')}
+                    onClick={() => navigate('/field-complex')}
                     className="cursor-pointer bg-[#d66986] text-white rounded-[15px] p-6 shadow-lg hover:shadow-xl transition-all duration-300"
                 >
                     <div className="flex flex-col items-center text-center">
@@ -51,7 +51,7 @@ const Home = () => {
                         />
                         <h3 className="text-xl font-bold mb-2">Tìm kiếm sân chơi</h3>
                         <p className="text-[0.95rem] text-[#dedede]">
-                            Giúp bạn dễ dàng tìm và chọn sân thể thao trong khuôn viên FPT, với danh sách sân và vị trí cụ thể.
+                            Giúp bạn dễ dàng tìm và chọn cụm sân trong khu vực, với danh sách sân và vị trí cụ thể.
                         </p>
                     </div>
                 </div>
