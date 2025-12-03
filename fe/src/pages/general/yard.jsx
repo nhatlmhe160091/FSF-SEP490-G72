@@ -38,12 +38,12 @@ const Yard = () => {
     }, [currentUser]);
 
     const categories = [
-        { id: "all", name: "Tất cả", icon: FaRunning },
-        { id: "bóng đá", name: "Bóng đá", icon: FaFutbol },
-        { id: "bóng rổ", name: "Bóng rổ", icon: FaBasketballBall },
+        // { id: "all", name: "Tất cả", icon: FaRunning },
+        // { id: "bóng đá", name: "Bóng đá", icon: FaFutbol },
+        // { id: "bóng rổ", name: "Bóng rổ", icon: FaBasketballBall },
         { id: "pickleball", name: "Pickleball", icon: FaTableTennis },
-        { id: "tennis", name: "Tennis", icon: MdSportsTennis },
-        { id: "cầu lông", name: "Cầu lông", icon: GiCricketBat },
+        // { id: "tennis", name: "Tennis", icon: MdSportsTennis },
+        // { id: "cầu lông", name: "Cầu lông", icon: GiCricketBat },
     ];
 
     const filteredFields = sportFields
@@ -132,8 +132,8 @@ const Yard = () => {
                             className="w-full"
                         />
                         <div className="flex justify-between text-sm text-gray-600">
-                            <span>${priceRange[0]}</span>
-                            <span>${priceRange[1]}</span>
+                            <span>{priceRange[0]}VND</span>
+                            <span>{priceRange[1]}VND</span>
                         </div>
                     </div>
                 </div>

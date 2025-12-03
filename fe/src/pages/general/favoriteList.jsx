@@ -85,7 +85,7 @@ const ListFavorite = () => {
         <p className="text-gray-600 mb-4">Hãy khám phá các sân và thêm vào danh sách của bạn!</p>
         <button
           className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
-          onClick={() => navigate("/sportfields")}
+          onClick={() => navigate("/yard")}
         >
           Khám phá sân
         </button>
@@ -95,6 +95,12 @@ const ListFavorite = () => {
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 p-6">
+      <button
+        className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
+        onClick={() => navigate("/yard")}
+      >
+        Thêm vào yêu thích
+      </button>
       {favorites.map((fav) => {
         const field = fav.fieldId;
         return (
