@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TextField, Button, FormControl, InputLabel, Select, MenuItem, Box } from '@mui/material';
 import UserService from '../../../services/userService';
 import { toast } from 'react-toastify';
@@ -16,7 +16,7 @@ const RegisterOwner = () => {
         setDob(currentDate);
     }, []);
     const validateEmail = (email) => {
-       return true;
+        return email.endsWith("@fpt.edu.vn") || email.endsWith("@gmail.com");
     };
 
     const handleSubmit = async (e) => {
@@ -24,10 +24,10 @@ const RegisterOwner = () => {
         try {
             // Validate email before submitting
             if (!validateEmail(email)) {
-                toast.error('Email phải có đuôi @fpt.edu.vn');
+                toast.error('Email phải có đuôi @fpt.edu.vn hoặc @gmail.com');
                 return;
             }
-            
+
             const filter = { fname, lname, dob, phoneNumber, email, gender, password, role };
             await UserService.registerAndVerifyAccount(filter);
             toast.success('Tạo tài khoản thành công!');
@@ -52,13 +52,13 @@ const RegisterOwner = () => {
             <TextField label="Tên" value={lname} onChange={(e) => setLname(e.target.value)} fullWidth margin="normal" />
             <TextField label="Ngày sinh" type="date" value={dob} onChange={(e) => setDob(e.target.value)} fullWidth margin="normal" InputLabelProps={{ shrink: true }} />
             <TextField label="Số điện thoại" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} fullWidth margin="normal" />
-            <TextField 
-                label="Email" 
-                value={email} 
-                onChange={(e) => setEmail(e.target.value)} 
-                fullWidth 
+            <TextField
+                label="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                fullWidth
                 margin="normal"
-                helperText={email && !validateEmail(email) ? "Email phải có đuôi @fpt.edu.vn" : ""}
+                helperText={email && !validateEmail(email) ? "Email phải có đuôi @fpt.edu.vn hoặc @gmail.com" : ""}
                 error={email && !validateEmail(email)}
             />
             <FormControl fullWidth margin="normal">

@@ -176,7 +176,7 @@ const YardDetail = () => {
                             </div>
                             <div className="flex justify-between items-center mb-6">
                                 <span className="text-gray-600">Giá theo giờ:</span>
-                                <span className="text-2xl font-bold text-green-600">${fieldData?.pricePerHour}</span>
+                                <span className="text-2xl font-bold text-green-600">{fieldData?.pricePerHour}VND/h</span>
                             </div>
                             <button
                                 onClick={() => {
