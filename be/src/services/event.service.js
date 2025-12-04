@@ -207,30 +207,30 @@ class EventService {
         }
         await event.save();
         const populatedEvent = await event.populate(['createdBy', 'fieldId']);
-        
+
         // Cập nhật trạng thái schedule
-         const bookingDate = new Date(startTime);
+        const bookingDate = new Date(startTime);
         const scheduleDate = new Date(Date.UTC(
             bookingDate.getUTCFullYear(),
             bookingDate.getUTCMonth(),
             bookingDate.getUTCDate(),
             0, 0, 0, 0
         ));
-        
+
         console.log('Đang cập nhật schedule cho event:', {
             fieldId: data.fieldId,
             scheduleDate,
             startTime,
             endTime
         });
-        
+
         const schedule = await Schedule.findOne({ fieldId: data.fieldId, date: scheduleDate });
         if (schedule) {
             console.log('Tìm thấy schedule, đang cập nhật time slots...');
             let updated = false;
             const start = startTime.getTime();
             const end = endTime.getTime();
-            
+
             for (const slot of schedule.timeSlots) {
                 if (
                     slot.startTime < end &&
@@ -256,7 +256,7 @@ class EventService {
             console.error('Không tìm thấy schedule cho fieldId và date này');
             throw { status: 404, message: 'Không tìm thấy schedule cho sân và ngày này. Vui lòng tạo schedule trước.' };
         }
-        
+
         return {
             success: true,
             status: 201,
@@ -382,7 +382,7 @@ class EventService {
         if (updates.minPlayers || updates.maxPlayers) {
             const minPlayers = updates.minPlayers || event.minPlayers;
             const maxPlayers = updates.maxPlayers || event.maxPlayers;
-            
+
             if (minPlayers < 1 || minPlayers > 8) {
                 throw { status: 400, message: 'Số người tối thiểu phải từ 1' };
             }
@@ -427,7 +427,7 @@ class EventService {
 
         event.status = 'cancelled';
         await event.save();
-        
+
         return {
             success: true,
             status: 200,
@@ -478,7 +478,7 @@ class EventService {
 
         await event.save();
         const populatedEvent = await event.populate(['createdBy', 'fieldId', 'interestedPlayers.userId']);
-        
+
         return {
             success: true,
             status: 200,
@@ -521,7 +521,7 @@ class EventService {
         playerInterest.status = 'rejected';
         await event.save();
         const populatedEvent = await event.populate(['createdBy', 'fieldId', 'interestedPlayers.userId']);
-        
+
         return {
             success: true,
             status: 200,
@@ -550,7 +550,7 @@ class EventService {
         }
 
         const player = event.interestedPlayers[playerIndex];
-        
+
         // Nếu người này đã accepted thì cần hoàn lại slot
         if (player.status === 'accepted') {
             event.availableSlots += 1;
@@ -562,7 +562,7 @@ class EventService {
         event.interestedPlayers.splice(playerIndex, 1);
         await event.save();
         const populatedEvent = await event.populate(['createdBy', 'fieldId', 'interestedPlayers.userId']);
-        
+
         return {
             success: true,
             status: 200,
@@ -603,16 +603,20 @@ class EventService {
             throw { status: 400, message: `Chưa đủ số lượng người chơi tối thiểu (${totalPlayers}/${event.minPlayers})` };
         }
 
-        // Tính toán giá cho mỗi người (đã giảm giá)
-        const field = event.fieldId;
-        const duration = (event.endTime - event.startTime) / (1000 * 60 * 60); // giờ
-        const fieldPrice = field.pricePerHour || field.price;
+        // Tạo danh sách participants
+        const participants = [
+            event.createdBy._id,
+            ...acceptedPlayers.map(p => p.userId._id)
+        ];
+
+        // Tính giá / người
+        const duration = (event.endTime - event.startTime) / (1000 * 60 * 60);
+        const fieldPrice = event.fieldId.pricePerHour || event.fieldId.price;
         const totalPrice = fieldPrice * duration;
         const discountedPrice = totalPrice * (1 - event.discountPercent / 100);
         const pricePerPerson = Math.round(discountedPrice / participants.length);
 
-        // Tạo danh sách participants
-        const participants = [event.createdBy._id, ...acceptedPlayers.map(p => p.userId._id)];
+        // Tạo participantDetails
         const participantDetails = participants.map(userId => ({
             userId,
             paymentStatus: 'pending',
@@ -645,7 +649,7 @@ class EventService {
 
         const populatedEvent = await event.populate(['createdBy', 'fieldId', 'interestedPlayers.userId']);
         const populatedBooking = await booking.populate(['fieldId', 'participants']);
-        
+
         return {
             success: true,
             status: 201,
@@ -714,7 +718,7 @@ class EventService {
         // Tự động đóng nếu quá deadline
         if (event.status === 'open' && now > event.deadline) {
             const acceptedCount = event.interestedPlayers.filter(p => p.status === 'accepted').length + 1;
-            
+
             if (acceptedCount >= event.minPlayers) {
                 // Đủ người, chuyển sang confirmed
                 event.status = 'confirmed';
@@ -737,7 +741,7 @@ class EventService {
     // Lấy lịch trình của user (tất cả bookings và events sắp tới)
     async getUserSchedule(userId) {
         const now = new Date(Date.now() + 7 * 60 * 60 * 1000);
-        
+
         // Lấy tất cả bookings sắp tới của user
         const bookings = await Booking.find({
             userId,
