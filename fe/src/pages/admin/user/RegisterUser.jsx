@@ -19,8 +19,7 @@ const RegisterUser = () => {
         return email.endsWith("@fpt.edu.vn") || email.endsWith("@gmail.com");
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const toggleFavorite = async (fieldId) => {
         try {
             // Validate email before submitting
             if (!validateEmail(email)) {
@@ -46,6 +45,12 @@ const RegisterUser = () => {
         }
     };
 
+    const isFavorite = (fieldId) => {
+        return favorites.some(fav => fav.fieldId?._id === fieldId);
+    };
+    const handlePageChange = ({ selected }) => {
+        setCurrentPage(selected);
+    };
     return (
         <Box component="form" onSubmit={handleSubmit}>
             <TextField label="Họ" value={fname} onChange={(e) => setFname(e.target.value)} fullWidth margin="normal" />

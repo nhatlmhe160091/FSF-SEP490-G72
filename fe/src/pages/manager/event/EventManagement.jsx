@@ -297,10 +297,10 @@ const EventManagement = () => {
                         <strong>Sân:</strong> {event.fieldId?.name}
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
-                        <strong>Thời gian:</strong> {dayjs(event.startTime).format('DD/MM/YYYY HH:mm')}
+                        <strong>Thời gian:</strong> {dayjs.utc(event.startTime).format('DD/MM/YYYY HH:mm')}
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
-                        <strong>Deadline:</strong> {dayjs(event.deadline).format('DD/MM/YYYY HH:mm')}
+                        <strong>Deadline:</strong> {dayjs.utc(event.deadline).format('DD/MM/YYYY HH:mm')}
                       </Typography>
                     </Box>
 
@@ -406,12 +406,12 @@ const EventManagement = () => {
                 </Grid>
                 <Grid item xs={6}>
                   <Typography variant="body2" color="text.secondary">
-                    <strong>Thời gian:</strong> {dayjs(selectedEvent.startTime).format('DD/MM/YYYY HH:mm')}
+                    <strong>Thời gian:</strong> {dayjs.utc(selectedEvent.startTime).format('DD/MM/YYYY HH:mm')}
                   </Typography>
                 </Grid>
                 <Grid item xs={6}>
                   <Typography variant="body2" color="text.secondary">
-                    <strong>Deadline:</strong> {dayjs(selectedEvent.deadline).format('DD/MM/YYYY HH:mm')}
+                    <strong>Deadline:</strong> {dayjs.utc(selectedEvent.deadline).format('DD/MM/YYYY HH:mm')}
                   </Typography>
                 </Grid>
                 <Grid item xs={6}>
