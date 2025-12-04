@@ -298,10 +298,9 @@ const BookingHistory = () => {
               >
                 <MenuItem value="all">Tất cả</MenuItem>
                 <MenuItem value="pending">Đang xử lí</MenuItem>
-                 <MenuItem value="waiting">Chờ xác nhận</MenuItem>
+                <MenuItem value="waiting">Chờ xác nhận</MenuItem>
                 <MenuItem value="confirmed">Đã xác nhận</MenuItem>
                 <MenuItem value="cancelled">Đã hủy</MenuItem>
-               
               </Select>
             </FormControl>
           </Grid>
@@ -367,7 +366,9 @@ const BookingHistory = () => {
                     </TableCell>
                     <TableCell>{b.totalPrice?.toLocaleString('vi-VN')}đ</TableCell>
                     <TableCell>
-                      {b.status === 'pending' ? (
+                      {b.status === 'cancelled' ? (
+                        <Chip label="Đã hủy" color="error" size="small" />
+                      ) : b.status === 'pending' ? (
                         <Button
                           size="small"
                           variant="contained"
@@ -381,7 +382,9 @@ const BookingHistory = () => {
                       )}
                     </TableCell>
                     <TableCell>
-                      {b.participants && b.participants.length > 0
+                      {b.status === 'cancelled' ? (
+                        <Chip label="Đã hủy" color="error" size="small" />
+                      ) : b.participants && b.participants.length > 0
                         ? `Xé vé (${b.participants.length - 1})`
                         : b.matchmaking && b.matchmaking.length > 0
                         ? (
@@ -590,7 +593,7 @@ const BookingHistory = () => {
                 </Box>
               )}
               <Divider sx={{ my: 2 }} />
-             
+              
               <Typography variant="subtitle2" fontWeight="bold">{selectedBooking.participants && selectedBooking.participants.length > 0 ? 'Xé vé:' : 'Ghép trận:'}</Typography>
               {selectedBooking.participants && selectedBooking.participants.length > 0 ? (
                 <Box>
