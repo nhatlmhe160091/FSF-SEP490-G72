@@ -11,7 +11,7 @@ import { toast } from "react-toastify";
 import feedbackService from '../../services/api/feedbackService';
 
 const FieldComplexDetail = () => {
-        const [showAllFields, setShowAllFields] = useState(false);
+    const [showAllFields, setShowAllFields] = useState(false);
     const { id } = useParams();
     const navigate = useNavigate();
     const [complexData, setComplexData] = useState(null);
@@ -35,9 +35,17 @@ const FieldComplexDetail = () => {
 
                 // Lọc các sân thuộc cụm này
                 if (fieldsRes) {
-                    const fieldsInComplex = fieldsRes.filter(
-                        field => field.complex === id
-                    );
+                    const fieldsInComplex = fieldsRes.filter(field => {
+                        if (!field.complex) return false;
+
+                        // Complex dạng object
+                        if (typeof field.complex === "object") {
+                            return field.complex._id === id;
+                        }
+
+                        // Complex dạng id string
+                        return field.complex === id;
+                    });
                     setSportFields(fieldsInComplex);
                 }
 

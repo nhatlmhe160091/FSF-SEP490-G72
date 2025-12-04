@@ -60,7 +60,17 @@ const FieldComplexList = () => {
 
     // Đếm số sân trong mỗi cụm
     const getFieldCount = (complexId) => {
-        return sportFields.filter(field => field.complex === complexId).length;
+        return sportFields.filter(field => {
+            if (!field.complex) return false;
+
+            // Nếu complex là object
+            if (typeof field.complex === "object") {
+                return field.complex._id === complexId;
+            }
+
+            // Nếu complex chỉ là id string
+            return field.complex === complexId;
+        }).length;
     };
 
     // Lọc theo tìm kiếm
