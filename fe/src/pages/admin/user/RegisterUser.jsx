@@ -19,14 +19,14 @@ const RegisterUser = () => {
         return email.endsWith("@fpt.edu.vn") || email.endsWith("@gmail.com");
     };
 
-    const toggleFavorite = async (fieldId) => {
+    const handleSubmit = async (e) => {
+        e.preventDefault();
         try {
             // Validate email before submitting
             if (!validateEmail(email)) {
                 toast.error('Email phải có đuôi @fpt.edu.vn hoặc @gmail.com');
                 return;
             }
-
             const filter = { fname, lname, dob, phoneNumber, email, gender, password, role };
             await UserService.registerAndVerifyAccount(filter);
             toast.success('Tạo tài khoản thành công!');
@@ -45,23 +45,17 @@ const RegisterUser = () => {
         }
     };
 
-    const isFavorite = (fieldId) => {
-        return favorites.some(fav => fav.fieldId?._id === fieldId);
-    };
-    const handlePageChange = ({ selected }) => {
-        setCurrentPage(selected);
-    };
     return (
         <Box component="form" onSubmit={handleSubmit}>
             <TextField label="Họ" value={fname} onChange={(e) => setFname(e.target.value)} fullWidth margin="normal" />
             <TextField label="Tên" value={lname} onChange={(e) => setLname(e.target.value)} fullWidth margin="normal" />
             <TextField label="Ngày sinh" type="date" value={dob} onChange={(e) => setDob(e.target.value)} fullWidth margin="normal" InputLabelProps={{ shrink: true }} />
             <TextField label="Số điện thoại" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} fullWidth margin="normal" />
-            <TextField
-                label="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                fullWidth
+            <TextField 
+                label="Email" 
+                value={email} 
+                onChange={(e) => setEmail(e.target.value)} 
+                fullWidth 
                 margin="normal"
                 helperText={email && !validateEmail(email) ? "Email phải có đuôi @fpt.edu.vn hoặc @gmail.com" : ""}
                 error={email && !validateEmail(email)}
@@ -80,7 +74,7 @@ const RegisterUser = () => {
                 <Select value={role} onChange={(e) => setRole(e.target.value)}>
                     <MenuItem value="ADMIN">Quản trị viên</MenuItem>
                     <MenuItem value="MANAGER">Chủ sân</MenuItem>
-                    <MenuItem value="CUSTOMER">Khách hàng</MenuItem>
+                    <MenuItem value="CUSTOMER">Khách hàng</MenuItem> 
                 </Select>
             </FormControl>
             <Button type="submit" variant="contained" color="primary">Tạo mới</Button>
