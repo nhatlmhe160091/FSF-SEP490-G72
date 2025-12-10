@@ -1,185 +1,276 @@
-const FieldComplex = require('../models/fieldComplex.model');
-const SportField = require('../models/sportField.model');
-const { User } = require('../models/index');
-const admin = require('../configs/firebaseAdmin');
-const cloudinary = require('../configs/cloudinary.config');
+const FieldComplexService = require('../fieldComplex.service');
+const FieldComplex = require('../../models/fieldComplex.model');
+const SportField = require('../../models/sportField.model');
+const { User } = require('../../models/index');
+const admin = require('../../configs/firebaseAdmin');
+const cloudinary = require('../../configs/cloudinary.config');
 const { v4: uuidv4 } = require('uuid');
 
-class FieldComplexService {
-    async createFieldComplex(data, imageFiles = []) {
-        let imageUrls = [];
-        if (imageFiles.length > 0) {
-            const uploadPromises = imageFiles.map(file =>
-                new Promise((resolve, reject) => {
-                    cloudinary.uploader.upload_stream(
-                        {
-                            folder: 'field_complexes',
-                            public_id: `field_complex_${uuidv4()}`,
-                        },
-                        (error, result) => {
-                            if (error) return reject(new Error(`Lỗi khi tải lên Cloudinary: ${error.message}`));
-                            resolve(result);
-                        }
-                    ).end(file.buffer);
-                })
-            );
-            const results = await Promise.all(uploadPromises);
-            imageUrls = results.map(r => r.secure_url);
-        }
-        
-        const fieldComplex = new FieldComplex({
-            ...data,
-            images: imageUrls.length > 0 ? imageUrls : data.images || []
-        });
-        return await fieldComplex.save();
-    }
+jest.mock('../../models/fieldComplex.model');
+jest.mock('../../models/sportField.model');
+jest.mock('../../models/index');
+jest.mock('../../configs/firebaseAdmin');
+jest.mock('../../configs/cloudinary.config');
+jest.mock('uuid');
 
+describe('FieldComplexService', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
 
-    async getAllFieldComplexes() {
-        const complexes = await FieldComplex.find().populate('owner').populate('staffs');
-        // Lấy danh sách owner hợp lệ
-        const owners = complexes.map(c => c.owner).filter(Boolean);
-        const firebaseUIDs = owners.map((user) => ({ uid: user.firebaseUID })).filter(u => u.uid);
-        let firebaseUsers = [];
-        try {
-            if (firebaseUIDs.length > 0) {
-                const { users: firebaseUserRecords } = await admin.auth().getUsers(firebaseUIDs);
-                firebaseUsers = firebaseUserRecords;
-            }
-        } catch (error) {
-            console.error('Error fetching Firebase users:', error);
-        }
-        return complexes.map(complex => {
-            let owner = complex.owner;
-            let ownerDetail = null;
-            if (owner) {
-                const firebaseUser = firebaseUsers.find(fu => fu.uid === owner.firebaseUID);
-                ownerDetail = {
-                    ...owner.toObject(),
-                    email: firebaseUser ? firebaseUser.email : null,
-                    accountStatus: firebaseUser ? (firebaseUser.disabled ? 'Disabled' : 'Active') : 'Unknown',
-                };
-            }
-            // Trả về thông tin staffs kèm email nếu có firebaseUID
-            const staffsDetail = complex.staffs ? complex.staffs.map(staff => {
-                let staffObj = staff.toObject();
-                let email = null;
-                if (staff.firebaseUID) {
-                    const firebaseUser = firebaseUsers.find(fu => fu.uid === staff.firebaseUID);
-                    email = firebaseUser ? firebaseUser.email : null;
-                }
-                return { ...staffObj, email };
-            }) : [];
-            return {
-                ...complex.toObject(),
-                owner: ownerDetail,
-                staffs: staffsDetail
-            };
-        });
-    }
-
-    async getFieldComplexById(id) {
-        const complex = await FieldComplex.findById(id).populate('owner').populate('staffs');
-        if (!complex) return null;
-        let ownerDetail = null;
-        if (complex.owner && complex.owner.firebaseUID) {
-            try {
-                const firebaseUser = (await admin.auth().getUser(complex.owner.firebaseUID));
-                ownerDetail = {
-                    ...complex.owner.toObject(),
-                    email: firebaseUser.email,
-                    accountStatus: firebaseUser.disabled ? 'Disabled' : 'Active',
-                };
-            } catch (error) {
-                ownerDetail = {
-                    ...complex.owner.toObject(),
-                    email: null,
-                    accountStatus: 'Unknown',
-                };
-            }
-        }
-        // Lấy danh sách các sân thuộc cụm sân này
-        const sportFields = await SportField.find({ complex: id });
-        // Trả về thông tin staffs kèm email nếu có firebaseUID
-        let staffsDetail = [];
-        if (complex.staffs && complex.staffs.length > 0) {
-            staffsDetail = await Promise.all(complex.staffs.map(async staff => {
-                let staffObj = staff.toObject();
-                let email = null;
-                if (staff.firebaseUID) {
-                    try {
-                        const firebaseUser = await admin.auth().getUser(staff.firebaseUID);
-                        email = firebaseUser.email;
-                    } catch (error) {
-                        email = null;
-                    }
-                }
-                return { ...staffObj, email };
+    describe('createFieldComplex', () => {
+        it('should create field complex without images', async () => {
+            const mockData = { name: 'Complex 1', owner: 'o1' };
+            const mockComplex = { ...mockData, _id: 'c1' };
+            FieldComplex.prototype.save = jest.fn().mockResolvedValue(mockComplex);
+            FieldComplex.mockImplementation(() => ({
+                ...mockData,
+                save: FieldComplex.prototype.save
             }));
-        }
-        return {
-            ...complex.toObject(),
-            owner: ownerDetail,
-            sportFields: sportFields.map(f => f.toObject()),
-            staffs: staffsDetail
-        };
-    }
 
-    async updateFieldComplex(id, data, imageFiles = []) {
-        console.log('Updating Field Complex with data:', data);
-        console.log('Number of image files to upload:', imageFiles);
-        let imageUrls = [];
-        if (imageFiles.length > 0) {
-            const uploadPromises = imageFiles.map(file =>
-                new Promise((resolve, reject) => {
-                    cloudinary.uploader.upload_stream(
-                        {
-                            folder: 'field_complexes',
-                            public_id: `field_complex_${uuidv4()}`,
-                        },
-                        (error, result) => {
-                            if (error) return reject(new Error(`Lỗi khi tải lên Cloudinary: ${error.message}`));
-                            resolve(result);
-                        }
-                    ).end(file.buffer);
+            const result = await FieldComplexService.createFieldComplex(mockData, []);
+            expect(result).toEqual(mockComplex);
+            expect(FieldComplex).toHaveBeenCalledWith({ ...mockData, images: [] });
+        });
+
+        it('should create field complex with images', async () => {
+            const mockData = { name: 'Complex 2', owner: 'o2' };
+            const mockComplex = { ...mockData, _id: 'c2', images: ['url1'] };
+            FieldComplex.prototype.save = jest.fn().mockResolvedValue(mockComplex);
+            FieldComplex.mockImplementation(() => ({
+                ...mockData,
+                images: ['url1'],
+                save: FieldComplex.prototype.save
+            }));
+
+            uuidv4.mockReturnValue('uuid1');
+            const mockUploadStream = jest.fn((options, cb) => ({
+                end: (buffer) => cb(null, { secure_url: 'url1' })
+            }));
+            cloudinary.uploader = { upload_stream: mockUploadStream };
+
+            const file = { buffer: Buffer.from('test') };
+            const result = await FieldComplexService.createFieldComplex(mockData, [file]);
+            expect(result).toEqual(mockComplex);
+            expect(cloudinary.uploader.upload_stream).toHaveBeenCalled();
+        });
+
+        it('should handle cloudinary upload error', async () => {
+            const mockData = { name: 'Complex 3' };
+            uuidv4.mockReturnValue('uuid2');
+            const mockUploadStream = jest.fn((options, cb) => ({
+                end: (buffer) => cb(new Error('Upload failed'), null)
+            }));
+            cloudinary.uploader = { upload_stream: mockUploadStream };
+
+            const file = { buffer: Buffer.from('test') };
+            await expect(FieldComplexService.createFieldComplex(mockData, [file])).rejects.toThrow('Lỗi khi tải lên Cloudinary: Upload failed');
+        });
+    });
+
+    describe('getAllFieldComplexes', () => {
+        it('should return all field complexes with owner and staffs details', async () => {
+            const mockComplexes = [
+                {
+                    _id: 'c1',
+                    owner: { _id: 'o1', firebaseUID: 'uid1', toObject: () => ({ _id: 'o1', firebaseUID: 'uid1' }) },
+                    staffs: [{ _id: 's1', firebaseUID: 'uid2', toObject: () => ({ _id: 's1', firebaseUID: 'uid2' }) }],
+                    toObject: () => ({ _id: 'c1', owner: { _id: 'o1' }, staffs: [{ _id: 's1' }] })
+                }
+            ];
+            FieldComplex.find.mockReturnValue({
+                populate: jest.fn().mockReturnValue({
+                    populate: jest.fn().mockResolvedValue(mockComplexes)
                 })
-            );
-            const results = await Promise.all(uploadPromises);
-            imageUrls = results.map(r => r.secure_url);
-        }
+            });
 
-        if (imageUrls.length > 0) {
-            data.images = imageUrls;
-        }
-        
-        return await FieldComplex.findByIdAndUpdate(id, data, { new: true });
-    }
+            admin.auth().getUsers = jest.fn().mockResolvedValue({
+                users: [
+                    { uid: 'uid1', email: 'owner@example.com', disabled: false },
+                    { uid: 'uid2', email: 'staff@example.com', disabled: false }
+                ]
+            });
 
-    async deleteFieldComplex(id) {
-        return await FieldComplex.findByIdAndDelete(id);
-    }
+            const result = await FieldComplexService.getAllFieldComplexes();
+            expect(Array.isArray(result)).toBe(true);
+            expect(result[0]).toHaveProperty('owner.email', 'owner@example.com');
+            expect(result[0].staffs[0]).toHaveProperty('email', 'staff@example.com');
+        });
 
-    async addStaffToFieldComplex(complexId, staffId) {
-        // Thêm staffId vào mảng staffs nếu chưa có
-        const complex = await FieldComplex.findById(complexId);
-        if (!complex) return null;
-        if (!complex.staffs) complex.staffs = [];
-        if (!complex.staffs.includes(staffId)) {
-            complex.staffs.push(staffId);
-            await complex.save();
-        }
-        return complex;
-    }
+        it('should handle firebase error gracefully', async () => {
+            const mockComplexes = [
+                {
+                    _id: 'c1',
+                    owner: { _id: 'o1', firebaseUID: 'uid1', toObject: () => ({ _id: 'o1', firebaseUID: 'uid1' }) },
+                    staffs: [],
+                    toObject: () => ({ _id: 'c1', owner: { _id: 'o1' }, staffs: [] })
+                }
+            ];
+            FieldComplex.find.mockReturnValue({
+                populate: jest.fn().mockReturnValue({
+                    populate: jest.fn().mockResolvedValue(mockComplexes)
+                })
+            });
 
-    async removeStaffFromFieldComplex(complexId, staffId) {
-        // Xoá staffId khỏi mảng staffs
-        const complex = await FieldComplex.findById(complexId);
-        if (!complex) return null;
-        if (!complex.staffs) complex.staffs = [];
-        complex.staffs = complex.staffs.filter(id => id.toString() !== staffId);
-        await complex.save();
-        return complex;
-    }
-}
+            admin.auth().getUsers = jest.fn().mockRejectedValue(new Error('Firebase error'));
 
-module.exports = new FieldComplexService();
+            const result = await FieldComplexService.getAllFieldComplexes();
+            expect(result[0]).toHaveProperty('owner.email', null);
+        });
+    });
+
+    describe('getFieldComplexById', () => {
+        it('should return null if not found', async () => {
+            FieldComplex.findById.mockReturnValue({
+                populate: jest.fn().mockReturnValue({
+                    populate: jest.fn().mockResolvedValue(null)
+                })
+            });
+
+            const result = await FieldComplexService.getFieldComplexById('c1');
+            expect(result).toBeNull();
+        });
+
+        it('should return field complex with details', async () => {
+            const mockComplex = {
+                _id: 'c1',
+                owner: { _id: 'o1', firebaseUID: 'uid1', toObject: () => ({ _id: 'o1', firebaseUID: 'uid1' }) },
+                staffs: [{ _id: 's1', firebaseUID: 'uid2', toObject: () => ({ _id: 's1', firebaseUID: 'uid2' }) }],
+                toObject: () => ({ _id: 'c1', owner: { _id: 'o1' }, staffs: [{ _id: 's1' }] })
+            };
+            FieldComplex.findById.mockReturnValue({
+                populate: jest.fn().mockReturnValue({
+                    populate: jest.fn().mockResolvedValue(mockComplex)
+                })
+            });
+
+            SportField.find.mockResolvedValue([{ _id: 'f1' }]);
+
+            admin.auth().getUser = jest.fn()
+                .mockResolvedValueOnce({ email: 'owner@example.com', disabled: false })
+                .mockResolvedValueOnce({ email: 'staff@example.com', disabled: false });
+
+            const result = await FieldComplexService.getFieldComplexById('c1');
+            expect(result).toHaveProperty('_id', 'c1');
+            expect(result).toHaveProperty('owner.email', 'owner@example.com');
+            expect(result).toHaveProperty('sportFields');
+            expect(result.staffs[0]).toHaveProperty('email', 'staff@example.com');
+        });
+
+        it('should handle firebase getUser error', async () => {
+            const mockComplex = {
+                _id: 'c1',
+                owner: { _id: 'o1', firebaseUID: 'uid1', toObject: () => ({ _id: 'o1', firebaseUID: 'uid1' }) },
+                staffs: [],
+                toObject: () => ({ _id: 'c1', owner: { _id: 'o1' }, staffs: [] })
+            };
+            FieldComplex.findById.mockReturnValue({
+                populate: jest.fn().mockReturnValue({
+                    populate: jest.fn().mockResolvedValue(mockComplex)
+                })
+            });
+
+            SportField.find.mockResolvedValue([]);
+
+            admin.auth().getUser = jest.fn().mockRejectedValue(new Error('Firebase error'));
+
+            const result = await FieldComplexService.getFieldComplexById('c1');
+            expect(result).toHaveProperty('owner.accountStatus', 'Unknown');
+        });
+    });
+
+    describe('updateFieldComplex', () => {
+        it('should update field complex without images', async () => {
+            const mockData = { name: 'Updated Complex' };
+            const mockUpdated = { _id: 'c1', ...mockData };
+            FieldComplex.findByIdAndUpdate.mockResolvedValue(mockUpdated);
+
+            const result = await FieldComplexService.updateFieldComplex('c1', mockData, []);
+            expect(result).toEqual(mockUpdated);
+            expect(FieldComplex.findByIdAndUpdate).toHaveBeenCalledWith('c1', mockData, { new: true });
+        });
+
+        it('should update field complex with images', async () => {
+            const mockData = { name: 'Updated Complex 2' };
+            const mockUpdated = { _id: 'c2', ...mockData, images: ['url2'] };
+            FieldComplex.findByIdAndUpdate.mockResolvedValue(mockUpdated);
+
+            uuidv4.mockReturnValue('uuid3');
+            const mockUploadStream = jest.fn((options, cb) => ({
+                end: (buffer) => cb(null, { secure_url: 'url2' })
+            }));
+            cloudinary.uploader = { upload_stream: mockUploadStream };
+
+            const file = { buffer: Buffer.from('test') };
+            const result = await FieldComplexService.updateFieldComplex('c2', mockData, [file]);
+            expect(result).toEqual(mockUpdated);
+            expect(mockData.images).toEqual(['url2']);
+        });
+    });
+
+    describe('deleteFieldComplex', () => {
+        it('should delete and return field complex', async () => {
+            const mockDeleted = { _id: 'c1' };
+            FieldComplex.findByIdAndDelete.mockResolvedValue(mockDeleted);
+
+            const result = await FieldComplexService.deleteFieldComplex('c1');
+            expect(result).toEqual(mockDeleted);
+        });
+    });
+
+    describe('addStaffToFieldComplex', () => {
+        it('should add staff if not already present', async () => {
+            const mockComplex = {
+                _id: 'c1',
+                staffs: ['s1'],
+                save: jest.fn().mockResolvedValue({ _id: 'c1', staffs: ['s1', 's2'] })
+            };
+            FieldComplex.findById.mockResolvedValue(mockComplex);
+
+            const result = await FieldComplexService.addStaffToFieldComplex('c1', 's2');
+            expect(result.staffs).toContain('s2');
+            expect(mockComplex.save).toHaveBeenCalled();
+        });
+
+        it('should not add staff if already present', async () => {
+            const mockComplex = {
+                _id: 'c1',
+                staffs: ['s1', 's2'],
+                save: jest.fn()
+            };
+            FieldComplex.findById.mockResolvedValue(mockComplex);
+
+            const result = await FieldComplexService.addStaffToFieldComplex('c1', 's2');
+            expect(mockComplex.save).not.toHaveBeenCalled();
+        });
+
+        it('should return null if complex not found', async () => {
+            FieldComplex.findById.mockResolvedValue(null);
+
+            const result = await FieldComplexService.addStaffToFieldComplex('c1', 's2');
+            expect(result).toBeNull();
+        });
+    });
+
+    describe('removeStaffFromFieldComplex', () => {
+        it('should remove staff if present', async () => {
+            const mockComplex = {
+                _id: 'c1',
+                staffs: ['s1', 's2'],
+                save: jest.fn().mockResolvedValue({ _id: 'c1', staffs: ['s1'] })
+            };
+            FieldComplex.findById.mockResolvedValue(mockComplex);
+
+            const result = await FieldComplexService.removeStaffFromFieldComplex('c1', 's2');
+            expect(result.staffs).not.toContain('s2');
+            expect(mockComplex.save).toHaveBeenCalled();
+        });
+
+        it('should return null if complex not found', async () => {
+            FieldComplex.findById.mockResolvedValue(null);
+
+            const result = await FieldComplexService.removeStaffFromFieldComplex('c1', 's2');
+            expect(result).toBeNull();
+        });
+    });
+});
