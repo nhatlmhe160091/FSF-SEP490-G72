@@ -74,7 +74,9 @@ const FieldComplexList = () => {
     };
 
     // Lọc theo tìm kiếm
-    const filteredComplexes = fieldComplexes.filter(complex =>
+    const filteredComplexes = fieldComplexes
+    .filter(complex => complex.isActive)
+    .filter(complex =>
         complex.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         complex.location?.toLowerCase().includes(searchTerm.toLowerCase())
     );
