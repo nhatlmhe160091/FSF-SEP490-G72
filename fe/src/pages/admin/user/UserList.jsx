@@ -25,6 +25,7 @@ const UserList = () => {
     const [page, setPage] = useState(1);
     const [limit] = useState(5);
     const [search, setSearch] = useState('');
+    const [debouncedSearch, setDebouncedSearch] = useState('');
     const [role, setRole] = useState('');
     const [totalPages, setTotalPages] = useState(1);
     // const [openEditDialog, setOpenEditDialog] = useState(false);
@@ -35,7 +36,7 @@ const UserList = () => {
     const fetchUsers = async () => {
         setLoading(true);
         try {
-            const data = await UserService.getPaginatedUsers(page, limit, search, role);
+            const data = await UserService.getPaginatedUsers(page, limit, debouncedSearch, role);
             setUsers(data.data);
             setTotalPages(data.meta.totalPages);
         } catch (error) {
@@ -47,8 +48,23 @@ const UserList = () => {
 
     useEffect(() => {
         fetchUsers();
-        // eslint-disable-next-line
-    }, [page, limit, search, role]);
+  
+    }, [page, limit, debouncedSearch, role]);
+
+
+    useEffect(() => {
+        if (search.length === 0) {
+            setDebouncedSearch('');
+            return;
+        }
+        if (search.length < 3) return;
+
+        const timer = setTimeout(() => {
+            setDebouncedSearch(search);
+        }, 500); // 500ms delay
+
+        return () => clearTimeout(timer);
+    }, [search]);
 
 
     const handleEditClick = (user) => {
@@ -116,8 +132,8 @@ const UserList = () => {
                                 <MenuItem value="">Tất cả</MenuItem>
                                 <MenuItem value="ADMIN">Quản trị viên</MenuItem>
                                 <MenuItem value="MANAGER">Chủ sân</MenuItem>
-                                <MenuItem value="STAFF">Nhân viên</MenuItem>
                                 <MenuItem value="CUSTOMER">Khách hàng</MenuItem>
+                                <MenuItem value="STAFF">Nhân viên</MenuItem>
                             </Select>
                         </FormControl>
                     </Box>

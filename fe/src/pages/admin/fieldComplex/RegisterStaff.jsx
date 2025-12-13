@@ -13,6 +13,7 @@ const RegisterStaff = () => {
     const [email, setEmail] = useState('');
     const [gender, setGender] = useState('');
     const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
     const [role] = useState('STAFF');
     useEffect(() => {
         const currentDate = new Date().toISOString().split('T')[0];
@@ -28,6 +29,11 @@ const RegisterStaff = () => {
             // Validate email before submitting
             if (!validateEmail(email)) {
                 toast.error('Email phải có đuôi @fpt.edu.vn hoặc @gmail.com');
+                return;
+            }
+            // Validate password confirmation
+            if (password !== confirmPassword) {
+                toast.error('Mật khẩu xác nhận không khớp!');
                 return;
             }
             const filter = { fname, lname, dob, phoneNumber, email, gender, password, role };
@@ -46,6 +52,7 @@ const RegisterStaff = () => {
             setEmail('');
             setGender('');
             setPassword('');
+            setConfirmPassword('');
         } catch (error) {
             console.error('Error creating user:', error?.message);
             toast.error(error?.message || 'Đã xảy ra lỗi khi tạo tài khoản.');
@@ -58,7 +65,7 @@ const RegisterStaff = () => {
             <TextField label="Tên" value={lname} onChange={(e) => setLname(e.target.value)} fullWidth margin="normal" />
             <TextField label="Ngày sinh" type="date" value={dob} onChange={(e) => setDob(e.target.value)} fullWidth margin="normal" InputLabelProps={{ shrink: true }} />
             <TextField label="Số điện thoại" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} fullWidth margin="normal" />
-            <TextField
+            <TextField 
                 label="Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -76,6 +83,16 @@ const RegisterStaff = () => {
                 </Select>
             </FormControl>
             <TextField label="Mật khẩu" type="password" value={password} onChange={(e) => setPassword(e.target.value)} fullWidth margin="normal" />
+            <TextField 
+                label="Xác nhận mật khẩu" 
+                type="password" 
+                value={confirmPassword} 
+                onChange={(e) => setConfirmPassword(e.target.value)} 
+                fullWidth 
+                margin="normal"
+                helperText={confirmPassword && password !== confirmPassword ? "Mật khẩu xác nhận không khớp" : ""}
+                error={confirmPassword && password !== confirmPassword}
+            />
             {/* Trường vai trò đã được ẩn, mặc định là STAFF */}
             <Button type="submit" variant="contained" color="primary">Tạo mới</Button>
         </Box>
