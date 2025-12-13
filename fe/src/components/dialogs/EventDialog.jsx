@@ -22,7 +22,7 @@ const EventDialog = ({ open, onClose, selectedSlots, sportField, onConfirm }) =>
     estimatedPrice: 0,
     deadline: ''
   });
-  const [mode, setMode] = useState('discount'); // 'discount' or 'price'
+  const [mode, setMode] = useState('price'); // 'discount' or 'price'
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -143,7 +143,7 @@ const EventDialog = ({ open, onClose, selectedSlots, sportField, onConfirm }) =>
         startTime,
         endTime,
         deadline: deadline.toISOString(),
-        ...(mode === 'price' ? { estimatedPrice: formData.estimatedPrice } : { discountPercent: formData.discountPercent })
+        estimatedPrice: formData.estimatedPrice
       };
       
       // console.log('=== EVENT DATA BEING SENT ===');
@@ -349,7 +349,7 @@ const EventDialog = ({ open, onClose, selectedSlots, sportField, onConfirm }) =>
                 value={mode}
                 onChange={(e) => setMode(e.target.value)}
               >
-                <FormControlLabel value="discount" control={<Radio />} label="Nhập % giảm giá" />
+                {/* <FormControlLabel value="discount" control={<Radio />} label="Nhập % giảm giá" /> */}
                 <FormControlLabel value="price" control={<Radio />} label="Nhập giá ước tính" />
               </RadioGroup>
             </FormControl>
@@ -364,7 +364,7 @@ const EventDialog = ({ open, onClose, selectedSlots, sportField, onConfirm }) =>
                 onChange={e => handleChange('discountPercent', parseInt(e.target.value))}
                 fullWidth
                 inputProps={{ min: 0, max: 50 }}
-                helperText={`Giá ước tính: ${calculateEstimatedPrice(formData.discountPercent, formData.maxPlayers).toLocaleString()}đ`}
+                helperText={`Giá vé: ${calculateEstimatedPrice(formData.discountPercent, formData.maxPlayers).toLocaleString()}đ`}
               />
             </Grid>
           )}
@@ -372,13 +372,13 @@ const EventDialog = ({ open, onClose, selectedSlots, sportField, onConfirm }) =>
           {mode === 'price' && (
             <Grid item xs={6}>
               <TextField
-                label="Giá ước tính (đ)"
+                label="Giá vé (đ)"
                 type="number"
                 value={formData.estimatedPrice}
                 onChange={e => handleChange('estimatedPrice', parseInt(e.target.value))}
                 fullWidth
                 inputProps={{ min: 0 }}
-                helperText={`Giảm giá: ${calculateDiscountPercent(formData.estimatedPrice, formData.maxPlayers)}%`}
+                helperText={`Lợi nhuận: ${calculateDiscountPercent(formData.estimatedPrice, formData.maxPlayers)}%`}
               />
             </Grid>
           )}

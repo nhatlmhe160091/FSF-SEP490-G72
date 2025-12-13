@@ -49,7 +49,7 @@ const eventSchema = new Schema({
     },
     
     // Cấu hình matching
- minPlayers: {
+    minPlayers: {
         type: Number,
         required: true,
         min: 1,
@@ -61,7 +61,7 @@ const eventSchema = new Schema({
         required: true,
         min: 2,
         max: 8,
-        default: 2
+        default: 8
     },
     availableSlots: {
         type: Number,
@@ -115,8 +115,6 @@ const eventSchema = new Schema({
     },
     discountPercent: {
         type: Number,
-        min: 0,
-        max: 50,
         default: 20,
         required: true
     },
@@ -154,4 +152,3 @@ eventSchema.index({ createdBy: 1 });
 eventSchema.index({ 'interestedPlayers.userId': 1 });
 
 module.exports = mongoose.model("Event", eventSchema);
-
