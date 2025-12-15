@@ -182,14 +182,14 @@ const SportsVenueDashboardStaff = () => {
             <p className="text-gray-600">Chủ sân: {owner?.fname} {owner?.lname} | Email: {owner?.email} | SĐT: {owner?.phoneNumber}</p>
           </div>
         )}
-        <div className="mb-4 flex justify-end">
+        {/* <div className="mb-4 flex justify-end">
           <button
             className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
             onClick={() => setCreateDialogOpen(true)}
           >
             Thêm sân
           </button>
-        </div>
+        </div> */}
         <div className="mb-6 flex flex-col sm:flex-row gap-4 items-center justify-between">
           <div className="relative w-full sm:w-64">
             <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
@@ -202,7 +202,7 @@ const SportsVenueDashboardStaff = () => {
             />
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
+          {/* <div className="flex flex-wrap items-center gap-3">
             <select
               className="w-full sm:w-48 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               value={filterType}
@@ -228,7 +228,7 @@ const SportsVenueDashboardStaff = () => {
                 </option>
               ))}
             </select>
-          </div>
+          </div> */}
 
         </div>
 
@@ -241,7 +241,7 @@ const SportsVenueDashboardStaff = () => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thông tin</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trạng thái</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tiện ích</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hành động</th>
+                  {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hành động</th> */}
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -285,7 +285,7 @@ const SportsVenueDashboardStaff = () => {
                         )}
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    {/* <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex space-x-2">
                         <button className="text-blue-600 hover:text-blue-900">
                           <FaEdit className="h-5 w-5"
@@ -298,9 +298,9 @@ const SportsVenueDashboardStaff = () => {
                         </button>
                         <button className="text-red-600 hover:text-red-900" onClick={() => handleDeleteVenue(venue)}>
                           <FaTrash className="h-5 w-5" />
-                        </button>
+                        </button> */}
                         {/* Confirm Delete Dialog */}
-                        {venueToDelete && (
+                        {/* {venueToDelete && (
                           <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-30">
                             <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-sm">
                               <h2 className="text-lg font-semibold mb-4">Xác nhận xóa sân</h2>
@@ -337,7 +337,7 @@ const SportsVenueDashboardStaff = () => {
                           <MdEvent className="h-5 w-5" />
                         </button>
                       </div>
-                    </td>
+                    </td> */}
                   </tr>
                 ))}
               </tbody>

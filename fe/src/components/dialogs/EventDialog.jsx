@@ -71,6 +71,20 @@ const EventDialog = ({ open, onClose, selectedSlots, sportField, onConfirm }) =>
     return Math.round(100 * (1 - (estimatedPrice * maxPlayers) / (fieldPrice * duration)));
   };
 
+  const getProfitLabel = (estimatedPrice, discountPercent) => {
+    const profitPercent = calculateDiscountPercent(estimatedPrice, formData.maxPlayers);
+
+    if (profitPercent > 0) {
+      return `Giảm giá: ${profitPercent}%`;
+    }
+
+    if (profitPercent < 0) {
+      return `Lợi nhuận: ${Math.abs(profitPercent)}%`;
+    }
+
+    return 'Hòa vốn';
+  }
+
   const handleChange = (field, value) => {
     setFormData(prev => {
       const newData = { ...prev, [field]: value };
@@ -378,7 +392,7 @@ const EventDialog = ({ open, onClose, selectedSlots, sportField, onConfirm }) =>
                 onChange={e => handleChange('estimatedPrice', parseInt(e.target.value))}
                 fullWidth
                 inputProps={{ min: 0 }}
-                helperText={`Lợi nhuận: ${calculateDiscountPercent(formData.estimatedPrice, formData.maxPlayers)}%`}
+                helperText={getProfitLabel(formData.estimatedPrice, formData.discountPercent)}
               />
             </Grid>
           )}
