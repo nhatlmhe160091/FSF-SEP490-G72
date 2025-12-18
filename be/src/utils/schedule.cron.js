@@ -233,7 +233,7 @@ function registerScheduleCrons() {
     checkAndCreateMissingSchedules(1);
 
     // Tạo lịch mới thử nghiệm lúc 23:59 hôm nay (giờ server UTC)
-    cron.schedule('44 1 * * *', createNextDaySchedule);
+    cron.schedule('59 23 * * *', createNextDaySchedule);
 
     // Xóa lịch cũ mỗi tuần vào thứ Hai lúc 00:01
     cron.schedule('1 0 * * 1', cleanupOldSchedules);
