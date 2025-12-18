@@ -303,10 +303,10 @@ const EventManagement = () => {
                         <strong>Sân:</strong> {event.fieldId?.name}
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
-                        <strong>Thời gian:</strong> {dayjs(event.startTime).format('DD/MM/YYYY HH:mm')}
+                        <strong>Thời gian:</strong> {dayjs.utc(event.startTime).format('DD/MM/YYYY HH:mm')}
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
-                        <strong>Deadline:</strong> {dayjs(event.deadline).format('DD/MM/YYYY HH:mm')}
+                        <strong>Deadline:</strong> {dayjs.utc(event.deadline).format('DD/MM/YYYY HH:mm')}
                       </Typography>
                     </Box>
 
@@ -316,11 +316,11 @@ const EventManagement = () => {
                       {pendingCount > 0 && (
                         <Chip label={`${pendingCount} chờ duyệt`} size="small" color="warning" />
                       )}
-                      <Chip 
+                      {/* <Chip 
                         label={`${event.discountPercent < 0 ? '+' : '-'}${Math.abs(event.discountPercent)}%`} 
                         size="small" 
                         color={event.discountPercent < 0 ? 'success' : 'error'} 
-                      />
+                      /> */}
                     </Box>
 
                     <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
@@ -416,12 +416,12 @@ const EventManagement = () => {
                 </Grid>
                 <Grid item xs={6}>
                   <Typography variant="body2" color="text.secondary">
-                    <strong>Thời gian:</strong> {dayjs(selectedEvent.startTime).format('DD/MM/YYYY HH:mm')}
+                    <strong>Thời gian:</strong> {dayjs.utc(selectedEvent.startTime).format('DD/MM/YYYY HH:mm')}
                   </Typography>
                 </Grid>
                 <Grid item xs={6}>
                   <Typography variant="body2" color="text.secondary">
-                    <strong>Deadline:</strong> {dayjs(selectedEvent.deadline).format('DD/MM/YYYY HH:mm')}
+                    <strong>Deadline:</strong> {dayjs.utc(selectedEvent.deadline).format('DD/MM/YYYY HH:mm')}
                   </Typography>
                 </Grid>
                 <Grid item xs={6}>
@@ -429,14 +429,14 @@ const EventManagement = () => {
                     <strong>Số người:</strong> {selectedEvent.minPlayers} - {selectedEvent.maxPlayers} người
                   </Typography>
                 </Grid>
-                <Grid item xs={6}>
+                {/* <Grid item xs={6}>
                   <Typography variant="body2" color="text.secondary">
                     <strong>Lợi nhuận: </strong> 
                     <span style={{ color: selectedEvent.discountPercent < 0 ? '#2e7d32' : '#d32f2f', fontWeight: 600 }}>
                       {selectedEvent.discountPercent < 0 ? '+' : '-'}{Math.abs(selectedEvent.discountPercent)}%
                     </span>
                   </Typography>
-                </Grid>
+                </Grid> */}
               </Grid>
 
               <Typography variant="h6" sx={{ mb: 2 }}>

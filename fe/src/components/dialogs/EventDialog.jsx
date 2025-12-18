@@ -71,19 +71,19 @@ const EventDialog = ({ open, onClose, selectedSlots, sportField, onConfirm }) =>
     return Math.round(100 * (1 - (estimatedPrice * maxPlayers) / (fieldPrice * duration)));
   };
 
-  const getProfitLabel = (estimatedPrice, discountPercent) => {
-    const profitPercent = calculateDiscountPercent(estimatedPrice, formData.maxPlayers);
+  // const getProfitLabel = (estimatedPrice, discountPercent) => {
+  //   const profitPercent = calculateDiscountPercent(estimatedPrice, formData.maxPlayers);
 
-    if (profitPercent > 0) {
-      return `Giảm giá: ${profitPercent}%`;
-    }
+  //   if (profitPercent > 0) {
+  //     return `Giảm giá: ${profitPercent}%`;
+  //   }
 
-    if (profitPercent < 0) {
-      return `Lợi nhuận: ${Math.abs(profitPercent)}%`;
-    }
+  //   if (profitPercent < 0) {
+  //     return `Lợi nhuận: ${Math.abs(profitPercent)}%`;
+  //   }
 
-    return 'Hòa vốn';
-  }
+  //   return 'Hòa vốn';
+  // }
 
   const handleChange = (field, value) => {
     setFormData(prev => {
@@ -182,7 +182,7 @@ const EventDialog = ({ open, onClose, selectedSlots, sportField, onConfirm }) =>
         playerLevel: 'any',
         playStyle: 'casual',
         teamPreference: 'random',
-        discountPercent: 20,
+        // discountPercent: 20,
         estimatedPrice: 0,
         deadline: ''
       });
@@ -202,11 +202,10 @@ const EventDialog = ({ open, onClose, selectedSlots, sportField, onConfirm }) =>
       playerLevel: 'any',
       playStyle: 'casual',
       teamPreference: 'random',
-      discountPercent: 20,
+      // discountPercent: 20,
       estimatedPrice: 0,
       deadline: ''
     });
-    setMode('discount');
     onClose();
   };
 //   console.log('Selected Slots:', selectedSlots);
@@ -369,7 +368,7 @@ const EventDialog = ({ open, onClose, selectedSlots, sportField, onConfirm }) =>
             </FormControl>
           </Grid>
 
-          {mode === 'discount' && (
+          {/* {mode === 'discount' && (
             <Grid item xs={6}>
               <TextField
                 label="Giảm giá (%)"
@@ -381,7 +380,7 @@ const EventDialog = ({ open, onClose, selectedSlots, sportField, onConfirm }) =>
                 helperText={`Giá vé: ${calculateEstimatedPrice(formData.discountPercent, formData.maxPlayers).toLocaleString()}đ`}
               />
             </Grid>
-          )}
+          )} */}
 
           {mode === 'price' && (
             <Grid item xs={6}>
@@ -392,7 +391,7 @@ const EventDialog = ({ open, onClose, selectedSlots, sportField, onConfirm }) =>
                 onChange={e => handleChange('estimatedPrice', parseInt(e.target.value))}
                 fullWidth
                 inputProps={{ min: 0 }}
-                helperText={getProfitLabel(formData.estimatedPrice, formData.discountPercent)}
+                // helperText={getProfitLabel(formData.estimatedPrice, formData.discountPercent)}
               />
             </Grid>
           )}
