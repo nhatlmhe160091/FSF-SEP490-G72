@@ -18,7 +18,7 @@ import { useParams } from "react-router-dom";
 import scheduleService from '../../../services/api/scheduleService';
 import EventDialog from '../../../components/dialogs/EventDialog';
 const EventSchedule = () => {
-    const { complexId } = useParams(); 
+  const { complexId } = useParams();
   const [selectedDate, setSelectedDate] = useState(dayjs());
   const [sportFields, setSportFields] = useState([]);
   const [timeSlots, setTimeSlots] = useState([]);
@@ -55,8 +55,20 @@ const EventSchedule = () => {
     return slotDateTime.isBefore(dayjs());
   };
 
+  const isAfterDeadline = (slotTime) => {
+    const slotStart = dayjs(
+      `${selectedDate.format('YYYY-MM-DD')}T${slotTime}:00`
+    );
+
+    // deadline mặc định = trước 2 giờ
+    const deadline = slotStart.subtract(2, 'hour');
+
+    return dayjs().isAfter(deadline);
+  };
+
   const getSlotStatus = (fieldId, slotTime) => {
     if (isPastSlot(slotTime)) return 'past';
+    if (isAfterDeadline(slotTime)) return 'deadlinePassed';
     const fieldSchedule = schedule.find(s => s.fieldId === fieldId);
     if (!fieldSchedule) return 'available';
 
@@ -74,6 +86,11 @@ const EventSchedule = () => {
   };
 
   const handleSlotClick = (fieldId, slotTime) => {
+    if (isAfterDeadline(slotTime)) {
+      toast.warn('Đã quá hạn đặt khung giờ này!');
+      return;
+    }
+
     const status = getSlotStatus(fieldId, slotTime);
     if (status !== 'available') {
       toast.warn(
@@ -216,6 +233,13 @@ const EventSchedule = () => {
           <Box sx={{ width: 20, height: 20, bgcolor: '#f44336', mr: 1 }} />
           <Typography fontSize={isMobile ? 12 : 14}>Đã đặt</Typography>
         </Box>
+        <Box sx={{ display: 'flex', alignItems: 'center', mr: 2 }}>
+          <Box sx={{ width: 20, height: 20, bgcolor: '#fcf401ff', mr: 1 }} />
+          <Typography fontSize={isMobile ? 12 : 14}>
+            Quá deadline
+          </Typography>
+        </Box>
+
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Box sx={{
             width: 20,
@@ -300,6 +324,7 @@ const EventSchedule = () => {
                   else if (status === 'event') cellBg = '#ff9800'; // Màu cam cho event
                   else if (status === 'booked') cellBg = '#f44336';
                   else if (status === 'past') cellBg = '#e0e0e0';
+                  else if (status === 'deadlinePassed') cellBg = '#fcf401ff';
                   else if (isSelected) cellBg = '#4caf50';
                   else cellBg = 'white';
 

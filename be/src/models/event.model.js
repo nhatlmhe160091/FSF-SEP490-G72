@@ -52,9 +52,9 @@ const eventSchema = new Schema({
     minPlayers: {
         type: Number,
         required: true,
-        min: 1,
+        min: 2,
         max: 8,
-        default: 1
+        default: 2
     },
     maxPlayers: {
         type: Number,

@@ -107,11 +107,11 @@ class EventService {
         }
 
         // Validate số lượng người chơi
-        const minPlayers = parseInt(data.minPlayers) || 1;
+        const minPlayers = parseInt(data.minPlayers) || 2;
         const maxPlayers = parseInt(data.maxPlayers) || 2;
 
-        if (minPlayers < 1 || minPlayers > 8) {
-            throw { status: 400, message: 'Số người tối thiểu phải từ 1' };
+        if (minPlayers < 2 || minPlayers > 8) {
+            throw { status: 400, message: 'Số người tối thiểu phải từ 2' };
         }
 
         if (maxPlayers < 2 || maxPlayers > 8) {
@@ -364,8 +364,8 @@ class EventService {
             const minPlayers = updates.minPlayers || event.minPlayers;
             const maxPlayers = updates.maxPlayers || event.maxPlayers;
 
-            if (minPlayers < 1 || minPlayers > 8) {
-                throw { status: 400, message: 'Số người tối thiểu phải từ 1' };
+            if (minPlayers < 2 || minPlayers > 8) {
+                throw { status: 400, message: 'Số người tối thiểu phải từ 2' };
             }
             if (maxPlayers < 2 || maxPlayers > 8) {
                 throw { status: 400, message: 'Số người tối đa phải từ 2 đến 8' };
@@ -585,12 +585,13 @@ class EventService {
         }
 
         // Tính toán giá cho mỗi người (đã giảm giá)
-        const field = event.fieldId;
-        const duration = (event.endTime - event.startTime) / (1000 * 60 * 60); // giờ
-        const fieldPrice = field.pricePerHour || field.price;
-        const totalPrice = fieldPrice * duration;
-        const discountedPrice = totalPrice * (1 - event.discountPercent / 100);
-        const pricePerPerson = Math.round(discountedPrice / totalPlayers);
+        const pricePerPerson = event.estimatedPrice;
+
+        if (!pricePerPerson || pricePerPerson <= 0) {
+            throw { status: 400, message: 'Giá vé không hợp lệ' };
+        }
+
+        const totalPrice = pricePerPerson * totalPlayers;
 
         // Tạo danh sách participants
         const participants = [event.createdBy._id, ...acceptedPlayers.map(p => p.userId._id)];
@@ -608,13 +609,13 @@ class EventService {
             bookingType: 'event-matching', // Loại đặc biệt cho matching
             userId: event.createdBy._id,
             status: 'confirmed', // Tự động confirmed vì đã có đủ người
-            totalPrice: pricePerPerson,
+            totalPrice,
             participants,
             participantDetails,
             maxParticipants: event.maxPlayers,
             customerName: `${event.createdBy.fname} ${event.createdBy.lname}` || 'Người dùng không tên',
             phoneNumber: event.createdBy.phoneNumber || 'Chưa cập nhật',
-            notes: `Event matching: ${event.name}. Giảm ${event.discountPercent}%. Giá/người: ${pricePerPerson.toLocaleString()}đ`
+            notes: `Event matching: ${event.name}. Giá/người: ${pricePerPerson.toLocaleString()}đ`
         });
 
         await booking.save();

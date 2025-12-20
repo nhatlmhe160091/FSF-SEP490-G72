@@ -13,8 +13,8 @@ const EventDialog = ({ open, onClose, selectedSlots, sportField, onConfirm }) =>
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    minPlayers: 1,
-    maxPlayers: 2,
+    minPlayers: 2,
+    maxPlayers: 4,
     playerLevel: 'any',
     playStyle: 'casual',
     teamPreference: 'random',
@@ -177,8 +177,8 @@ const EventDialog = ({ open, onClose, selectedSlots, sportField, onConfirm }) =>
       setFormData({
         name: '',
         description: '',
-        minPlayers: 1,
-        maxPlayers: 2,
+        minPlayers: 2,
+        maxPlayers: 4,
         playerLevel: 'any',
         playStyle: 'casual',
         teamPreference: 'random',
@@ -197,8 +197,8 @@ const EventDialog = ({ open, onClose, selectedSlots, sportField, onConfirm }) =>
     setFormData({
       name: '',
       description: '',
-      minPlayers: 1,
-      maxPlayers: 2,
+      minPlayers: 2,
+      maxPlayers: 4,
       playerLevel: 'any',
       playStyle: 'casual',
       teamPreference: 'random',
