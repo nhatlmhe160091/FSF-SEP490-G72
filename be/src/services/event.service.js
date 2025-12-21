@@ -409,6 +409,30 @@ class EventService {
         event.status = 'cancelled';
         await event.save();
 
+        // Khôi phục schedule slots
+        const bookingDate = new Date(event.startTime);
+        const scheduleDate = new Date(Date.UTC(
+            bookingDate.getUTCFullYear(),
+            bookingDate.getUTCMonth(),
+            bookingDate.getUTCDate(),
+            0, 0, 0, 0
+        ));
+        const schedule = await Schedule.findOne({ fieldId: event.fieldId, date: scheduleDate });
+        if (schedule) {
+            let updated = false;
+            for (const slot of schedule.timeSlots) {
+                if (
+                    slot.startTime < event.endTime &&
+                    slot.endTime > event.startTime &&
+                    slot.status === 'event'
+                ) {
+                    slot.status = 'available';
+                    updated = true;
+                }
+            }
+            if (updated) await schedule.save();
+        }
+
         return {
             success: true,
             status: 200,

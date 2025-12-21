@@ -253,9 +253,9 @@ const BookingSchedule = () => {
         </Box>
       </Box>
 
-      <Typography sx={{ mb: 2, color: '#f57c00', fontSize: isMobile ? 12 : 14, textAlign: isMobile ? 'center' : 'left' }}>
+      {/* <Typography sx={{ mb: 2, color: '#f57c00', fontSize: isMobile ? 12 : 14, textAlign: isMobile ? 'center' : 'left' }}>
         Lưu ý: Nếu bạn cần đặt lịch cố định vui lòng liên hệ: 0374.857.068 để được hỗ trợ
-      </Typography>
+      </Typography> */}
 
       <Box sx={tableContainerSx} component={Paper} elevation={isMobile ? 0 : 1}>
         <Table
