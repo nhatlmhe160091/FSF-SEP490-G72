@@ -14,7 +14,7 @@ const About = () => (
       <Typography variant="h5" fontWeight="bold" sx={{ mt: 3, mb: 1 }}>
         Tính năng nổi bật:
       </Typography>
-      <ul style={{ marginLeft: 24, marginBottom: 16 }}>
+      <ul style={{ marginLeft: 24, marginBottom: 16, fontFamily: 'Arial' }}>
         <li>Đặt sân trực tuyến mọi lúc, mọi nơi</li>
         <li>Thanh toán linh hoạt: ví điện tử, VNPAY, tiền mặt</li>
         <li>Quản lý lịch sử đặt sân, đánh giá và phản hồi</li>

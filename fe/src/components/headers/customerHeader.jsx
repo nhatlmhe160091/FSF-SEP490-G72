@@ -219,7 +219,7 @@ function CustomerHeader() {
                                         variant="body1"
                                         underline="hover"
                                     >
-                                        Tài khoản : {user?.lname} {user?.fname}
+                                        Tài khoản: {user?.lname} {user?.fname}
                                     </Link>
                                 </Box>
                             </Tooltip>

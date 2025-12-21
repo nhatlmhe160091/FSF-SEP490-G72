@@ -204,7 +204,7 @@ export default function FieldComplexForm({
           multiple
           onChange={handleImageChange}
           accept="image/*"
-          className="w-full"
+          className="w-full file:px-3 file:py-1 file:border file:border-gray-300 file:rounded-md file:bg-gray-100 hover:file:bg-blue-300"
         />
         {form.images.length > 0 && (
           <div className="mt-2 flex flex-wrap gap-2">
