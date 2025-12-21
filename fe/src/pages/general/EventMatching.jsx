@@ -421,7 +421,7 @@ const EventMatching = () => {
             return (
               <Grid item xs={12} md={6} lg={4} key={event._id}>
                 <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', position: 'relative' }}>
-                  {event.fieldId.pricePerHour > 0 && (
+                  {/* {event.fieldId.pricePerHour > 0 && (
                     <Chip
                       icon={<DiscountIcon />}
                       label={`Giá sân ${event.fieldId.pricePerHour}đ/giờ`}
@@ -429,7 +429,7 @@ const EventMatching = () => {
                       size="small"
                       sx={{ position: 'absolute', top: 10, right: 10, zIndex: 1 }}
                     />
-                  )}
+                  )} */}
                   
                   <CardContent sx={{ flexGrow: 1 }}>
                     <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1, pr: 5 }}>
@@ -569,14 +569,14 @@ const EventMatching = () => {
             <DialogTitle sx={{ bgcolor: '#1976d2', color: 'white' }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Typography variant="h6">{selectedEvent.name}</Typography>
-                {selectedEvent.fieldId.pricePerHour > 0 && (
+                {/* {selectedEvent.fieldId.pricePerHour > 0 && (
                   <Chip
                     icon={<DiscountIcon />}
                     label={`Giá sân ${selectedEvent.fieldId.pricePerHour}đ/giờ`}
                     color="error"
                     size="small"
                   />
-                )}
+                )} */}
               </Box>
             </DialogTitle>
             <DialogContent sx={{ mt: 2 }}>

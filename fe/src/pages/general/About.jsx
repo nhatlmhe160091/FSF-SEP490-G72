@@ -9,7 +9,7 @@ const About = () => (
       </Typography>
       <Divider sx={{ mb: 3 }} />
       <Typography variant="body1" sx={{ mb: 2 }}>
-        Hệ thống đặt sân thể thao trực tuyến giúp bạn dễ dàng tìm kiếm, đặt lịch và quản lý các sân bóng đá, cầu lông, tennis và nhiều loại sân khác. Chúng tôi mang đến trải nghiệm đặt sân nhanh chóng, minh bạch và tiện lợi cho mọi đối tượng khách hàng.
+        Hệ thống đặt sân thể thao trực tuyến giúp bạn dễ dàng tìm kiếm, đặt lịch và quản lý các sân pickleball và nhiều loại sân khác. Chúng tôi mang đến trải nghiệm đặt sân nhanh chóng, minh bạch và tiện lợi cho mọi đối tượng khách hàng.
       </Typography>
       <Typography variant="h5" fontWeight="bold" sx={{ mt: 3, mb: 1 }}>
         Tính năng nổi bật:
@@ -30,7 +30,7 @@ const About = () => (
       <Grid container spacing={2} sx={{ mb: 2 }}>
         <Grid item xs={12} sm={6}>
           <Typography variant="subtitle1" fontWeight="bold">Liên hệ hỗ trợ:</Typography>
-          <Typography>Email: support@fsf.vn</Typography>
+          <Typography>Email: support@sfms.vn</Typography>
           <Typography>Hotline: 0374.857.068</Typography>
         </Grid>
         <Grid item xs={12} sm={6}>
@@ -40,7 +40,7 @@ const About = () => (
       </Grid>
       <Divider sx={{ my: 2 }} />
       <Typography variant="body2" color="text.secondary" align="center">
-        &copy; {new Date().getFullYear()} FPT Sports Field. All rights reserved.
+        &copy; {new Date().getFullYear()} SFMS. All rights reserved.
       </Typography>
     </Paper>
   </Container>
