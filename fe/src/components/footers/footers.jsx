@@ -15,7 +15,7 @@ const Footer = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
               <h3 className="text-xl font-bold mb-4">Về chúng tôi</h3>
-              <p className="text-gray-400">Nền tảng đáng tin cậy của bạn cho việc đặt sân bóng đá</p>
+              <p className="text-gray-400">Nền tảng đáng tin cậy cho việc đặt sân thể thao</p>
             </div>
             <div>
               <h3 className="text-xl font-bold mb-4">Liên kết nhanh</h3>
@@ -51,7 +51,7 @@ const Footer = () => {
                         </div>
           </div>
           <div className="mt-8 pt-8 border-t border-gray-800 text-center text-gray-400">
-            <p>© {new Date().getFullYear()} FPT Sports Field. All rights reserved.</p>
+            <p>© {new Date().getFullYear()} SFMS. All rights reserved.</p>
           </div>
         </div>
       </footer>

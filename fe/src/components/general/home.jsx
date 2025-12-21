@@ -7,12 +7,12 @@ const Home = () => {
     const navigate = useNavigate();
     const [email, setEmail] = useState("");
     const partners = [
-        { name: "Stadium A", logo: "https://images.unsplash.com/photo-1522778119026-d647f0596c20" },
-        { name: "Stadium B", logo: "https://images.unsplash.com/photo-1489944440615-453fc2b6a9a9" },
-        { name: "Stadium C", logo: "https://images.unsplash.com/photo-1516802273409-68526ee1bdd6" },
-        { name: "Stadium D", logo: "https://images.unsplash.com/photo-1518091043644-c1d4457512c6" },
-        { name: "Stadium E", logo: "https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c" },
-        { name: "Stadium F", logo: "https://images.unsplash.com/photo-1511886929837-354d827aae26" }
+        { name: "Stadium A", logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQSf8LKkLTVLVjmQcWBw9r9hmDC3I80QwxsNA&s" },
+        { name: "Stadium B", logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVq4FR3GIw9kDp4AFRX0FyfMigw0n0DB3jWg&s" },
+        { name: "Stadium C", logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYkyHmRE3yxnbkPFsrXj0sowoUno9wTayO-g&s" },
+        { name: "Stadium D", logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQT8xmkgi66ZjOHYYzYUGACoIMypyKmUVZp7Q&s" },
+        { name: "Stadium E", logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcScfm_8lso2-w5FtMH2inW22Lc39F5_k5zayQ&s" },
+        { name: "Stadium F", logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTiGYlEeVXCJXkt16dhQ4Twrbcl9QYqeKOtUw&s" }
     ];
 
     return (
@@ -20,7 +20,7 @@ const Home = () => {
             {/* Hero Section */}
             <div className="relative h-[80vh] flex items-center justify-center">
                 <img
-                    src="https://images.unsplash.com/photo-1522778034537-20a2486be803"
+                    src="https://bizweb.dktcdn.net/100/482/641/files/pickleball-la-gi-cach-choi-pickleball-3.jpg?v=1730111233080.com/photo-1522778034537-20a2486be803"
                     alt="Football Pitch"
                     className="absolute inset-0 w-full h-full object-cover z-0"
                 />
@@ -44,11 +44,11 @@ const Home = () => {
                     className="cursor-pointer bg-[#d66986] text-white rounded-[15px] p-6 shadow-lg hover:shadow-xl transition-all duration-300"
                 >
                     <div className="flex flex-col items-center text-center">
-                        <img
+                        {/* <img
                             src="https://booking-sports.com/wp-content/uploads/2024/11/12-white-300x300.png"
                             alt="Tìm kiếm sân chơi"
                             className="w-[113px] mb-4"
-                        />
+                        /> */}
                         <h3 className="text-xl font-bold mb-2">Tìm kiếm sân chơi</h3>
                         <p className="text-[0.95rem] text-[#dedede]">
                             Giúp bạn dễ dàng tìm và chọn cụm sân trong khu vực, với danh sách sân và vị trí cụ thể.
@@ -61,11 +61,11 @@ const Home = () => {
                     onClick={() => navigate("/matchmaking-list")}
                 >
                     <div className="flex flex-col items-center text-center">
-                        <img
+                        {/* <img
                             src="https://booking-sports.com/wp-content/uploads/2024/11/10-300x300.png"
                             alt="Tìm bạn cùng chơi"
                             className="w-[113px] mb-4"
-                        />
+                        /> */}
                         <h3 className="text-xl font-bold mb-2">Tìm bạn cùng chơi</h3>
                         <p className="text-[0.95rem] text-[#444444]">
                             Người chơi có thể nhanh chóng tìm đối tác phù hợp trên ứng dụng dựa trên bộ lọc các loại hình thể thao, và vị trí mong muốn.
@@ -76,11 +76,11 @@ const Home = () => {
                 {/* Feature 3 */}
                 <div className="bg-[#f3e6e6] text-gray-800 rounded-[15px] p-6 shadow-lg hover:shadow-xl transition-all duration-300">
                     <div className="flex flex-col items-center text-center">
-                        <img
+                        {/* <img
                             src="https://booking-sports.com/wp-content/uploads/2024/11/11-300x300.png"
                             alt="Đặt giờ thuê sân"
                             className="w-[113px] mb-4"
-                        />
+                        /> */}
                         <h3 className="text-xl font-bold mb-2">Đặt giờ thuê sân</h3>
                         <p className="text-[0.95rem] text-[#444444]">
                             Người chơi dễ dàng đặt sân bằng cách chọn bộ môn, sân, ngày và giờ mong muốn với 1 nút bấm, giúp việc đặt sân nhanh chóng và tiện lợi hơn.
