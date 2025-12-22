@@ -1,5 +1,7 @@
 const { User } = require('../models');
 const bookingModel = require('../models/booking.model');
+const Event = require('../models/event.model');
+const Maintenance = require('../models/maintenance.model');
 const SportField = require('../models/sportField.model');
 const Schedule = require('../models/schedule.model');
 const FieldComplex = require('../models/fieldComplex.model');
@@ -55,6 +57,33 @@ class BookingService {
         });
         if (overlap) {
             throw { status: 409, message: 'Sân đã được đặt trong khoảng thời gian này.' };
+        }
+
+        // Kiểm tra trùng lặp với event của chủ sân
+        const overlapEvent = await Event.findOne({
+            fieldId,
+            status: { $in: ['open', 'ongoing'] }, // hoặc chỉ 'open' tuỳ nghiệp vụ
+            startTime: { $lt: end },
+            endTime: { $gt: start }
+        });
+
+        if (overlapEvent) {
+            throw {
+                status: 409,
+                message: 'Chủ sân đã đặt sự kiện trong khung giờ này.'
+            };
+        }
+
+        // Không cho phép trùng lịch bảo trì cùng sân
+        const overlapMaintenance = await Maintenance.findOne({
+            fieldId: fieldId,
+            $or: [
+                { startTime: { $lt: end }, endTime: { $gt: start } }
+            ],
+            status: { $in: ['scheduled', 'in_progress'] }
+        });
+        if (overlapMaintenance) {
+            throw { status: 409, message: 'Sân đã có lịch bảo trì trong khoảng thời gian này.' };
         }
 
         // Nếu mọi thứ hợp lệ, tạo booking

@@ -3,6 +3,7 @@ const Booking = require('../models/booking.model');
 const User = require('../models/user.model');
 const SportField = require('../models/sportField.model');
 const Schedule = require('../models/schedule.model');
+const Maintenance = require('../models/maintenance.model');
 
 class EventService {
     // Tìm kiếm event với bộ lọc
@@ -150,7 +151,7 @@ class EventService {
         const duration = (endTime - startTime) / (1000 * 60 * 60); // giờ
         // const estimatedPrice = fieldPrice * duration * (1 - discountPercent / 100) / maxPlayers;
         
-      const discountPercent = Math.round(100 * (1 - (data.estimatedPrice * maxPlayers) / (fieldPrice * duration))); 
+        const discountPercent = Math.round(100 * (1 - (data.estimatedPrice * maxPlayers) / (fieldPrice * duration)));
         // Tạo event mới
         const event = new Event({
             name: data.name,
@@ -173,6 +174,34 @@ class EventService {
             estimatedPrice: data.estimatedPrice,
             interestedPlayers: []
         });
+
+        // Kiểm tra trùng lịch đặt sân
+        const overlap = await Booking.findOne({
+            fieldId: data.fieldId,
+            status: { $in: ['pending', 'waiting', 'confirmed'] },
+            $or: [
+                {
+                    startTime: { $lt: endTime },
+                    endTime: { $gt: startTime }
+                }
+            ]
+        });
+        if (overlap) {
+            throw { status: 409, message: 'Sân đã được đặt trong khoảng thời gian này.' };
+        }
+
+        // Không cho phép trùng lịch bảo trì cùng sân
+        const overlapMaintenance = await Maintenance.findOne({
+            fieldId: data.fieldId,
+            $or: [
+                { startTime: { $lt: endTime }, endTime: { $gt: startTime } }
+            ],
+            status: { $in: ['scheduled', 'in_progress'] }
+        });
+        if (overlap) {
+            throw { status: 409, message: 'Sân đã có lịch bảo trì trong khoảng thời gian này.' };
+        }
+
         // Kiểm tra trùng lịch sự kiện
         const overlappingEvent = await Event.findOne({
             fieldId: data.fieldId,

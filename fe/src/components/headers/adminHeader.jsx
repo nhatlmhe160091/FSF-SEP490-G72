@@ -92,7 +92,7 @@ function AdminHeader() {
                                         variant="body1"
                                         underline="hover"
                                     >
-                                        Quản trị viên : {user?.lname} {user?.fname}
+                                        Quản trị viên: {user?.lname} {user?.fname}
                                     </Link>
                                 </Box>
                             </Tooltip>
