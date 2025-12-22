@@ -68,7 +68,7 @@ const Home = () => {
                         /> */}
                         <h3 className="text-xl font-bold mb-2">Tìm bạn cùng chơi</h3>
                         <p className="text-[0.95rem] text-[#444444]">
-                            Người chơi có thể nhanh chóng tìm đối tác phù hợp trên ứng dụng dựa trên bộ lọc các loại hình thể thao, và vị trí mong muốn.
+                            Người chơi có thể nhanh chóng tìm người chơi phù hợp trên ứng dụng dựa trên các bộ lọc, vị trí và sân mong muốn.
                         </p>
                     </div>
                 </div>
@@ -83,7 +83,7 @@ const Home = () => {
                         /> */}
                         <h3 className="text-xl font-bold mb-2">Đặt giờ thuê sân</h3>
                         <p className="text-[0.95rem] text-[#444444]">
-                            Người chơi dễ dàng đặt sân bằng cách chọn bộ môn, sân, ngày và giờ mong muốn với 1 nút bấm, giúp việc đặt sân nhanh chóng và tiện lợi hơn.
+                            Người chơi dễ dàng đặt sân bằng cách chọn sân, ngày và giờ mong muốn với 1 nút bấm, giúp việc đặt sân nhanh chóng và tiện lợi hơn.
                         </p>
                     </div>
                 </div>

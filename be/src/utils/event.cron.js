@@ -422,17 +422,17 @@ async function cleanupOldEvents() {
 function registerEventCrons() {
     console.log('[Event Cron] 📅 Đang đăng ký cron jobs cho Event...');
     
-    // Kiểm tra deadline mỗi 5 phút
+    // Kiểm tra deadline mỗi 10 giây
     cron.schedule('*/10 * * * * *', checkEventDeadlines);
-    console.log('[Event Cron] ✓ Đã đăng ký: Kiểm tra deadline (mỗi 5 phút)');
+    console.log('[Event Cron] ✓ Đã đăng ký: Kiểm tra deadline (mỗi 10 giây)');
     
     // Gửi cảnh báo mỗi 30 phút
     cron.schedule('*/30 * * * *', sendDeadlineWarnings);
     console.log('[Event Cron] ✓ Đã đăng ký: Gửi cảnh báo (mỗi 30 phút)');
     
-    // Hoàn thành event mỗi 10 phút
+    // Hoàn thành event mỗi 10 giây
     cron.schedule('*/10 * * * * *', completeFinishedEvents);
-    console.log('[Event Cron] ✓ Đã đăng ký: Hoàn thành event (mỗi 10 phút)');
+    console.log('[Event Cron] ✓ Đã đăng ký: Hoàn thành event (mỗi 10 giây)');
     
     // Dọn dẹp event cũ mỗi ngày lúc 3:00 AM
     cron.schedule('0 3 * * *', cleanupOldEvents);
